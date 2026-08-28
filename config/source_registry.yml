@@ -1,0 +1,72 @@
+sources:
+  dges_cna:
+    owner: "Direção-Geral do Ensino Superior (DGES)"
+    role: "National access competition, placements, demand, grades and geographic mobility"
+    official_index: "https://www.dges.gov.pt/pt/pagina/regime-geral-ensino-superior-publico-concurso-nacional-de-acesso"
+    official_index_coverage: "1997-2025"
+    annual_statistics_template: "https://www.dges.gov.pt/guias/pdfs/statcol/{year}/"
+    pair_statistics_template_verified_2004_2025: "https://www.dges.gov.pt/guias/pdfs/statce/col{yy}f{phase}/index.htm"
+    coverage_note: >-
+      The official archive reports statistics from 1997 to 2025. The repository
+      does not pre-assume the detailed statce URL before 2004. The 2026 first-phase
+      release is treated as a current partial vintage until the standard annual
+      statistics bundle is published.
+    primary_documents:
+      - "Estatística por par estabelecimento/curso (todos os pares)"
+      - "Distrito/GAES or Distrito/CAE de candidatura and first preference / placement"
+      - "Classificações dos últimos colocados pelo contingente geral"
+    verified_examples:
+      2004_pair_detail: "https://www.dges.gov.pt/guias/pdfs/statce/col04f1/ec04_01100213.pdf"
+      2024_pair_detail: "https://www.dges.gov.pt/guias/pdfs/statce/col24f1/ec24_01608083.pdf"
+      2025_index: "https://www.dges.gov.pt/guias/pdfs/statcol/2025/"
+      2025_mobility: "https://www.dges.gov.pt/guias/pdfs/statcol/2025/Mobilidade25.pdf"
+      2025_pair_statistics: "https://www.dges.gov.pt/guias/pdfs/statcol/2025/StCEs25.pdf"
+      2025_pair_index: "https://www.dges.gov.pt/guias/pdfs/statce/col25f1/index.htm"
+      2023_first_phase_note: "https://www.dges.gov.pt/coloc/2023/nota_cna23_1f_1.pdf"
+      2024_first_phase_note: "https://www.dges.gov.pt/coloc/2024/nota_cna24_1f_1.pdf"
+      2025_first_phase_note: "https://dges.gov.pt/coloc/2025/nota_cna25_1f_1.pdf"
+      2026_first_phase_note: "https://dges.gov.pt/coloc/2026/nota_cna26_1f_2.pdf"
+      2026_placements_page: "https://www.dges.gov.pt/coloc/2026/index.asp"
+      2026_placements_excel: "https://www.dges.gov.pt/coloc/2026/cna26_1f_resultados.xls"
+      2026_placements_pdf: "https://www.dges.gov.pt/coloc/2026/cna26_1f_resultados.pdf"
+
+  dgeec_raides:
+    owner: "Direção-Geral de Estatísticas da Educação e Ciência (DGEEC)"
+    role: "Enrolments, first-time entrants and graduates by course/cycle/field"
+    official_page: "https://www.dgeec.medu.pt/"
+    survey_name: "Registo de Alunos Inscritos e Diplomados do Ensino Superior (RAIDES)"
+
+  dgeec_education_statistics:
+    owner: "DGEEC"
+    role: "Published higher-education tables by cycle and education field"
+    example_2023_24: "https://estatisticas-educacao.dgeec.medu.pt/eef/2024/ensino_superior/alunos/diplomados.asp"
+
+  fct_rd_units:
+    owner: "Fundação para a Ciência e a Tecnologia (FCT)"
+    role: "R&D-unit evaluations, host institutions, scientific domains and unit characteristics"
+    evaluation_2023_24: "https://www.fct.pt/en/concursos/programa-plurianual-de-financiamento-de-unidades-de-i-d-2023-2024-1-1"
+    units_page: "https://www.fct.pt/financiamento/programas-de-financiamento/instituicoes-de-id/unidades-de-id"
+    atlas_note: "Atlas of Research Units provides unit-level context including fields and integrated researchers."
+
+  dgeec_ipctn:
+    owner: "DGEEC"
+    role: "R&D personnel, institutions and sector-level research activity"
+    survey_name: "Inquérito ao Potencial Científico e Tecnológico Nacional (IPCTN)"
+    acquisition: "manual_or_official_table_download"
+
+  ine_demography:
+    owner: "Instituto Nacional de Estatística (INE)"
+    role: "Population denominators and demographic controls"
+    acquisition: "official_api_or_download"
+    pordata_dissemination:
+      series: "Resident population aged 15-24, total"
+      url: "https://www.pordata.pt/en/portugal/resident+population+of+working+age+total+and+by+age+group-3245"
+      use: "Broad-cohort sensitivity only; not an exact age-18 denominator"
+
+  rankings_optional:
+    owner: "External ranking providers"
+    role: "Secondary test of incremental association between rankings and demand/grades"
+    providers: ["QS", "Times Higher Education", "ARWU"]
+    acquisition: "user_supplied_or_licensed"
+    redistributed: false
+    note: "Provider terms and historical comparability must be recorded in a source receipt."

@@ -1,0 +1,45 @@
+{
+  "admission_window": [
+    2017,
+    2026
+  ],
+  "analysis": "study_a_demographic_cohort_proxy_sensitivity",
+  "denominator": "INE/PORDATA population aged 15-24 divided by 10",
+  "exact_age_18_denominator": false,
+  "imputation_used": false,
+  "inputs": {
+    "config/study.yml": "b89bdcac1930e3e0c1f6fa85cc6e93ebf5c1fc918275a5bbc3517ab7982a7c5a",
+    "config/study_a_demographic.yml": "5b5f377cbf21c09e46cd1429e9ca5cde29d729aed255255a40ba47f1ed0e2643",
+    "data/curated/demography/pt_population_15_24_2016_2025.csv": "9da0f2ce71f01bb48909e7bb6f38ea389159b2c2b346a69b34a4177f7644623d",
+    "data/source_manifests/dges_2019_archive_audit.csv": "05ee20d45aa7e85917ccb8f8874963f29f55f6fe08d5ab1d1b882466eb96ecd9",
+    "data/source_manifests/study_a_demographic.csv": "b6922ab0ac8b2009c47e3fd09b97b21174ebab40b32c12754cc4d303ba47b1b8",
+    "results/study_a/medium_run_component_metrics.csv": "d9d8a90d7f65836ae8e43453b5ab710ca43fab4e680f4021d37368d86c215232",
+    "results/study_a/medium_run_stem_summary.csv": "1f62fa75268d8eeb884c89ba9afe88b467bb461aab357197f67688b4d8a9b3ed",
+    "scripts/build_study_a_demographic.py": "fbfe11bd354f5ac1a177fd31d1ef1e7b258d3a90867404a4339daaee8490562d",
+    "src/pt_he_pipeline/study_a_demography.py": "dccaa4bfa2c5f20a2f202c235c19f87e843fe4e0e7c02db7bd46682f83a824aa",
+    "tests/test_study_a_demographic_release_data.py": "9c18e11442ba9ed8d634e1c055a361104d6bd0d08e8c2ab0e7f1dc7ad8058ef4",
+    "tests/test_study_a_demography.py": "418a9760ea5fcd96be66465c23ab30140376b62f845e07164698e2e74cb279fe"
+  },
+  "observed_admission_years": [
+    2017,
+    2018,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "outputs": {
+    "results/study_a/demographic_component_metrics.csv": "38b12a4392f226afdec766b21272c5f525c6adce9f484294d05ff64740398d22",
+    "results/study_a/demographic_endpoint_comparison.csv": "013dbbecc32b4913f0f1a47a2d35e3862d58cba2b22b98821a0bfcb764c0d989",
+    "results/study_a/demographic_findings.md": "2b80cf02a1a8fe6746d9037fa2c688e73d3a0fa8e221cd19d36c88a3d7099108",
+    "results/study_a/demographic_stem_metrics.csv": "c10d25bf701d9298c01af6fd8fb1780bf6e720cab118422fa5048526ba27f748"
+  },
+  "population_reference_rule": "previous_calendar_year",
+  "primary_estimand": false,
+  "provider_bytes_bundled": false,
+  "receipt_sha256": "286dbf3a2dc5623f934a75cdc99fb73cf6b502a3c4cf54d822a95164ba4bdb9c",
+  "version": "0.3.2"
+}

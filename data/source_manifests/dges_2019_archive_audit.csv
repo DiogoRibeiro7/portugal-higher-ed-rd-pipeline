@@ -1,0 +1,9 @@
+year,phase,official_archive_url,listed_resource,resource_present,relevance_to_broad_area_gap,audit_date
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,placement_summary,true,no_complete_broad_area_table,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,establishment_comparison,true,no_complete_broad_area_table,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,course_comparison,true,programme_panel_source,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,mobility,true,study_b_source,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,general_contingent_cutoffs,true,programme_panel_source,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,all_pair_statistics,true,programme_panel_source,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,pair_statistics_index,true,programme_panel_source,2026-08-25
+2019,1,https://www.dges.gov.pt/guias/pdfs/statcol/2019/,broad_area_placement_table,false,gap_not_closed_no_imputation,2026-08-25

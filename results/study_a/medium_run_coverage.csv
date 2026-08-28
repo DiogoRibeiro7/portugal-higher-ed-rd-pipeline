@@ -1,0 +1,11 @@
+year,observed,status
+2017,True,source_locked
+2018,True,source_locked
+2019,False,not_source_locked
+2020,True,source_locked
+2021,True,source_locked
+2022,True,source_locked
+2023,True,source_locked
+2024,True,source_locked
+2025,True,source_locked
+2026,True,source_locked

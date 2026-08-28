@@ -1,0 +1,37 @@
+version: 0.3.1
+study: A
+analysis: medium_run_broad_area
+language: en-GB
+window:
+  first_year: 2017
+  last_year: 2026
+  expected_years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+source_level: broad_study_area
+source_table:
+  default: Quadro V
+  vintage_exceptions:
+    2017: Quadro XII
+source_policy:
+  provider_bytes_bundled: false
+  no_imputation_for_missing_source_years: true
+  source_locked_observed_years: [2017, 2018, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  missing_source_years: [2019]
+registered_stem_components: ["05", "06", "07"]
+primary_descriptive_outputs:
+  - endpoint_change_2017_2026
+  - log_linear_placement_trend
+  - placement_share_slope
+  - occupancy_slope
+  - first_choice_pressure_slope
+trend_interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  significance_testing: false
+  structural_break_testing: deferred
+sensitivity:
+  exclude_years: [2020, 2021]
+  label: exclude_pandemic_years
+notes:
+  - Calendar year is used as the trend regressor, so the 2019 source gap is not compressed.
+  - The 2019 broad-area observation is not interpolated, backfilled, or reconstructed.
+  - The full registered 1997-2026 programme-level Study A remains pending.

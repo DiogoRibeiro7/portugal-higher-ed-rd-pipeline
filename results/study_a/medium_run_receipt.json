@@ -1,0 +1,49 @@
+{
+  "analysis": "study_a_medium_run_broad_area",
+  "curation_status": "transcribed_from_official_published_aggregate_tables",
+  "expected_window": [
+    2017,
+    2026
+  ],
+  "imputation_used": false,
+  "inputs": {
+    "config/study.yml": "b89bdcac1930e3e0c1f6fa85cc6e93ebf5c1fc918275a5bbc3517ab7982a7c5a",
+    "config/study_a_medium_run.yml": "0188a524c79d47df1daa1543992528e9a4aed50cddfb422b57b747176b058e04",
+    "data/curated/dges/first_phase_area_2017_2026_observed.csv": "96035d2db752dcdadb643706d5b366e6e15380798f22b506912544131275db4b",
+    "data/curated/dges/national_first_phase_2013_2026.csv": "55bd10b755e681b0dabaaa59efe28cec724ed48ae1c487b280cc4f05d62c7b93",
+    "data/source_manifests/dges_study_a_medium_run.csv": "01c8f2be1a151db87e4dd5b30d0d675b4e6f521f9fe604fe229b3f1c516a91fb",
+    "scripts/build_study_a_medium_run.py": "0e21091f49cde71f5fdfe79dd46f8e3fedb526cb288f0ece61d85fe1908d8e94",
+    "src/pt_he_pipeline/study_a.py": "526974d2abd00d6757b0bf9f8b39e3fa853709c47e8c31017573d441c343cdac",
+    "src/pt_he_pipeline/study_a_trends.py": "ebf01f1f0b774b4e56c42923e95ea690c10827770bd9e29ef49e53bc811ac55d",
+    "tests/test_study_a.py": "c960cf02cd9ac9f44c0da7973efb4e85c670525fe3a26b716204692eb4bfc9de",
+    "tests/test_study_a_medium_run_release_data.py": "1ce9e1689ad60be694143afde791391a536fbeea9486d483252bf3cc7f476d80",
+    "tests/test_study_a_release_data.py": "a2dcdbbc7282b078a9f0d379f2a42dcf866d9fd774c5e2d9a338056072a9c87e",
+    "tests/test_study_a_trends.py": "a0fd268d5a59f2abfc2dc7409471eac13eacfd8e57a633722f5c5031f16828b4"
+  },
+  "missing_source_years": [
+    2019
+  ],
+  "observed_years": [
+    2017,
+    2018,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "outputs": {
+    "results/study_a/medium_run_component_metrics.csv": "d9d8a90d7f65836ae8e43453b5ab710ca43fab4e680f4021d37368d86c215232",
+    "results/study_a/medium_run_coverage.csv": "34de48ed329cfc61588df361c44b62b6cf526cd3755a113e01d960f2ba9a9fe9",
+    "results/study_a/medium_run_endpoint_comparison.csv": "31b98ca19306785a0c4a48123e94523da72bd2b61ff6d7140b9c13b90d8218d3",
+    "results/study_a/medium_run_findings.md": "83597985c156dbc48cd4a4d05d58f446ce40b95b8d8ecc3d887eed97f450dcef",
+    "results/study_a/medium_run_source_area_metrics.csv": "9b8b85672272049052c14de412a3cece7533e12806ee74bc909d2246b4e796be",
+    "results/study_a/medium_run_stem_summary.csv": "1f62fa75268d8eeb884c89ba9afe88b467bb461aab357197f67688b4d8a9b3ed",
+    "results/study_a/medium_run_trends.csv": "cdf16125cef4d2d987ce8ffcd12fffd25b4c7f406f094ea40327db0f821bef6b"
+  },
+  "provider_bytes_bundled": false,
+  "receipt_sha256": "4580efb7c54fd93d718331f10e21e820c30eacca0e5b079cb05d445cd9189d11",
+  "version": "0.3.1"
+}

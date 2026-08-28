@@ -1,0 +1,5 @@
+stem_code,stem_component,first_year,last_year,placements_first,placements_last,raw_placement_change,cohort_proxy_rate_first,cohort_proxy_rate_last,cohort_proxy_rate_change
+05,"Natural sciences, mathematics and statistics",2017,2026,3816,3557,-0.0678721174,34.633009,30.01095142,-0.1334581576
+06,Information and communication technologies,2017,2026,820,1312,0.6,7.44210361,11.06954407,0.4874213868
+07,"Engineering, manufacturing and construction",2017,2026,9290,10312,0.1100107643,84.31358846,87.00391653,0.03190859399
+STEM,All registered STEM,2017,2026,13926,15181,0.09011920149,126.3887011,128.084412,0.01341663406

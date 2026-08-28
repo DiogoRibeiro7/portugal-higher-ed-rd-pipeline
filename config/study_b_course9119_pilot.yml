@@ -1,0 +1,46 @@
+version: 0.3.3
+study: B
+analysis: matched_course_demand_selectivity_pilot
+language: en-GB
+scope:
+  competition_phase: 1
+  programme_code: "9119"
+  programme_name: Engenharia Informática
+  degree: Licenciatura
+  years: [2018, 2019, 2020]
+  expected_institutions_per_year: 23
+source_design:
+  source_family: DGES StatsCurso comparative first-phase tables
+  source_document_years: [2019, 2020]
+  overlap_year: 2019
+  overlap_rule: exact_measure_equality_before_deduplication
+  canonical_overlap_preference: contemporary_document
+  provider_bytes_bundled: false
+  curation_status: transcribed_from_official_published_comparative_tables
+primary_demand:
+  variable: applicants_per_vacancy
+  transform: natural_log
+secondary_demand:
+  variable: first_choice_pressure
+  transform: natural_log
+primary_outcomes:
+  - last_placed_general_contingent_grade
+  - mean_application_grade_placed
+model_sequence:
+  - year
+  - year_plus_demand
+  - institution_year
+  - institution_year_plus_demand
+validation:
+  method: leave_one_year_out
+  time_term: linear_year_offset_2019
+interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  ranking_analysis: deferred
+  generalisation_beyond_course_9119: false
+notes:
+  - The pilot holds the exact DGES programme code fixed across all institutions and years.
+  - Placements may exceed initial vacancies when DGES admits tied candidates; occupancy may exceed one.
+  - Cross-sectional and nested-model R-squared values are descriptive explanatory summaries.
+  - Rankings and regionality are not included in this pilot.

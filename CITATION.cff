@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it."
+title: "Portuguese Higher Education Demand, Regionality, and R&D Pipeline"
+type: software
+version: 0.3.3
+date-released: 2026-08-26
+authors:
+  - name: "Diogo"
+license: MIT

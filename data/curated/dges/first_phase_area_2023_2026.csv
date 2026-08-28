@@ -1,0 +1,93 @@
+year,area,vacancies,first_choice_applicants,placements,remaining_vacancies,source_document,source_table
+2023,"Agricultura, Silvicultura e Pescas",723,201,291,432,nota_cna23_1f_1.pdf,Quadro V
+2023,"Arquitetura e Construção",1696,1413,1299,400,nota_cna23_1f_1.pdf,Quadro V
+2023,"Artes",3740,4262,3573,209,nota_cna23_1f_1.pdf,Quadro V
+2023,"Ciências da Vida",2248,2098,2119,140,nota_cna23_1f_1.pdf,Quadro V
+2023,"Ciências Empresariais",7649,9175,7344,363,nota_cna23_1f_1.pdf,Quadro V
+2023,"Ciências Físicas",1076,754,882,196,nota_cna23_1f_1.pdf,Quadro V
+2023,"Ciências Sociais e do Comportamento",4180,6419,4178,42,nota_cna23_1f_1.pdf,Quadro V
+2023,"Ciências Veterinárias",587,828,588,0,nota_cna23_1f_1.pdf,Quadro V
+2023,"Desconhecido ou não especificado",61,78,61,0,nota_cna23_1f_1.pdf,Quadro V
+2023,"Direito",1840,3458,1854,0,nota_cna23_1f_1.pdf,Quadro V
+2023,"Engenharia e Técnicas Afins",10242,8635,8233,2018,nota_cna23_1f_1.pdf,Quadro V
+2023,"Formação de Professores/Formadores e Ciências da Educação",1437,1657,1356,91,nota_cna23_1f_1.pdf,Quadro V
+2023,"Humanidades",2887,3262,2897,27,nota_cna23_1f_1.pdf,Quadro V
+2023,"Indústrias Transformadoras",554,142,284,270,nota_cna23_1f_1.pdf,Quadro V
+2023,"Informação e Jornalismo",949,1636,958,0,nota_cna23_1f_1.pdf,Quadro V
+2023,"Informática",1786,1335,1447,344,nota_cna23_1f_1.pdf,Quadro V
+2023,"Matemática e Estatística",753,705,720,34,nota_cna23_1f_1.pdf,Quadro V
+2023,"Proteção do Ambiente",494,177,334,161,nota_cna23_1f_1.pdf,Quadro V
+2023,"Saúde",7098,8692,7021,91,nota_cna23_1f_1.pdf,Quadro V
+2023,"Serviços de Segurança",40,8,21,19,nota_cna23_1f_1.pdf,Quadro V
+2023,"Serviços de Transporte",92,140,93,0,nota_cna23_1f_1.pdf,Quadro V
+2023,"Serviços Pessoais",3076,3010,2810,289,nota_cna23_1f_1.pdf,Quadro V
+2023,"Serviços Sociais",1155,988,1075,86,nota_cna23_1f_1.pdf,Quadro V
+2024,"Formação de Professores/Formadores e Ciências da Educação",1487,1694,1442,54,nota_cna24_1f_1.pdf,Quadro V
+2024,"Artes",3774,4623,3642,165,nota_cna24_1f_1.pdf,Quadro V
+2024,"Humanidades",2892,3063,2910,31,nota_cna24_1f_1.pdf,Quadro V
+2024,"Ciências Sociais e do Comportamento",4232,6062,4247,22,nota_cna24_1f_1.pdf,Quadro V
+2024,"Informação e Jornalismo",932,1475,940,0,nota_cna24_1f_1.pdf,Quadro V
+2024,"Ciências Empresariais",7683,9036,7377,378,nota_cna24_1f_1.pdf,Quadro V
+2024,"Direito",1851,3362,1861,2,nota_cna24_1f_1.pdf,Quadro V
+2024,"Ciências da Vida",2307,2009,2077,232,nota_cna24_1f_1.pdf,Quadro V
+2024,"Ciências Físicas",1075,719,880,197,nota_cna24_1f_1.pdf,Quadro V
+2024,"Matemática e Estatística",766,707,720,46,nota_cna24_1f_1.pdf,Quadro V
+2024,"Informática",1803,1375,1460,346,nota_cna24_1f_1.pdf,Quadro V
+2024,"Engenharia e Técnicas Afins",10242,8955,8547,1702,nota_cna24_1f_1.pdf,Quadro V
+2024,"Indústrias Transformadoras",506,134,294,212,nota_cna24_1f_1.pdf,Quadro V
+2024,"Arquitetura e Construção",1697,1817,1387,316,nota_cna24_1f_1.pdf,Quadro V
+2024,"Agricultura, Silvicultura e Pescas",690,201,261,429,nota_cna24_1f_1.pdf,Quadro V
+2024,"Ciências Veterinárias",590,768,568,26,nota_cna24_1f_1.pdf,Quadro V
+2024,"Saúde",7278,8240,7037,249,nota_cna24_1f_1.pdf,Quadro V
+2024,"Serviços Sociais",1156,896,1068,97,nota_cna24_1f_1.pdf,Quadro V
+2024,"Serviços Pessoais",3066,2802,2783,313,nota_cna24_1f_1.pdf,Quadro V
+2024,"Serviços de Transporte",93,141,94,0,nota_cna24_1f_1.pdf,Quadro V
+2024,"Proteção do Ambiente",445,147,286,159,nota_cna24_1f_1.pdf,Quadro V
+2024,"Serviços de Segurança",40,7,20,20,nota_cna24_1f_1.pdf,Quadro V
+2024,"Desconhecido ou não especificado",61,68,62,0,nota_cna24_1f_1.pdf,Quadro V
+2025,"Formação de Professores/Formadores e Ciências da Educação",1694,1879,1594,106,nota_cna25_1f_1.pdf,Quadro V
+2025,"Artes",3825,3652,3360,481,nota_cna25_1f_1.pdf,Quadro V
+2025,"Humanidades",2913,2549,2666,266,nota_cna25_1f_1.pdf,Quadro V
+2025,"Ciências Sociais e do Comportamento",4265,5486,4044,242,nota_cna25_1f_1.pdf,Quadro V
+2025,"Informação e Jornalismo",966,1241,877,89,nota_cna25_1f_1.pdf,Quadro V
+2025,"Ciências Empresariais",7822,6619,6075,1781,nota_cna25_1f_1.pdf,Quadro V
+2025,"Direito",1821,3086,1779,46,nota_cna25_1f_1.pdf,Quadro V
+2025,"Ciências da Vida",2304,1391,1684,621,nota_cna25_1f_1.pdf,Quadro V
+2025,"Ciências Físicas",1066,591,649,417,nota_cna25_1f_1.pdf,Quadro V
+2025,"Matemática e Estatística",767,639,657,110,nota_cna25_1f_1.pdf,Quadro V
+2025,"Informática",1900,931,1064,836,nota_cna25_1f_1.pdf,Quadro V
+2025,"Engenharia e Técnicas Afins",10241,7572,7529,2716,nota_cna25_1f_1.pdf,Quadro V
+2025,"Indústrias Transformadoras",508,137,267,241,nota_cna25_1f_1.pdf,Quadro V
+2025,"Arquitetura e Construção",1685,1706,1333,353,nota_cna25_1f_1.pdf,Quadro V
+2025,"Agricultura, Silvicultura e Pescas",694,176,250,444,nota_cna25_1f_1.pdf,Quadro V
+2025,"Ciências Veterinárias",621,747,537,85,nota_cna25_1f_1.pdf,Quadro V
+2025,"Saúde",7393,8178,6801,603,nota_cna25_1f_1.pdf,Quadro V
+2025,"Serviços Sociais",1085,419,638,447,nota_cna25_1f_1.pdf,Quadro V
+2025,"Serviços Pessoais",3151,1559,1820,1333,nota_cna25_1f_1.pdf,Quadro V
+2025,"Serviços de Transporte",31,30,31,0,nota_cna25_1f_1.pdf,Quadro V
+2025,"Proteção do Ambiente",439,100,164,275,nota_cna25_1f_1.pdf,Quadro V
+2025,"Serviços de Segurança",40,5,21,19,nota_cna25_1f_1.pdf,Quadro V
+2025,"Desconhecido ou não especificado",61,25,59,2,nota_cna25_1f_1.pdf,Quadro V
+2026,"Formação de Professores/Formadores e Ciências da Educação",1845,1936,1755,104,nota_cna26_1f_2.pdf,Quadro V
+2026,"Artes",3822,4376,3593,272,nota_cna26_1f_2.pdf,Quadro V
+2026,"Humanidades",2974,2822,2902,134,nota_cna26_1f_2.pdf,Quadro V
+2026,"Ciências Sociais e do Comportamento",4459,6453,4324,180,nota_cna26_1f_2.pdf,Quadro V
+2026,"Informação e Jornalismo",965,1546,964,12,nota_cna26_1f_2.pdf,Quadro V
+2026,"Ciências Empresariais",7869,9899,7282,676,nota_cna26_1f_2.pdf,Quadro V
+2026,"Direito",1848,3858,1838,26,nota_cna26_1f_2.pdf,Quadro V
+2026,"Ciências da Vida",2286,1843,2000,293,nota_cna26_1f_2.pdf,Quadro V
+2026,"Ciências Físicas",1075,561,773,305,nota_cna26_1f_2.pdf,Quadro V
+2026,"Matemática e Estatística",854,788,784,71,nota_cna26_1f_2.pdf,Quadro V
+2026,"Informática",1693,961,1312,383,nota_cna26_1f_2.pdf,Quadro V
+2026,"Engenharia e Técnicas Afins",10548,8790,8557,1997,nota_cna26_1f_2.pdf,Quadro V
+2026,"Indústrias Transformadoras",522,115,256,266,nota_cna26_1f_2.pdf,Quadro V
+2026,"Arquitectura e Construção",1752,2045,1499,259,nota_cna26_1f_2.pdf,Quadro V
+2026,"Agricultura, Silvicultura e Pescas",713,216,307,406,nota_cna26_1f_2.pdf,Quadro V
+2026,"Ciências Veterinárias",603,876,552,55,nota_cna26_1f_2.pdf,Quadro V
+2026,"Saúde",7579,9745,7340,276,nota_cna26_1f_2.pdf,Quadro V
+2026,"Serviços Sociais",1045,859,955,110,nota_cna26_1f_2.pdf,Quadro V
+2026,"Serviços Pessoais",3179,2534,2583,629,nota_cna26_1f_2.pdf,Quadro V
+2026,"Serviços de Transporte",31,60,31,0,nota_cna26_1f_2.pdf,Quadro V
+2026,"Protecção do Ambiente",470,144,302,170,nota_cna26_1f_2.pdf,Quadro V
+2026,"Serviços de Segurança",35,16,20,15,nota_cna26_1f_2.pdf,Quadro V
+2026,"Desconhecido ou não especificado",61,70,62,0,nota_cna26_1f_2.pdf,Quadro V

@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Ruff
+        run: poetry run ruff check .
+      - name: Mypy
+        run: poetry run mypy src
+      - name: Tests
+        run: poetry run pytest --cov=pt_he_pipeline --cov-report=term-missing
+      - name: Rebuild Study A recent baseline
+        run: poetry run python scripts/build_study_a_recent.py

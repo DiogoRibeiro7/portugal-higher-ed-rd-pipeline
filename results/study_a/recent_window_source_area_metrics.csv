@@ -1,0 +1,29 @@
+year,area,vacancies,first_choice_applicants,placements,remaining_vacancies,source_document,source_table,canonical_area,stem_code,national_placements,stem_component,placement_share,occupancy_rate,first_choice_pressure
+2023,Ciências Físicas,1076,754,882,196,nota_cna23_1f_1.pdf,Quadro V,Ciências Físicas,05,49438,"Natural sciences, mathematics and statistics",0.01784052753,0.8197026022,0.7007434944
+2023,Ciências da Vida,2248,2098,2119,140,nota_cna23_1f_1.pdf,Quadro V,Ciências da Vida,05,49438,"Natural sciences, mathematics and statistics",0.04286176625,0.9426156584,0.9332740214
+2023,Matemática e Estatística,753,705,720,34,nota_cna23_1f_1.pdf,Quadro V,Matemática e Estatística,05,49438,"Natural sciences, mathematics and statistics",0.01456369594,0.9561752988,0.9362549801
+2023,Informática,1786,1335,1447,344,nota_cna23_1f_1.pdf,Quadro V,Informática,06,49438,Information and communication technologies,0.02926898337,0.8101903695,0.7474804031
+2023,Arquitetura e Construção,1696,1413,1299,400,nota_cna23_1f_1.pdf,Quadro V,Arquitetura e Construção,07,49438,"Engineering, manufacturing and construction",0.02627533476,0.7659198113,0.8331367925
+2023,Engenharia e Técnicas Afins,10242,8635,8233,2018,nota_cna23_1f_1.pdf,Quadro V,Engenharia e Técnicas Afins,07,49438,"Engineering, manufacturing and construction",0.1665318176,0.8038469049,0.8430970514
+2023,Indústrias Transformadoras,554,142,284,270,nota_cna23_1f_1.pdf,Quadro V,Indústrias Transformadoras,07,49438,"Engineering, manufacturing and construction",0.005744568955,0.5126353791,0.2563176895
+2024,Ciências Físicas,1075,719,880,197,nota_cna24_1f_1.pdf,Quadro V,Ciências Físicas,05,49963,"Natural sciences, mathematics and statistics",0.01761303364,0.8186046512,0.6688372093
+2024,Ciências da Vida,2307,2009,2077,232,nota_cna24_1f_1.pdf,Quadro V,Ciências da Vida,05,49963,"Natural sciences, mathematics and statistics",0.04157076236,0.9003034244,0.870827915
+2024,Matemática e Estatística,766,707,720,46,nota_cna24_1f_1.pdf,Quadro V,Matemática e Estatística,05,49963,"Natural sciences, mathematics and statistics",0.01441066389,0.9399477807,0.9229765013
+2024,Informática,1803,1375,1460,346,nota_cna24_1f_1.pdf,Quadro V,Informática,06,49963,Information and communication technologies,0.029221624,0.8097615086,0.7626178591
+2024,Arquitetura e Construção,1697,1817,1387,316,nota_cna24_1f_1.pdf,Quadro V,Arquitetura e Construção,07,49963,"Engineering, manufacturing and construction",0.0277605428,0.8173246906,1.070713023
+2024,Engenharia e Técnicas Afins,10242,8955,8547,1702,nota_cna24_1f_1.pdf,Quadro V,Engenharia e Técnicas Afins,07,49963,"Engineering, manufacturing and construction",0.1710665893,0.8345049795,0.874340949
+2024,Indústrias Transformadoras,506,134,294,212,nota_cna24_1f_1.pdf,Quadro V,Indústrias Transformadoras,07,49963,"Engineering, manufacturing and construction",0.005884354422,0.581027668,0.2648221344
+2025,Ciências Físicas,1066,591,649,417,nota_cna25_1f_1.pdf,Quadro V,Ciências Físicas,05,43899,"Natural sciences, mathematics and statistics",0.01478393585,0.6088180113,0.5544090056
+2025,Ciências da Vida,2304,1391,1684,621,nota_cna25_1f_1.pdf,Quadro V,Ciências da Vida,05,43899,"Natural sciences, mathematics and statistics",0.03836078271,0.7309027778,0.6037326389
+2025,Matemática e Estatística,767,639,657,110,nota_cna25_1f_1.pdf,Quadro V,Matemática e Estatística,05,43899,"Natural sciences, mathematics and statistics",0.01496617235,0.8565840939,0.8331160365
+2025,Informática,1900,931,1064,836,nota_cna25_1f_1.pdf,Quadro V,Informática,06,43899,Information and communication technologies,0.02423745416,0.56,0.49
+2025,Arquitetura e Construção,1685,1706,1333,353,nota_cna25_1f_1.pdf,Quadro V,Arquitetura e Construção,07,43899,"Engineering, manufacturing and construction",0.03036515638,0.7910979228,1.012462908
+2025,Engenharia e Técnicas Afins,10241,7572,7529,2716,nota_cna25_1f_1.pdf,Quadro V,Engenharia e Técnicas Afins,07,43899,"Engineering, manufacturing and construction",0.1715073236,0.7351821111,0.7393809198
+2025,Indústrias Transformadoras,508,137,267,241,nota_cna25_1f_1.pdf,Quadro V,Indústrias Transformadoras,07,43899,"Engineering, manufacturing and construction",0.006082143101,0.5255905512,0.2696850394
+2026,Ciências Físicas,1075,561,773,305,nota_cna26_1f_2.pdf,Quadro V,Ciências Físicas,05,49991,"Natural sciences, mathematics and statistics",0.0154627833,0.7190697674,0.5218604651
+2026,Ciências da Vida,2286,1843,2000,293,nota_cna26_1f_2.pdf,Quadro V,Ciências da Vida,05,49991,"Natural sciences, mathematics and statistics",0.0400072013,0.8748906387,0.8062117235
+2026,Matemática e Estatística,854,788,784,71,nota_cna26_1f_2.pdf,Quadro V,Matemática e Estatística,05,49991,"Natural sciences, mathematics and statistics",0.01568282291,0.9180327869,0.9227166276
+2026,Informática,1693,961,1312,383,nota_cna26_1f_2.pdf,Quadro V,Informática,06,49991,Information and communication technologies,0.02624472405,0.7749556999,0.5676314235
+2026,Arquitectura e Construção,1752,2045,1499,259,nota_cna26_1f_2.pdf,Quadro V,Arquitetura e Construção,07,49991,"Engineering, manufacturing and construction",0.02998539737,0.8555936073,1.167237443
+2026,Engenharia e Técnicas Afins,10548,8790,8557,1997,nota_cna26_1f_2.pdf,Quadro V,Engenharia e Técnicas Afins,07,49991,"Engineering, manufacturing and construction",0.1711708107,0.8112438377,0.8333333333
+2026,Indústrias Transformadoras,522,115,256,266,nota_cna26_1f_2.pdf,Quadro V,Indústrias Transformadoras,07,49991,"Engineering, manufacturing and construction",0.005120921766,0.4904214559,0.2203065134

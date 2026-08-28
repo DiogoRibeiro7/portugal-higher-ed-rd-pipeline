@@ -1,0 +1,26 @@
+version: 0.3.2
+study: A
+analysis: demographic_cohort_proxy_sensitivity
+language: en-GB
+admission_window:
+  first_year: 2017
+  last_year: 2026
+  observed_admission_years: [2017, 2018, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+denominator:
+  source_entity: INE
+  dissemination: PORDATA
+  source_series: Resident population aged 15-24, total
+  population_reference_rule: previous_calendar_year
+  population_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  required_population_years: [2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  age_band_years: 10
+  derived_denominator: population_15_24_divided_by_10
+  label: average_single_year_cohort_proxy
+  exact_age_18_denominator: false
+  primary_estimand: false
+  sensitivity_only: true
+interpretation:
+  - The proxy is a cohort-scale normalisation, not the population aged exactly 18.
+  - The population value for year t-1 is aligned to competition year t.
+  - Raw placement counts and placement shares remain co-primary outcomes.
+  - No missing 2019 STEM broad-area observation is reconstructed.

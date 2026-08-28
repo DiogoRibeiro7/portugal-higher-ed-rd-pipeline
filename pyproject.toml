@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "pt-he-pipeline"
+version = "0.3.3"
+description = "Reproducible analysis of Portuguese higher-education demand, regionality, entry grades, and the R&D talent pipeline."
+authors = ["Diogo"]
+readme = "README.md"
+packages = [{ include = "pt_he_pipeline", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+beautifulsoup4 = ">=4.12"
+matplotlib = ">=3.9"
+numpy = ">=1.26"
+pandas = ">=2.2"
+openpyxl = ">=3.1"
+pypdf = ">=5.0"
+xlrd = ">=2.0"
+pyarrow = ">=16.0"
+pyyaml = ">=6.0"
+requests = ">=2.32"
+scipy = ">=1.13"
+statsmodels = ">=0.14"
+typer = ">=0.12"
+
+[tool.poetry.group.dev.dependencies]
+mypy = ">=1.10"
+pandas-stubs = ">=2.2"
+pre-commit = ">=3.7"
+pytest = ">=8.2"
+pytest-cov = ">=5.0"
+ruff = ">=0.5"
+types-beautifulsoup4 = ">=4.12"
+matplotlib = ">=3.9"
+types-PyYAML = ">=6.0"
+types-requests = ">=2.32"
+
+[tool.poetry.scripts]
+pt-he-pipeline = "pt_he_pipeline.cli:app"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["statsmodels.*", "pypdf.*"]
+ignore_missing_imports = true

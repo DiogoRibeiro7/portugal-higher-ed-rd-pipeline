@@ -1,0 +1,28 @@
+{
+  "analysis": "study_a_recent_window",
+  "curation_status": "transcribed_from_official_published_aggregate_tables",
+  "inputs": {
+    "config/study.yml": "b89bdcac1930e3e0c1f6fa85cc6e93ebf5c1fc918275a5bbc3517ab7982a7c5a",
+    "data/curated/dges/first_phase_area_2023_2026.csv": "128389ef0b9d6709cbcf363732aae60208e7a9121eb463bf7d613210d3362c06",
+    "data/curated/dges/national_first_phase_2013_2026.csv": "55bd10b755e681b0dabaaa59efe28cec724ed48ae1c487b280cc4f05d62c7b93",
+    "data/source_manifests/dges_study_a_recent.csv": "d045ad4010d958b79aa1c23993a542426b80105066e61ce8e3dafb86679c187a",
+    "scripts/build_study_a_recent.py": "50120356b18ff324d46d57ef7dbe66ce68aaef89e6b94785d9067ab8c456dfc5",
+    "src/pt_he_pipeline/study_a.py": "526974d2abd00d6757b0bf9f8b39e3fa853709c47e8c31017573d441c343cdac",
+    "tests/test_study_a.py": "c960cf02cd9ac9f44c0da7973efb4e85c670525fe3a26b716204692eb4bfc9de",
+    "tests/test_study_a_release_data.py": "a2dcdbbc7282b078a9f0d379f2a42dcf866d9fd774c5e2d9a338056072a9c87e"
+  },
+  "outputs": {
+    "results/study_a/recent_window_component_metrics.csv": "1aad69c370a0c833513e7e7c0e81437e5789410d25875c9c2e9604850f66767b",
+    "results/study_a/recent_window_endpoint_comparison.csv": "e27048386860aaf2ed991592aa8a76a01a71a4e2bfc0598019f51a308fd3148b",
+    "results/study_a/recent_window_findings.md": "253ea45ea0d92421eddafe5805c7b9e24d740bee98f7a637357bcf4b95b4b4d9",
+    "results/study_a/recent_window_source_area_metrics.csv": "9b17b7a6f65811b31e730c306391ec6c45bfad133ca12acb484ba1eb558caf1d",
+    "results/study_a/recent_window_stem_summary.csv": "330f6db62e6c55b4c5ee22940b8114392ad353ad07ca6fc19d8cc3ee6319ed80"
+  },
+  "provider_bytes_bundled": false,
+  "receipt_sha256": "c13ec3b7f5773400e717c81c786a44ba99fdce72cddcdba8c3f902fb7098326d",
+  "version": "0.3.0",
+  "window": [
+    2023,
+    2026
+  ]
+}
