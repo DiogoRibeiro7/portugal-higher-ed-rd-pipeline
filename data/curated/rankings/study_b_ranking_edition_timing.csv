@@ -1,0 +1,10 @@
+admission_year,application_start,application_deadline,provider,eligible_edition,publication_date,timing_status,source_note
+2018,2018-07-18,2018-08-07,QS,QS World University Rankings 2019,2018-06-06,eligible_latest_before_deadline,QS 2019 edition released before the 2018 first-phase deadline
+2018,2018-07-18,2018-08-07,Times Higher Education,World University Rankings 2018,2017-09-05,eligible_latest_before_deadline,THE 2019 was not released until September 2018
+2018,2018-07-18,2018-08-07,ARWU,Academic Ranking of World Universities 2017,2017-08-15,eligible_latest_before_deadline,ARWU 2018 was released after the 2018 first-phase deadline
+2019,2019-07-17,2019-08-06,QS,QS World University Rankings 2020,2019-06-19,eligible_latest_before_deadline,QS 2020 edition released before the 2019 first-phase deadline
+2019,2019-07-17,2019-08-06,Times Higher Education,World University Rankings 2019,2018-09-26,eligible_latest_before_deadline,THE 2020 was not released until September 2019
+2019,2019-07-17,2019-08-06,ARWU,Academic Ranking of World Universities 2018,2018-08-15,eligible_latest_before_deadline,ARWU 2019 was released after the 2019 first-phase deadline
+2020,2020-08-07,2020-08-23,QS,QS World University Rankings 2021,2020-06-10,eligible_latest_before_deadline,QS 2021 edition released before the 2020 first-phase deadline
+2020,2020-08-07,2020-08-23,Times Higher Education,World University Rankings 2020,2019-09-11,eligible_latest_before_deadline,THE 2020 edition was already public before applications opened
+2020,2020-08-07,2020-08-23,ARWU,Academic Ranking of World Universities 2020,2020-08-15,eligible_before_deadline_but_after_open,Eligible under frozen deadline rule; sensitivity should exclude because publication occurred after applications opened
