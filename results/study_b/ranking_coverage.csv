@@ -1,0 +1,10 @@
+provider,admission_year,coverage_status,eligible_parent_institutions,verified_ranked_parent_institutions,unresolved_parent_institutions,eligible_rows,verified_ranked_rows,unresolved_rows,verified_row_coverage
+ARWU,2018,verified_partial,13,5,0,52,16,0,0.3076923076923077
+ARWU,2019,verified_partial,13,4,0,52,13,0,0.25
+ARWU,2020,verified_partial,13,6,0,52,18,0,0.34615384615384615
+QS,2018,verified_partial,13,6,0,52,18,0,0.34615384615384615
+QS,2019,verified_partial,13,6,0,52,18,0,0.34615384615384615
+QS,2020,verified_partial,13,6,0,52,18,0,0.34615384615384615
+Times Higher Education,2018,verified_partial,13,11,1,52,42,5,0.8076923076923077
+Times Higher Education,2019,verified_partial,13,11,1,52,42,5,0.8076923076923077
+Times Higher Education,2020,verified_partial,13,11,1,52,42,5,0.8076923076923077
