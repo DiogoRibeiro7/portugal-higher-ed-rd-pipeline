@@ -1,8 +1,9 @@
 """Regionality metrics for Study B.
 
-The module keeps published origin geography intact. District-diagonal measures use
-only rows whose origin is explicitly classified as a district; autonomous regions
-and legacy access areas remain in the full flow table and contribute to coverage.
+The module keeps published origin and destination geography intact. The primary
+district-diagonal estimand uses only cells whose origin and destination are both
+explicitly classified as districts. Autonomous regions and legacy access areas remain
+in the full flow table and contribute to the coverage denominator.
 """
 from __future__ import annotations
 
@@ -14,7 +15,7 @@ import pandas as pd
 from pt_he_pipeline.validation import require_columns
 
 FLOW_TYPES: Final[tuple[str, ...]] = ("first_choice", "placement")
-ORIGIN_TYPES: Final[tuple[str, ...]] = (
+AREA_TYPES: Final[tuple[str, ...]] = (
     "district",
     "autonomous_region",
     "access_area",
@@ -25,7 +26,8 @@ REQUIRED_COLUMNS: Final[tuple[str, ...]] = (
     "flow_type",
     "origin_area",
     "origin_area_type",
-    "destination_district",
+    "destination_area",
+    "destination_area_type",
     "count",
 )
 CELL_KEY: Final[tuple[str, ...]] = (
@@ -33,7 +35,8 @@ CELL_KEY: Final[tuple[str, ...]] = (
     "flow_type",
     "origin_area",
     "origin_area_type",
-    "destination_district",
+    "destination_area",
+    "destination_area_type",
 )
 
 
@@ -58,8 +61,10 @@ def validate_source_flows(source: pd.DataFrame) -> pd.DataFrame:
 
     if not set(frame["flow_type"]).issubset(FLOW_TYPES):
         raise ValueError("unexpected mobility flow type")
-    if not set(frame["origin_area_type"]).issubset(ORIGIN_TYPES):
+    if not set(frame["origin_area_type"]).issubset(AREA_TYPES):
         raise ValueError("unexpected origin area type")
+    if not set(frame["destination_area_type"]).issubset(AREA_TYPES):
+        raise ValueError("unexpected destination area type")
     if frame[list(CELL_KEY)].isna().any().any():
         raise ValueError("mobility cell identifiers must not be missing")
 
@@ -118,20 +123,23 @@ def build_regionality_summary(flows: pd.DataFrame) -> pd.DataFrame:
         total = float(subset["count"].sum())
         comparable = subset.loc[subset["origin_area_type"] == "district"].copy()
         comparable_total = float(comparable["count"].sum())
-        same_district = comparable.loc[
-            comparable["origin_area"].astype(str).str.strip()
-            == comparable["destination_district"].astype(str).str.strip()
+        diagonal = comparable.loc[
+            (comparable["destination_area_type"] == "district")
+            & (
+                comparable["origin_area"].astype(str).str.strip()
+                == comparable["destination_area"].astype(str).str.strip()
+            )
         ]
-        diagonal = float(same_district["count"].sum())
+        diagonal_total = float(diagonal["count"].sum())
 
         rows.append(
             {
                 "year": int(year),
                 "flow_type": str(flow_type),
                 "total_flows": int(total),
-                "comparable_district_flows": int(comparable_total),
+                "comparable_district_origin_flows": int(comparable_total),
                 "comparable_origin_coverage": comparable_total / total,
-                "same_district_share": diagonal / comparable_total,
+                "same_district_share": diagonal_total / comparable_total,
                 "conditional_entropy": _conditional_entropy(comparable),
                 "normalised_mutual_information": _normalised_mutual_information(comparable),
             }
@@ -174,7 +182,7 @@ def _normalised_mutual_information(frame: pd.DataFrame) -> float:
 
     table = frame.pivot_table(
         index="origin_area",
-        columns="destination_district",
+        columns="destination_area",
         values="count",
         aggfunc="sum",
         fill_value=0,
