@@ -1,0 +1,36 @@
+institution_code,institution_name_pattern,parent_institution_id,parent_institution_name,ranking_eligible_parent,notes
+0150,Universidade dos Açores - Faculdade de Ciências Sociais e Humanas,uac,Universidade dos Açores,True,Explicit university parent
+0170,Universidade dos Açores - Faculdade de Economia e Gestão,uac,Universidade dos Açores,True,Explicit university parent
+7092,Universidade dos Açores - Escola Superior de Saúde - Angra do Heroísmo,uac,Universidade dos Açores,True,School explicitly belongs to university parent
+7093,Universidade dos Açores - Escola Superior de Saúde - Ponta Delgada,uac,Universidade dos Açores,True,School explicitly belongs to university parent
+0201,Universidade do Algarve - Faculdade de Ciências Humanas e Sociais,ualg,Universidade do Algarve,True,Explicit university parent
+0203,Universidade do Algarve - Faculdade de Ciências e Tecnologia,ualg,Universidade do Algarve,True,Explicit university parent
+0204,Universidade do Algarve - Faculdade de Economia,ualg,Universidade do Algarve,True,Explicit university parent
+3082,"Universidade do Algarve - Escola Superior de Gestão, Hotelaria e Turismo",ualg,Universidade do Algarve,True,School explicitly belongs to university parent
+3087,"Universidade do Algarve - Escola Superior de Gestão, Hotelaria e Turismo (Portimão)",ualg,Universidade do Algarve,True,School explicitly belongs to university parent
+7035,Universidade do Algarve - Escola Superior de Saúde,ualg,Universidade do Algarve,True,School explicitly belongs to university parent
+0300,Universidade de Aveiro,ua,Universidade de Aveiro,True,Direct university row
+3013,Universidade de Aveiro - Escola Superior de Saúde de Aveiro,ua,Universidade de Aveiro,True,School explicitly belongs to university parent
+0400,Universidade da Beira Interior,ubi,Universidade da Beira Interior,True,Direct university row
+0501,Universidade de Coimbra - Faculdade de Ciências e Tecnologia,uc,Universidade de Coimbra,True,Explicit university parent
+0503,Universidade de Coimbra - Faculdade de Economia,uc,Universidade de Coimbra,True,Explicit university parent
+0602,Universidade de Évora - Escola de Ciências e Tecnologia,uevora,Universidade de Évora,True,Explicit university parent
+0604,Universidade de Évora - Escola de Ciências Sociais,uevora,Universidade de Évora,True,Explicit university parent
+7030,Universidade de Évora - Escola Superior de Enfermagem de São João de Deus,uevora,Universidade de Évora,True,School explicitly belongs to university parent
+0904,Universidade Nova de Lisboa - Faculdade de Economia,nova,Universidade NOVA de Lisboa,True,Explicit university parent
+1000,Universidade do Minho,uminho,Universidade do Minho,True,Direct university row
+7010,Universidade do Minho - Escola Superior de Enfermagem,uminho,Universidade do Minho,True,School explicitly belongs to university parent
+1104,Universidade do Porto - Faculdade de Economia,uporto,Universidade do Porto,True,Explicit university parent
+1202,Universidade de Trás-os-Montes e Alto Douro - Escola de Ciências Humanas e Sociais,utad,Universidade de Trás-os-Montes e Alto Douro,True,Explicit university parent
+1203,Universidade de Trás-os-Montes e Alto Douro - Escola de Ciências e Tecnologia,utad,Universidade de Trás-os-Montes e Alto Douro,True,Explicit university parent
+7080,Universidade de Trás-os-Montes e Alto Douro - Escola Superior de Saúde,utad,Universidade de Trás-os-Montes e Alto Douro,True,School explicitly belongs to university parent
+1306,Universidade da Madeira - Faculdade de Artes e Humanidades,uma,Universidade da Madeira,True,Explicit university parent
+1307,Universidade da Madeira - Faculdade de Ciências Exatas e da Engenharia,uma,Universidade da Madeira,True,Explicit university parent
+1308,Universidade da Madeira - Faculdade de Ciências Sociais,uma,Universidade da Madeira,True,Explicit university parent
+1320,Universidade da Madeira - Escola Superior de Saúde,uma,Universidade da Madeira,True,School explicitly belongs to university parent
+1503,Universidade de Lisboa - Faculdade de Ciências,ulisboa,Universidade de Lisboa,True,Explicit university parent
+1517,Universidade de Lisboa - Instituto Superior de Economia e Gestão,ulisboa,Universidade de Lisboa,True,Explicit university parent
+6800,ISCTE - Instituto Universitário de Lisboa,iscte,ISCTE - Instituto Universitário de Lisboa,True,Direct university institute row
+7001,Escola Superior de Enfermagem de Coimbra,,,False,Independent nursing school; not mapped to Universidade de Coimbra
+7002,Escola Superior de Enfermagem de Lisboa,,,False,Independent nursing school; not mapped to Universidade de Lisboa
+7003,Escola Superior de Enfermagem do Porto,,,False,Independent nursing school; not mapped to Universidade do Porto
