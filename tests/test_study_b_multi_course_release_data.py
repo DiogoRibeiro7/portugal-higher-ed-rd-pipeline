@@ -83,12 +83,26 @@ def test_registered_sources_reconcile_and_clear_coverage_gate() -> None:
     assert len(overlap) == 87
     assert (overlap["source_document_count"] == 2).all()
 
-    counts = dict(zip(coverage["programme_code"], coverage["stable_institutions"], strict=True))
-    assert counts == {"9081": 13, "9119": 23, "9147": 22, "9219": 8, "9500": 21}
+    counts = dict(
+        zip(
+            coverage["programme_code"],
+            coverage["stable_institutions"],
+            strict=True,
+        )
+    )
+    assert counts == {
+        "9081": 13,
+        "9119": 23,
+        "9147": 22,
+        "9219": 8,
+        "9500": 21,
+    }
     assert len(stable) == 261
     assert len(model) == 258
     excluded = attrition.loc[attrition["excluded_institutions"] > 0]
-    assert excluded[["programme_code", "excluded_institutions"]].to_dict("records") == [
+    assert excluded[
+        ["programme_code", "excluded_institutions"]
+    ].to_dict("records") == [
         {"programme_code": "9081", "excluded_institutions": 1}
     ]
 
