@@ -1,0 +1,3 @@
+outcome,programme_year_cells,median_r_squared,q25_r_squared,q75_r_squared,share_r_squared_ge_0_50,share_r_squared_ge_0_80
+last_placed_general_contingent_grade,15,0.5978495782435318,0.4893143424852959,0.66928588858857,0.6666666666666666,0.0
+mean_application_grade_placed,15,0.5518072303538704,0.4193373670572546,0.5799854551313132,0.6,0.0
