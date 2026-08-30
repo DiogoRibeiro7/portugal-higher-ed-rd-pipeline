@@ -1,0 +1,11 @@
+source_document_year,source_url,programme_code,programme_name,degree,source_family,provider_bytes_bundled,curation_status
+2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,9081,Economia,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,9081,Economia,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,9119,Engenharia Informática,Licenciatura,DGES StatsCurso comparative first-phase table,False,existing_pilot_source_available
+2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,9119,Engenharia Informática,Licenciatura,DGES StatsCurso comparative first-phase table,False,existing_pilot_source_available
+2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,9147,Gestão,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,9147,Gestão,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,9219,Psicologia,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,9219,Psicologia,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,9500,Enfermagem,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
+2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,9500,Enfermagem,Licenciatura,DGES StatsCurso comparative first-phase table,False,pending_registered_extraction
