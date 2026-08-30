@@ -1,9 +1,9 @@
 """Build the registered Study B multi-course evidence layer.
 
-The script is deliberately fail-closed. It does not infer programme identities,
-fill missing source rows, or silently relax the frozen coverage gate. The curated
-source table must contain the registered 2019/2020 StatsCurso observations before
-any empirical output is written.
+The builder is deliberately fail-closed. It never infers programme identities,
+relaxes the registered coverage gate, or imputes missing grade observations.
+Curated programme shards are concatenated only after every registered source
+file is present.
 """
 from __future__ import annotations
 
@@ -29,6 +29,18 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config" / "study_b_multi_course.yml"
 DEFAULT_SOURCE = ROOT / "data" / "curated" / "dges" / "study_b_multi_course_source_rows.csv"
 DEFAULT_RESULTS = ROOT / "results" / "study_b"
+SOURCE_SHARDS = (
+    "course_9081_economics_2018_2020_source_rows.csv",
+    "course_9119_engineering_informatics_2018_2020_source_rows.csv",
+    "course_9147_management_2018_2020_source_rows_part1.csv",
+    "course_9147_management_2018_2020_source_rows_part2a.csv",
+    "course_9147_management_2018_2020_source_rows_part2b.csv",
+    "course_9219_psychology_2018_2020_source_rows.csv",
+    "course_9500_nursing_2018_2020_source_rows_part1.csv",
+    "course_9500_nursing_2018_2020_source_rows_part2.csv",
+    "course_9500_nursing_2018_2020_source_rows_part3.csv",
+    "course_9500_nursing_2018_2020_source_rows_part4.csv",
+)
 
 
 def _load_config(path: Path) -> dict[str, Any]:
@@ -87,20 +99,31 @@ def _policy(config: dict[str, Any]) -> MultiCoursePolicy:
     )
 
 
-def build(*, config_path: Path, source_path: Path, results_dir: Path) -> None:
-    """Validate the curated source table and write receipt-ready model artefacts."""
+def _load_source(source_path: Path) -> pd.DataFrame:
+    """Load a consolidated source table or the complete registered shard set."""
 
-    if not source_path.exists():
-        raise FileNotFoundError(
-            "Registered multi-course source rows are not present. Extract the five frozen "
-            "programme sections from StatsCurso19/20 before running this builder: "
-            f"{source_path}"
-        )
+    dtype = {"programme_code": str, "institution_code": str}
+    if source_path.exists():
+        return pd.read_csv(source_path, dtype=dtype)
+
+    source_dir = source_path.parent
+    paths = tuple(source_dir / name for name in SOURCE_SHARDS)
+    missing = [path.name for path in paths if not path.exists()]
+    if missing:
+        names = ", ".join(missing)
+        raise FileNotFoundError(f"registered multi-course source shards are missing: {names}")
+
+    frames = [pd.read_csv(path, dtype=dtype) for path in paths]
+    return pd.concat(frames, ignore_index=True)
+
+
+def build(*, config_path: Path, source_path: Path, results_dir: Path) -> None:
+    """Validate curated source rows and write deterministic model artefacts."""
 
     config = _load_config(config_path)
     programmes = _registry(config)
     policy = _policy(config)
-    source = pd.read_csv(source_path, dtype={"programme_code": str, "institution_code": str})
+    source = _load_source(source_path)
 
     canonical, reconciliation = reconcile_sources(
         source,
