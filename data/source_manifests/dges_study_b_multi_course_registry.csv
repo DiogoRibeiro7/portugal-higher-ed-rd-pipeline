@@ -1,0 +1,11 @@
+programme_code,programme_name,degree,broad_domain,source_document_year,source_url,identity_verified,status
+9081,Economia,Licenciatura,economics,2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,True,registered_for_full_extraction
+9081,Economia,Licenciatura,economics,2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,True,registered_for_full_extraction
+9119,Engenharia Informática,Licenciatura,ict,2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,True,existing_pilot_and_registered
+9119,Engenharia Informática,Licenciatura,ict,2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,True,existing_pilot_and_registered
+9147,Gestão,Licenciatura,management,2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,True,registered_for_full_extraction
+9147,Gestão,Licenciatura,management,2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,True,registered_for_full_extraction
+9219,Psicologia,Licenciatura,psychology,2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,True,registered_for_full_extraction
+9219,Psicologia,Licenciatura,psychology,2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,True,registered_for_full_extraction
+9500,Enfermagem,Licenciatura,nursing,2019,https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf,True,registered_for_full_extraction
+9500,Enfermagem,Licenciatura,nursing,2020,https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf,True,registered_for_full_extraction
