@@ -1,0 +1,50 @@
+version: 0.3.5-development
+study: B
+analysis: regionality_of_first_choice_and_placement
+language: en-GB
+scope:
+  competition_phase: 1
+  primary_years: [2023, 2024, 2025]
+  overlap_year: 2024
+source_design:
+  source_family: DGES Mobilidade comparative first-phase tables
+  source_document_years: [2024, 2025]
+  urls:
+    2024: https://www.dges.gov.pt/guias/pdfs/statcol/2024/Mobilidade24.pdf
+    2025: https://www.dges.gov.pt/guias/pdfs/statcol/2025/Mobilidade25.pdf
+  flow_types: [first_choice, placement]
+  overlap_rule: exact_cell_equality_before_deduplication
+  canonical_overlap_preference: contemporary_document
+  provider_bytes_bundled: false
+geography:
+  destination_unit: district
+  preserve_source_origin_labels: true
+  allowed_origin_area_types: [district, autonomous_region, access_area]
+  comparable_origin_types_for_primary_diagonal: [district]
+primary_estimands:
+  - comparable_origin_coverage
+  - same_district_first_choice_share
+  - same_district_placement_share
+secondary_estimands:
+  - conditional_entropy_destination_given_origin
+  - normalised_mutual_information
+  - origin_destination_concentration
+comparison:
+  primary_contrast: first_choice_vs_placement
+  interpretation: preference_vs_constrained_allocation
+validation:
+  require_non_negative_integer_counts: true
+  require_unique_source_cells: true
+  require_positive_annual_flow_totals: true
+  require_overlap_reconciliation: true
+interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  rankings: deferred
+  demand_grade_results: analysed_separately
+notes:
+  - The primary same-district share uses only origins explicitly published as districts.
+  - Autonomous regions and legacy access areas remain in the full flow table but do not enter the district diagonal by relabelling.
+  - Comparable-origin coverage is always reported beside the diagonal share.
+  - First choice is treated as the cleaner preference outcome; placement is a constrained allocation outcome.
+  - No threshold for strong regionality is chosen after observing the data.
