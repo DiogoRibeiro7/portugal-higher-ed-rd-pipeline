@@ -1,0 +1,64 @@
+version: 0.3.6-development
+study: B
+analysis: rankings_incremental_association
+language: en-GB
+scope:
+  competition_phase: 1
+  admission_years: [2018, 2019, 2020]
+  registered_programmes: ["9081", "9119", "9147", "9219", "9500"]
+  institution_scope: university_parent_institutions_only
+  exclude_polytechnic_sector: true
+ranking_design:
+  providers: [QS, Times Higher Education, ARWU]
+  use_provider_specific_models: true
+  pool_providers: false
+  publication_timing: ranking_must_be_published_before_application_deadline_for_target_admission_year
+  forward_fill_future_rankings: false
+  backfill_missing_rankings: false
+  exact_rank_handling: ordinal_numeric_if_officially_published
+  rank_band_handling: categorical_band_primary
+  rank_band_midpoint_primary: false
+  missing_rank_status: explicit_not_observed
+  redistribute_provider_data: false
+institution_matching:
+  unit: parent_university
+  source_establishment_mapping: explicit_concordance_only
+  automatic_fuzzy_matching: false
+estimands:
+  total_association:
+    outcome: [last_placed_general_contingent_grade, mean_application_grade_placed]
+    predictors: [programme, year, ranking]
+    interpretation: ranking_grade_association_without_conditioning_on_demand
+  ranking_to_demand:
+    outcome: applicants_per_vacancy
+    predictors: [programme, year, ranking]
+    interpretation: association_between_ranking_and_observed_demand_pressure
+  residual_association:
+    outcome: [last_placed_general_contingent_grade, mean_application_grade_placed]
+    predictors: [programme, year, applicants_per_vacancy, ranking]
+    interpretation: ranking_grade_association_conditional_on_contemporaneous_demand
+validation:
+  primary: leave_one_parent_institution_out
+  report_in_sample_r_squared: true
+  report_out_of_institution_rmse: true
+  compare_models:
+    - programme_year
+    - programme_year_plus_ranking
+    - programme_year_plus_demand
+    - programme_year_plus_demand_plus_ranking
+coverage:
+  report_ranked_parent_institutions
+  report_eligible_parent_institutions
+  report_row_coverage
+  no_complete_case_claim_without_coverage
+interpretation:
+  causal_interpretation: false
+  mediation_claim: false
+  ranking_as_reputation_proxy_only: true
+  claim_under_test: ranking_information_adds_little_once_relevant_structure_is_accounted_for
+notes:
+  - Rankings can influence demand, so conditioning on demand changes the estimand and must not be called the total ranking association.
+  - Ranking providers are analysed separately because their scales, bands, dates and methodologies are not commensurable by construction.
+  - A ranking published after the relevant application period is ineligible for that admission year.
+  - Parent-university rankings are never mechanically assigned to unrelated polytechnic institutions.
+  - Missing ranking coverage is an explicit limitation, not a zero or bottom rank.
