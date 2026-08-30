@@ -1,0 +1,77 @@
+version: 0.3.4-development
+study: B
+analysis: registered_multi_course_demand_selectivity
+language: en-GB
+scope:
+  competition_phase: 1
+  years: [2018, 2019, 2020]
+  overlap_year: 2019
+  minimum_stable_institutions_per_programme: 6
+selection:
+  status: frozen_before_full_multi_course_extraction_and_model_fitting
+  outcome_based_selection: false
+  rules:
+    - Keep an exact DGES programme code and degree; do not harmonise different codes by title.
+    - Require the code-title-degree identity in both the 2019 and 2020 StatsCurso documents.
+    - Require at least six establishments observed in all three competition years after reconciliation.
+    - Select stable establishments from source coverage only, before inspecting demand or grade values.
+  registered_programmes:
+    - code: "9081"
+      name: Economia
+      degree: Licenciatura
+      broad_domain: economics
+    - code: "9119"
+      name: Engenharia Informática
+      degree: Licenciatura
+      broad_domain: ict
+    - code: "9147"
+      name: Gestão
+      degree: Licenciatura
+      broad_domain: management
+    - code: "9219"
+      name: Psicologia
+      degree: Licenciatura
+      broad_domain: psychology
+    - code: "9500"
+      name: Enfermagem
+      degree: Licenciatura
+      broad_domain: nursing
+source_design:
+  source_family: DGES StatsCurso comparative first-phase tables
+  source_document_years: [2019, 2020]
+  urls:
+    2019: https://www.dges.gov.pt/guias/pdfs/statcol/2019/StatsCurso19.pdf
+    2020: https://www.dges.gov.pt/guias/pdfs/statcol/2020/StatsCurso20.pdf
+  overlap_rule: exact_measure_equality_before_deduplication
+  canonical_overlap_preference: contemporary_document
+  provider_bytes_bundled: false
+balance:
+  primary_panel: continuously_offered_establishment_programme_units
+  overlap_document_count_required: 2
+  zero_placement_rows_preserved_in_source_panel: true
+  model_complete_attrition_reported_separately: true
+primary_demand:
+  variable: applicants_per_vacancy
+  transform: natural_log
+primary_outcomes:
+  - last_placed_general_contingent_grade
+  - mean_application_grade_placed
+cross_section:
+  unit: programme_by_year
+  minimum_institutions: 3
+  summaries:
+    - median_r_squared
+    - interquartile_range_r_squared
+    - share_r_squared_ge_0_50
+    - share_r_squared_ge_0_80
+interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  rankings: deferred
+  regionality: deferred
+  claim_scope: demand pressure across registered matched programmes
+notes:
+  - The five-programme registry is deliberately heterogeneous across academic domains.
+  - Programme identities are not merged across reforms, renamings or degree changes.
+  - Stable-offering selection may change the target population and is reported explicitly.
+  - Missing grades from zero placements remain in the source panel and are not silently imputed.
