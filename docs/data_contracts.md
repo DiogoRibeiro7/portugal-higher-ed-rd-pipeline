@@ -35,9 +35,16 @@ Canonical course–institution–year table.
 | `flow_type` | string | `first_choice` or `placement` |
 | `origin_area` | string | published district, autonomous region or legacy CAE/GAES access area |
 | `origin_area_type` | string | `district`, `autonomous_region` or `access_area` |
-| `destination_district` | string | first-choice or placement district |
+| `destination_area` | string | published destination district, autonomous region or access area |
+| `destination_area_type` | string | `district`, `autonomous_region` or `access_area` |
 | `count` | integer | applicants/placed students in the cell |
 | `source_sha256` | string | hash of raw source |
+
+The primary same-district estimand uses only district-to-same-district cells in the
+numerator. District-origin flows to autonomous regions remain valid observed mobility
+and stay in the comparable-origin denominator; they are not relabelled as district
+flows. Recent DGES mobility tables publish the 18 mainland districts plus the two
+autonomous regions on the destination axis.
 
 ## `education_pipeline`
 

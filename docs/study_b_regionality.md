@@ -20,32 +20,38 @@ The primary registered window is 2023-2025. The 2024 and 2025 DGES comparative
 independent overlap in 2024. Every duplicated 2024 origin-destination cell must agree
 exactly across the two publications before canonicalisation.
 
-The source contract preserves the published origin geography. Historical access areas,
-autonomous regions and districts are stored under distinct `origin_area_type` values.
-No legacy access area is silently assigned to a district.
+The source contract preserves the published geography on both axes. Recent mobility
+tables contain the 18 mainland districts plus the two autonomous regions as destination
+areas. Historical source vintages can also contain legacy access areas. Districts,
+autonomous regions and access areas therefore use explicit area-type fields and are not
+silently relabelled.
 
 ## Primary estimands
 
-For flow type \(f\) and year \(t\), let \(C_{odtf}\) be the published flow from origin
-area \(o\) to destination district \(d\).
+For flow type \(f\) and year \(t\), let \(C_{oatf}\) be the published flow from origin
+area \(o\) to destination area \(a\).
 
 The first reported quantity is comparable-origin coverage:
 
 \[
 K_{tf} =
-\frac{\sum_{o \in D}\sum_d C_{odtf}}
-     {\sum_o\sum_d C_{odtf}},
+\frac{\sum_{o \in D}\sum_a C_{oatf}}
+     {\sum_o\sum_a C_{oatf}},
 \]
 
 where \(D\) is the set of origins explicitly published as districts.
 
-Conditional on that comparable subset, the same-district share is
+Conditional on that comparable-origin subset, the same-district share is
 
 \[
 R_{tf} =
 \frac{\sum_{d \in D} C_{ddtf}}
-     {\sum_{o \in D}\sum_d C_{odtf}}.
+     {\sum_{o \in D}\sum_a C_{oatf}}.
 \]
+
+The numerator uses only district-to-same-district cells. Flows from a district to an
+autonomous region remain in the denominator because they are genuine observed mobility,
+but they are not reclassified onto a district diagonal.
 
 `R` is never reported without `K`. A high diagonal share based on a small comparable
 subset would otherwise be misleading.
