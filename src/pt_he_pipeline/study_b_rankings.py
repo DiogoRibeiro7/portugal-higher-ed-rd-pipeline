@@ -51,21 +51,33 @@ def validate_ranking_rows(
         ),
     )
     frame = rankings.copy()
-    frame["admission_year"] = pd.to_numeric(frame["admission_year"], errors="raise").astype(int)
+    frame["admission_year"] = pd.to_numeric(
+        frame["admission_year"], errors="raise"
+    ).astype(int)
     if not set(frame["admission_year"]).issubset(policy.years):
         raise ValueError("ranking rows contain years outside the registered window")
     if not set(frame["provider"]).issubset(policy.providers):
         raise ValueError("ranking rows contain an unregistered provider")
-    frame["publication_date"] = pd.to_datetime(frame["publication_date"], errors="raise")
-    frame["application_deadline"] = pd.to_datetime(frame["application_deadline"], errors="raise")
+    frame["publication_date"] = pd.to_datetime(
+        frame["publication_date"], errors="raise"
+    )
+    frame["application_deadline"] = pd.to_datetime(
+        frame["application_deadline"], errors="raise"
+    )
     if (frame["publication_date"] > frame["application_deadline"]).any():
         raise ValueError("ranking publication occurs after the application deadline")
-    if frame.duplicated(["admission_year", "provider", "parent_institution_id"]).any():
+    if frame.duplicated(
+        ["admission_year", "provider", "parent_institution_id"]
+    ).any():
         raise ValueError("duplicate provider/year/parent ranking observation")
-    has_rank = pd.to_numeric(frame["rank"], errors="coerce").notna()
+
+    numeric_rank = pd.to_numeric(frame["rank"], errors="coerce")
+    has_rank = numeric_rank.notna()
     has_band = frame["rank_band"].notna() & frame["rank_band"].astype(str).str.strip().ne("")
     if (has_rank & has_band).any():
         raise ValueError("ranking row must use exact rank or rank band, not both")
+    if (numeric_rank.loc[has_rank] <= 0).any():
+        raise ValueError("exact ranks must be strictly positive")
     return frame
 
 
@@ -79,30 +91,48 @@ def build_ranking_coverage(
 
     require_columns(panel, ("year", "parent_institution_id"))
     frame = validate_ranking_rows(rankings)
-    ranked = frame.loc[frame["provider"] == provider, ["admission_year", "parent_institution_id"]]
+    ranked = frame.loc[
+        frame["provider"] == provider,
+        ["admission_year", "parent_institution_id"],
+    ]
     rows: list[dict[str, object]] = []
     for year, subset in panel.groupby("year", sort=True):
         eligible_parents = subset["parent_institution_id"].dropna().astype(str).nunique()
         keys = set(
             zip(
-                ranked.loc[ranked["admission_year"] == year, "parent_institution_id"].astype(str),
+                ranked.loc[
+                    ranked["admission_year"] == year,
+                    "parent_institution_id",
+                ].astype(str),
                 strict=False,
             )
         )
-        ranked_mask = subset["parent_institution_id"].astype(str).map(lambda value: (value,) in keys)
+        ranked_mask = subset["parent_institution_id"].astype(str).map(
+            lambda value: (value,) in keys
+        )
         rows.append(
             {
                 "year": int(year),
                 "provider": provider,
                 "eligible_parent_institutions": int(eligible_parents),
                 "ranked_parent_institutions": int(
-                    subset.loc[ranked_mask, "parent_institution_id"].astype(str).nunique()
+                    subset.loc[ranked_mask, "parent_institution_id"]
+                    .astype(str)
+                    .nunique()
                 ),
                 "eligible_rows": int(subset["parent_institution_id"].notna().sum()),
                 "ranked_rows": int(ranked_mask.sum()),
             }
         )
     return pd.DataFrame(rows)
+
+
+def _has_ranking(frame: pd.DataFrame) -> pd.Series:
+    """Return whether each row contains an official exact rank or rank band."""
+
+    numeric_rank = pd.to_numeric(frame["rank"], errors="coerce")
+    band = frame["rank_band"].fillna("").astype(str).str.strip()
+    return numeric_rank.notna() | band.ne("")
 
 
 def leave_one_parent_out_rmse(
@@ -112,26 +142,33 @@ def leave_one_parent_out_rmse(
     include_demand: bool,
     include_ranking: bool,
 ) -> float:
-    """Return LOPO RMSE for a complete provider-specific modelling frame."""
+    """Return LOPO RMSE for a complete provider-specific modelling frame.
 
-    require_columns(
-        frame,
-        (
-            "programme_code",
-            "year",
-            "parent_institution_id",
-            "applicants_per_vacancy",
-            "ranking_score",
-            outcome,
-        ),
-    )
+    Exact ranks remain ordinal numeric predictors. Rank bands are represented by
+    categorical indicators and are never replaced by numeric midpoints. Rows
+    without either an exact rank or a published band are excluded only from
+    models that include ranking.
+    """
+
+    required = [
+        "programme_code",
+        "year",
+        "parent_institution_id",
+        "applicants_per_vacancy",
+        outcome,
+    ]
+    if include_ranking:
+        required.extend(("rank", "rank_band"))
+    require_columns(frame, tuple(required))
+
     data = frame.dropna(
         subset=["programme_code", "year", "parent_institution_id", outcome]
     ).copy()
     if include_demand:
         data = data.loc[data["applicants_per_vacancy"] > 0].copy()
     if include_ranking:
-        data = data.dropna(subset=["ranking_score"])
+        data = data.loc[_has_ranking(data)].copy()
+
     predictions: list[float] = []
     observed: list[float] = []
     parents = sorted(data["parent_institution_id"].astype(str).unique())
@@ -140,7 +177,11 @@ def leave_one_parent_out_rmse(
         train = data.loc[data["parent_institution_id"].astype(str) != parent]
         if test.empty or train.empty:
             continue
-        train_design = _design(train, include_demand=include_demand, include_ranking=include_ranking)
+        train_design = _design(
+            train,
+            include_demand=include_demand,
+            include_ranking=include_ranking,
+        )
         test_design = _design(
             test,
             include_demand=include_demand,
@@ -163,6 +204,8 @@ def _design(
     include_ranking: bool,
     columns: list[str] | None = None,
 ) -> pd.DataFrame:
+    """Build one registered model matrix without numerically encoding rank bands."""
+
     data = pd.DataFrame(index=frame.index)
     categorical = pd.get_dummies(
         frame[["programme_code", "year"]].astype(str),
@@ -171,10 +214,26 @@ def _design(
         dtype=float,
     )
     data = pd.concat([data, categorical], axis=1)
+
     if include_demand:
-        data["log_applicants_per_vacancy"] = np.log(frame["applicants_per_vacancy"].astype(float))
+        data["log_applicants_per_vacancy"] = np.log(
+            frame["applicants_per_vacancy"].astype(float)
+        )
+
     if include_ranking:
-        data["ranking_score"] = frame["ranking_score"].astype(float)
+        exact_rank = pd.to_numeric(frame["rank"], errors="coerce")
+        data["ranking_exact_observed"] = exact_rank.notna().astype(float)
+        data["ranking_exact"] = exact_rank.fillna(0.0).astype(float)
+
+        rank_band = frame["rank_band"].fillna("").astype(str).str.strip()
+        band_dummies = pd.get_dummies(
+            rank_band.where(rank_band.ne(""), "__exact_rank__"),
+            prefix="ranking_band",
+            drop_first=True,
+            dtype=float,
+        )
+        data = pd.concat([data, band_dummies], axis=1)
+
     data = sm.add_constant(data, has_constant="add")
     if columns is not None:
         data = data.reindex(columns=columns, fill_value=0.0)
