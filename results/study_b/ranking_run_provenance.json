@@ -1,0 +1,32 @@
+{
+  "analysis": "Study B provider-specific ranking predictive comparisons",
+  "analysis_code_commit": "45eda2bfe3cdc41df84aaeef785767025cb79a7c",
+  "private_ranking_panel_sha256": "f6bbf50d7544937e4e16da66a0cbeec6bda34c29c82ddce7c28dd14e130aaad0",
+  "private_ranking_panel_rows": 64,
+  "provider_year_ranked_programme_rows": {
+    "QS": {
+      "2018": 18,
+      "2019": 18,
+      "2020": 18
+    },
+    "Times Higher Education": {
+      "2018": 32,
+      "2019": 42,
+      "2020": 42
+    },
+    "ARWU": {
+      "2018": 16,
+      "2019": 13,
+      "2020": 18
+    }
+  },
+  "output_rows": 15,
+  "validation": "leave-one-parent-institution-out",
+  "comparison_rule": "paired identical training rows and identical ranking-and-structure-supported held-out rows",
+  "provider_values_committed": false,
+  "notes": [
+    "The private ranking panel was reconstructed and matched the frozen canonical SHA-256 before model fitting.",
+    "The DGES join reproduced the frozen provider/year programme-row coverage counts before model fitting.",
+    "Negative delta_rmse and delta_mae indicate lower predictive error after adding ranking."
+  ]
+}
