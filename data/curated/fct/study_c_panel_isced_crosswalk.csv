@@ -1,30 +1,30 @@
 panel_key,panel_label,isced_f_scope,primary_study_c_scope,notes
-EARTH_ENV,Earth and Environmental Sciences and Technologies,05,true,Primary natural-science feeder scope; use the official FCT panel label only
-MATERIALS,Materials Science and Engineering, and Nanotechnology,07,true,Primary engineering feeder scope
-SOC_GEO,Sociology, Anthropology and Geography,,false,Mixed social-science panel; outside the frozen primary feeder scope
-MECH,Mechanical Engineering and Engineering systems,07,true,Primary engineering feeder scope
+EARTH_ENV,Earth and Environmental Sciences and Technologies,05,true,Primary natural-science feeder scope; use the canonical FCT workbook panel label only
+MATERIALS,"Materials Sciences and Engineering, and Nanotechnology",07,true,Primary engineering feeder scope
+SOC_GEO,"Sociology, Anthropology and Geography",,false,Mixed social-science panel; outside the frozen primary feeder scope
+MECH,Mechanical Engineering and Engineering Systems,07,true,Primary engineering feeder scope
 PHIL,Philosophy,,false,Outside the frozen primary feeder scope
-CIVIL_GEO,Civil and Geological engineering,07,true,Engineering panel mapped to ISCED-F 07; no unit-level reclassification from names
+CIVIL_GEO,Civil and Geological Engineering,07,true,Engineering panel mapped to ISCED-F 07; no unit-level reclassification from names
 CHEM_BIO_ENG,Chemical and Biological Engineering,07,true,Primary engineering feeder scope
 CHEM,Chemistry,05,true,Primary natural-science feeder scope
-CS_IT,Computer Science and Information Technologies,06,true,Primary ICT feeder scope
+CS_IT,Computer Sciences and Information Technologies,06,true,Primary ICT feeder scope
 LAW,Law,,false,Outside the frozen primary feeder scope
-HIST_ARCH,History and Archeology,,false,Outside the frozen primary feeder scope
-POLSCI,Political Science,,false,Outside the frozen primary feeder scope
+HIST_ARCH,History and Archaeology,,false,Outside the frozen primary feeder scope
+POLSCI,Political Sciences,,false,Outside the frozen primary feeder scope
 ARCH_URB,Architecture and Urbanism,07,true,Architecture/construction feeder scope
-LANG_COMM,Languages & Communication Sciences,,false,Outside the frozen primary feeder scope
+LANG_COMM,Language and Communication Sciences,,false,Outside the frozen primary feeder scope
 LIT,Literary Studies,,false,Outside the frozen primary feeder scope
 PSY,Psychology,,false,Outside the frozen primary feeder scope
-BIO,Biological Sciences Biodiversity and Ecosystems,05,true,Primary natural-science feeder scope
-AGR,Agricultural Agro-food and Veterinary Sciences,,false,Outside the frozen primary feeder scope
+BIO,"Biological Sciences, Biodiversity and Ecosystems",05,true,Primary natural-science feeder scope
+AGR,"Agricultural, Agro-food and Veterinary Sciences",,false,Outside the frozen primary feeder scope
 ARTS,Arts and Design,,false,Outside the frozen primary feeder scope
 BIOMED,Biomedicine,,false,Medical/health domain outside the frozen primary feeder scope
 CLINICAL,Clinical and Translational Research,,false,Medical/health domain outside the frozen primary feeder scope
 ECON_MGMT,Economics and Management,,false,Outside the frozen primary feeder scope
-EDU,Educational Science,,false,Outside the frozen primary feeder scope
+EDU,Educational Sciences,,false,Outside the frozen primary feeder scope
 ELEC_COMP,Electrical and Computer Engineering,07,true,Primary engineering feeder scope; computing-adjacent engineering remains ISCED-F 07
 MATH,Mathematics,05,true,Primary natural-science feeder scope
 PHYS,Physics,05,true,Primary natural-science feeder scope
-PUB_HEALTH,Public Health,,false,Medical/health domain outside the frozen primary feeder scope
-SPORT,Sport Science,,false,Outside the frozen primary feeder scope
+PUB_HEALTH,"Public Health, Nursing, Health Technologies",,false,Medical/health domain outside the frozen primary feeder scope
+SPORT,Sport Sciences,,false,Outside the frozen primary feeder scope
 MANAGEMENT,Management,,false,Outside the frozen primary feeder scope
