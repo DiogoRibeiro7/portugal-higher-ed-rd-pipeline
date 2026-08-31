@@ -31,6 +31,33 @@ class RankingPolicy:
         return tuple(range(self.first_year, self.last_year + 1))
 
 
+@dataclass(frozen=True)
+class LopoComparisonResult:
+    """Paired LOPO metrics on identical ranking-supported observations."""
+
+    baseline_rmse: float
+    ranking_rmse: float
+    baseline_mae: float
+    ranking_mae: float
+    eligible_rows: int
+    eligible_parents: int
+    supported_rows: int
+    unsupported_rows: int
+    supported_parents: int
+
+    @property
+    def delta_rmse(self) -> float:
+        """Return ranking-model RMSE minus baseline RMSE."""
+
+        return self.ranking_rmse - self.baseline_rmse
+
+    @property
+    def delta_mae(self) -> float:
+        """Return ranking-model MAE minus baseline MAE."""
+
+        return self.ranking_mae - self.baseline_mae
+
+
 def validate_ranking_rows(
     rankings: pd.DataFrame,
     *,
@@ -135,6 +162,132 @@ def _has_ranking(frame: pd.DataFrame) -> pd.Series:
     return numeric_rank.notna() | band.ne("")
 
 
+def _ranking_support_mask(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
+    """Return held-out rows supported by the ranking representation in training."""
+
+    train_exact = pd.to_numeric(train["rank"], errors="coerce").dropna()
+    exact_supported = train_exact.nunique() >= 2
+    train_bands = set(
+        train["rank_band"].fillna("").astype(str).str.strip().loc[lambda s: s.ne("")]
+    )
+
+    test_exact = pd.to_numeric(test["rank"], errors="coerce")
+    test_band = test["rank_band"].fillna("").astype(str).str.strip()
+    exact_rows = test_exact.notna()
+    band_rows = test_band.ne("")
+
+    supported = pd.Series(False, index=test.index, dtype=bool)
+    if exact_supported:
+        supported.loc[exact_rows] = True
+    supported.loc[band_rows] = test_band.loc[band_rows].isin(train_bands)
+    return supported
+
+
+def leave_one_parent_out_comparison(
+    frame: pd.DataFrame,
+    *,
+    outcome: str,
+    include_demand: bool,
+) -> LopoComparisonResult:
+    """Compare baseline and ranking models on identical supported LOPO rows.
+
+    Both models are trained on the same provider-ranked rows. A held-out banded row
+    is scored only when its exact official band occurs in training. A held-out exact
+    rank is scored only when training contains at least two distinct exact ranks.
+    Unsupported rows are counted but never silently mapped to the reference category.
+    """
+
+    required = (
+        "programme_code",
+        "year",
+        "parent_institution_id",
+        "applicants_per_vacancy",
+        "rank",
+        "rank_band",
+        outcome,
+    )
+    require_columns(frame, required)
+
+    data = frame.dropna(
+        subset=["programme_code", "year", "parent_institution_id", outcome]
+    ).copy()
+    data = data.loc[_has_ranking(data)].copy()
+    if include_demand:
+        data = data.loc[data["applicants_per_vacancy"] > 0].copy()
+
+    eligible_rows = int(len(data))
+    eligible_parents = int(data["parent_institution_id"].astype(str).nunique())
+    baseline_predictions: list[float] = []
+    ranking_predictions: list[float] = []
+    observed: list[float] = []
+    unsupported_rows = 0
+    supported_parent_ids: set[str] = set()
+
+    for parent in sorted(data["parent_institution_id"].astype(str).unique()):
+        test = data.loc[data["parent_institution_id"].astype(str) == parent]
+        train = data.loc[data["parent_institution_id"].astype(str) != parent]
+        if test.empty or train.empty:
+            continue
+
+        support_mask = _ranking_support_mask(train, test)
+        unsupported_rows += int((~support_mask).sum())
+        supported_test = test.loc[support_mask].copy()
+        if supported_test.empty:
+            continue
+        supported_parent_ids.add(parent)
+
+        baseline_train_design = _design(
+            train,
+            include_demand=include_demand,
+            include_ranking=False,
+        )
+        baseline_test_design = _design(
+            supported_test,
+            include_demand=include_demand,
+            include_ranking=False,
+            columns=list(baseline_train_design.columns),
+        )
+        ranking_train_design = _design(
+            train,
+            include_demand=include_demand,
+            include_ranking=True,
+        )
+        ranking_test_design = _design(
+            supported_test,
+            include_demand=include_demand,
+            include_ranking=True,
+            columns=list(ranking_train_design.columns),
+        )
+
+        baseline_model = sm.OLS(
+            train[outcome].astype(float), baseline_train_design
+        ).fit()
+        ranking_model = sm.OLS(train[outcome].astype(float), ranking_train_design).fit()
+        baseline_predictions.extend(
+            baseline_model.predict(baseline_test_design).tolist()
+        )
+        ranking_predictions.extend(ranking_model.predict(ranking_test_design).tolist())
+        observed.extend(supported_test[outcome].astype(float).tolist())
+
+    if not observed:
+        raise ValueError("leave-one-parent-out comparison produced no supported test observations")
+
+    observed_array = np.asarray(observed)
+    baseline_residual = observed_array - np.asarray(baseline_predictions)
+    ranking_residual = observed_array - np.asarray(ranking_predictions)
+    return LopoComparisonResult(
+        baseline_rmse=float(np.sqrt(np.mean(baseline_residual**2))),
+        ranking_rmse=float(np.sqrt(np.mean(ranking_residual**2))),
+        baseline_mae=float(np.mean(np.abs(baseline_residual))),
+        ranking_mae=float(np.mean(np.abs(ranking_residual))),
+        eligible_rows=eligible_rows,
+        eligible_parents=eligible_parents,
+        supported_rows=int(len(observed)),
+        unsupported_rows=unsupported_rows,
+        supported_parents=len(supported_parent_ids),
+    )
+
+
 def leave_one_parent_out_rmse(
     frame: pd.DataFrame,
     *,
@@ -142,13 +295,7 @@ def leave_one_parent_out_rmse(
     include_demand: bool,
     include_ranking: bool,
 ) -> float:
-    """Return LOPO RMSE for a complete provider-specific modelling frame.
-
-    Exact ranks remain ordinal numeric predictors. Rank bands are represented by
-    categorical indicators and are never replaced by numeric midpoints. Rows
-    without either an exact rank or a published band are excluded only from
-    models that include ranking.
-    """
+    """Return LOPO RMSE for one model, preserving backward compatibility."""
 
     required = [
         "programme_code",
@@ -171,12 +318,15 @@ def leave_one_parent_out_rmse(
 
     predictions: list[float] = []
     observed: list[float] = []
-    parents = sorted(data["parent_institution_id"].astype(str).unique())
-    for parent in parents:
+    for parent in sorted(data["parent_institution_id"].astype(str).unique()):
         test = data.loc[data["parent_institution_id"].astype(str) == parent]
         train = data.loc[data["parent_institution_id"].astype(str) != parent]
         if test.empty or train.empty:
             continue
+        if include_ranking:
+            test = test.loc[_ranking_support_mask(train, test)].copy()
+            if test.empty:
+                continue
         train_design = _design(
             train,
             include_demand=include_demand,
@@ -192,7 +342,7 @@ def leave_one_parent_out_rmse(
         predictions.extend(model.predict(test_design).tolist())
         observed.extend(test[outcome].astype(float).tolist())
     if not observed:
-        raise ValueError("leave-one-parent-out validation produced no test observations")
+        raise ValueError("leave-one-parent-out validation produced no supported test observations")
     residual = np.asarray(observed) - np.asarray(predictions)
     return float(np.sqrt(np.mean(residual**2)))
 
