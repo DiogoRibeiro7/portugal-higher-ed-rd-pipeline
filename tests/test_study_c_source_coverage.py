@@ -5,23 +5,27 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "results/study_c/source_coverage_audit.yml"
 RAIDES_SCHEMA = ROOT / "data/source_manifests/study_c_raides_schema.yml"
+SUPPORT_AUDIT = ROOT / "results/study_c/raides_support_audit.yml"
 
 
 def _audit() -> dict:
     return yaml.safe_load(AUDIT.read_text(encoding="utf-8"))
 
 
-def test_study_c_coverage_gate_remains_closed_while_primary_blockers_exist() -> None:
+def _support_audit() -> dict:
+    return yaml.safe_load(SUPPORT_AUDIT.read_text(encoding="utf-8"))
+
+
+def test_study_c_gate_has_only_fct_weight_blockers_remaining() -> None:
     audit = _audit()
     assert audit["unit_exposure_allowed"] is False
-    blockers = audit["primary_blockers_before_unit_exposure"]
-    assert blockers
-    assert "formal_unit_institution_participation_not_resolved" in blockers
-    assert "unit_institution_field_weights_not_built" in blockers
-    assert "institution_field_component_coverage_not_computed" in blockers
+    assert audit["primary_blockers_before_unit_exposure"] == [
+        "formal_unit_institution_participation_not_resolved",
+        "unit_institution_field_weights_not_built",
+    ]
 
 
-def test_raides_full_window_bytes_and_semantics_are_validated() -> None:
+def test_raides_full_window_support_gate_is_complete() -> None:
     audit = _audit()
     raides = audit["raides"]
     assert raides["official_annual_inscritos_tables_exist"] is True
@@ -29,8 +33,23 @@ def test_raides_full_window_bytes_and_semantics_are_validated() -> None:
     assert raides["component_semantics_resolved"] is True
     assert raides["official_file_bytes_validated_full_window"] is True
     assert raides["institution_course_field_cycle_schema_full_window_verified"] is True
+    assert raides["institution_code_concordance_finalised"] is True
     assert raides["institution_field_component_coverage_computable"] is True
-    assert raides["institution_field_component_coverage_computed"] is False
+    assert raides["institution_field_component_coverage_computed"] is True
+    assert raides["support_summary"]["eligible_series_minimum_five_years"] == 363
+    assert raides["support_summary"]["pairs_all_five_components_eligible"] == 31
+
+
+def test_raides_support_audit_preserves_missing_not_zero_rule() -> None:
+    support = _support_audit()
+    assert support["summary"]["institution_field_component_series"] == 494
+    assert support["summary"]["institution_field_pairs"] == 160
+    assert support["summary"]["institution_codes"] == 74
+    assert support["summary"]["codes_in_both_raides_families"] == 69
+    assert support["support_rule"]["minimum_comparable_annual_observations"] == 5
+    assert support["support_rule"]["year_is_supported_only_when_actual_record_exists"] is True
+    assert support["support_rule"]["absent_row_is_not_promoted_to_zero"] is True
+    assert support["unit_exposure_allowed"] is False
 
 
 def test_raides_schema_keeps_five_registered_components_separate() -> None:
@@ -50,8 +69,7 @@ def test_raides_schema_keeps_five_registered_components_separate() -> None:
 
 
 def test_fct_registry_and_ratings_are_available_but_weights_are_not() -> None:
-    audit = _audit()
-    fct = audit["fct"]
+    fct = _audit()["fct"]
     assert fct["approved_units_total"] == 313
     assert fct["unit_registry_available"] is True
     assert fct["rating_complete_for_approved_units"] is True
