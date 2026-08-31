@@ -1,0 +1,98 @@
+version: 1.0
+status: prospectively_frozen
+study: R&D talent-pipeline exposure
+primary_estimand_type: descriptive_exposure
+causal_language_allowed: false
+
+fct:
+  evaluation_wave: 2023/2024
+  high_performance_ratings:
+    - Excellent
+    - Very Good
+  rating_role: stratifier_only
+  rating_as_downstream_outcome_for_primary_window: false
+  evaluation_activity_period:
+    start_year: 2018
+    end_year: 2023
+
+fields:
+  primary_isced_f_2013:
+    - '05'
+    - '06'
+    - '07'
+  ambiguous_panel_primary_inclusion: false
+  multi_domain_panels_require_explicit_fractional_weights: true
+
+host_weights:
+  required_sum: 1.0
+  priority:
+    - public_member_or_integrated_researcher_counts_by_institution
+    - equal_across_formally_listed_participating_institutions
+    - sole_publicly_identifiable_host_or_managing_institution
+  infer_from_rankings: false
+  infer_from_admissions: false
+  infer_from_geographic_proximity: false
+
+pipeline:
+  raides_window:
+    first_academic_year: 2018/19
+    last_academic_year: 2024/25
+  minimum_comparable_annual_observations: 5
+  primary_components:
+    - first_time_entrants
+    - graduates_first_cycle
+    - graduates_second_cycle
+    - doctoral_enrolments
+    - doctoral_graduates
+  primary_trend: log_linear_annual_path
+  zero_handling: endpoint_and_linear_count_sensitivity_no_log_offset
+  missing_imputation: false
+
+research_personnel:
+  source: IPCTN
+  calendar_window:
+    first_year: 2018
+    last_year: 2024
+  role: contextual_end_stage_stock
+  included_in_feeder_composite: false
+
+primary_outputs:
+  - unit_component_exposure_vector
+  - exposure_distribution_by_fct_rating
+  - high_performing_unit_negative_component_count
+  - contextual_research_personnel_fte_path
+
+rating_group_comparison:
+  summaries:
+    - median
+    - interquartile_range
+    - empirical_distribution
+  inferential_causal_claim: false
+
+exploratory_composite:
+  enabled: true
+  only_after_component_results_frozen: true
+  standardisation: across_eligible_units
+  weighting: equal_over_available_feeder_components
+  leave_one_component_out_sensitivity_required: true
+  component_vector_must_also_be_reported: true
+
+downstream_outcomes:
+  enabled_in_primary_phase: false
+  require_strictly_post_exposure_outcome: true
+  require_separate_prospective_design_freeze: true
+  potentially_eligible:
+    - integrated_researcher_counts
+    - research_personnel_fte
+    - unit_funding
+    - later_fct_evaluation_wave
+
+reproducibility_gate:
+  required_before_unit_level_results:
+    - fct_unit_registry_and_rating_source_manifest
+    - fct_panel_to_isced_crosswalk
+    - unit_to_institution_weight_table
+    - raides_source_manifest_and_variable_contract
+    - ipctn_source_manifest_and_fte_contract
+    - institution_field_component_coverage_audit
+    - validation_tests
