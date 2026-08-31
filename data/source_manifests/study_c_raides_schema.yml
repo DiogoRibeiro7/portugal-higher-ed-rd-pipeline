@@ -1,0 +1,79 @@
+version: 1
+study: C
+status: raides_schema_contract
+window:
+  first_academic_year: 2018/2019
+  last_academic_year: 2024/2025
+source_authority: Direcao-Geral de Estatisticas da Educacao e Ciencia
+statistical_system: RAIDES
+source_families:
+  inscritos:
+    purpose:
+      - first_time_entrants
+      - doctoral_enrolments
+    annual_tables_identified_for_full_window: true
+  diplomados:
+    purpose:
+      - graduates_first_cycle
+      - graduates_second_cycle
+      - doctoral_graduates
+    annual_tables_identified_for_full_window: true
+component_contract:
+  first_time_entrants:
+    definition: students enrolled in the first year for the first time in initial higher-education programmes, using the official DGEEC/RAIDES first-time-entry concept
+    required_dimensions:
+      - institution
+      - course_or_programme
+      - education_training_field
+      - academic_year
+    status: semantic_definition_resolved_file_validation_pending
+  graduates_first_cycle:
+    definition: graduates from first-cycle degree programmes, with integrated-master structures handled under their official degree type rather than silently recoded
+    required_dimensions:
+      - institution
+      - course_or_programme
+      - education_training_field
+      - degree_cycle
+      - academic_year
+    status: semantic_definition_resolved_file_validation_pending
+  graduates_second_cycle:
+    definition: graduates from second-cycle master's programmes, with integrated-master structures reported separately where present
+    required_dimensions:
+      - institution
+      - course_or_programme
+      - education_training_field
+      - degree_cycle
+      - academic_year
+    status: semantic_definition_resolved_file_validation_pending
+  doctoral_enrolments:
+    definition: students enrolled in third-cycle/doctoral programmes
+    required_dimensions:
+      - institution
+      - course_or_programme
+      - education_training_field
+      - degree_cycle
+      - academic_year
+    status: semantic_definition_resolved_file_validation_pending
+  doctoral_graduates:
+    definition: graduates awarded a doctoral/third-cycle qualification
+    required_dimensions:
+      - institution
+      - course_or_programme
+      - education_training_field
+      - degree_cycle
+      - academic_year
+    status: semantic_definition_resolved_file_validation_pending
+aggregation_rules:
+  primary_field_level: ISCED-F 2013 two-digit fields 05, 06 and 07
+  derive_field_from_official_course_CNAEF_or_equivalent: true
+  allocate_national_totals_downwards: false
+  allocate_sector_totals_downwards: false
+  impute_missing_institution_field_cells: false
+  minimum_comparable_annual_observations: 5
+validation_required_before_analysis_ready:
+  - retrieve_or_materialise_official_annual_files_for_the_frozen_window
+  - verify stable institution identifiers or commit an explicit concordance
+  - verify course/programme and field variables for each year
+  - verify cycle/degree-type coding for each year
+  - reconcile published totals where available
+  - compute institution_x_field_x_component_year support matrix
