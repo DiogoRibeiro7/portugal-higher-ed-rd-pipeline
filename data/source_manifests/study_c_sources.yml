@@ -1,0 +1,55 @@
+version: 1
+study: C
+status: source_mapping_gate
+sources:
+  fct_evaluation_2023_2024:
+    authority: Fundacao para a Ciencia e a Tecnologia
+    purpose: canonical R&D-unit registry, scientific panel, final rating and formal participating institutions
+    call: R&D Units Evaluation 2023/2024
+    public_call_page: https://www.fct.pt/concursos/avaliacao-de-unidades-de-id-2023-2024/
+    final_results_access: myFCT_document_endpoint
+    retrieval_mode: manual_author_supplied_required
+    canonical_file_required_before_unit_results: true
+    use_as_downstream_outcome: false
+    role: current_exposure_stratifier
+    activity_period_overlap_note: evaluation covers scientific activity overlapping 2018-2023; it cannot be treated as an outcome caused by the 2018/19-2024/25 feeder window
+  raides:
+    authority: Direcao-Geral de Estatisticas da Educacao e Ciencia
+    purpose: institution x field x academic-year higher-education feeder stages
+    statistical_system: RAIDES
+    academic_year_window:
+      first: 2018/2019
+      last: 2024/2025
+    required_components:
+      - first_time_entrants
+      - graduates_first_cycle
+      - graduates_second_cycle
+      - doctoral_enrolments
+      - doctoral_graduates
+    required_dimensions:
+      - institution
+      - education_training_field
+      - cycle_or_degree_level
+      - academic_year
+    retrieval_policy: official DGEEC statistical tables or author-downloaded official files only
+    imputation: forbidden
+  ipctn:
+    authority: Direcao-Geral de Estatisticas da Educacao e Ciencia
+    purpose: contextual research-personnel stock
+    survey: IPCTN
+    calendar_year_window:
+      first: 2018
+      last: 2024
+    required_measure: research_personnel_fte
+    role: context_only_not_feeder_composite
+    required_dimensions:
+      - institution_or_sector_entity
+      - scientific_field_where_available
+      - calendar_year
+    retrieval_policy: official DGEEC/IPCTN tables or author-downloaded official files only
+    imputation: forbidden
+rules:
+  official_sources_only: true
+  search_snippets_as_data: false
+  institutional_press_releases_as_canonical_unit_registry: false
+  compute_unit_exposure_before_all_required_sources_resolved: false
