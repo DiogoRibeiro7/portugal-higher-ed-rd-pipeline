@@ -1,0 +1,57 @@
+version: 1
+study: C
+audit_type: source_availability_and_granularity
+unit_exposure_allowed: false
+
+fct:
+  evaluation_wave: 2023/2024
+  accepted_units_total: 336
+  evaluation_panels_total: 29
+  primary_scope_panels: 12
+  canonical_final_results_file:
+    status: blocked_manual_dependency
+    official_source_identified: true
+    reproducibly_retrieved_in_current_environment: false
+  unit_registry_available: false
+  rating_completeness_auditable: false
+  institution_mapping_auditable: false
+  unit_weights_auditable: false
+
+raides:
+  frozen_window: 2018/19-2024/25
+  official_annual_inscritos_tables_exist: true
+  official_annual_diplomados_tables_exist: true
+  first_time_entrants_institution_course_series_identified: true
+  institution_field_cycle_schema_full_window_verified: false
+  component_status:
+    first_time_entrants: source_identified_schema_verification_pending
+    graduates_first_cycle: source_identified_schema_verification_pending
+    graduates_second_cycle: source_identified_schema_verification_pending
+    doctoral_enrolments: source_identified_schema_verification_pending
+    doctoral_graduates: source_identified_schema_verification_pending
+  institution_field_component_coverage_computable: false
+  note: >-
+    Publication of an annual national table is not sufficient for Study C coverage.
+    A component becomes analysis-ready only after its institution x field x stage schema
+    is verified consistently across at least five years of the frozen window.
+
+ipctn:
+  frozen_window: 2018-2024
+  official_2024_definitive_results_identified: true
+  research_personnel_fte_context_identified: true
+  institution_scientific_field_schema_full_window_verified: false
+  contextual_unit_linkage_computable: false
+
+blockers_before_unit_exposure:
+  - canonical_fct_final_results_file_not_retrieved
+  - fct_unit_registry_and_ratings_not_parsed
+  - formal_unit_institution_participation_not_parsed
+  - raides_institution_field_stage_schema_not_verified_for_full_window
+  - ipctn_institution_field_fte_schema_not_verified_for_full_window
+  - institution_field_component_coverage_not_computed
+
+rules:
+  national_or_sector_totals_may_not_be_allocated_to_units: true
+  search_snippets_may_not_define_registry_or_coverage: true
+  unavailable_dimensions_remain_unavailable: true
+  exposure_calculation_before_blockers_resolved: false
