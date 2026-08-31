@@ -8,6 +8,7 @@ from pt_he_pipeline.study_b_rankings import (
     _design,
     _design_schema,
     _ranking_support_mask,
+    _structural_support_mask,
     build_ranking_coverage,
     leave_one_parent_out_comparison,
     leave_one_parent_out_rmse,
@@ -185,6 +186,16 @@ def test_unseen_structural_level_fails_closed() -> None:
         )
 
 
+def test_structural_support_marks_unique_held_out_programme_unsupported() -> None:
+    panel = _band_panel()
+    unique = panel.iloc[[0]].copy()
+    unique["parent_institution_id"] = "u4"
+    unique["programme_code"] = "9219"
+    train = panel.copy()
+    support = _structural_support_mask(train, unique)
+    assert not support.any()
+
+
 def test_unseen_held_out_band_is_not_supported() -> None:
     panel = _band_panel()
     train = panel.loc[panel["parent_institution_id"].isin(["u1", "u2"])]
@@ -204,6 +215,8 @@ def test_paired_lopo_comparison_uses_only_identical_supported_rows() -> None:
     assert result.eligible_parents == 3
     assert result.supported_rows == 12
     assert result.unsupported_rows == 6
+    assert result.unsupported_ranking_rows == 6
+    assert result.unsupported_structural_rows == 0
     assert result.supported_parents == 2
     assert result.baseline_rmse >= 0
     assert result.ranking_rmse >= 0
