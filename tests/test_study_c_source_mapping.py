@@ -18,15 +18,35 @@ def test_study_c_source_manifest_preserves_manual_fct_dependency() -> None:
     assert manifest["rules"]["compute_unit_exposure_before_all_required_sources_resolved"] is False
 
 
-def test_panel_crosswalk_is_restricted_to_frozen_study_c_fields() -> None:
+def test_panel_crosswalk_uses_exact_fct_panel_universe_and_frozen_fields() -> None:
     crosswalk = pd.read_csv(
         ROOT / "data/curated/fct/study_c_panel_isced_crosswalk.csv",
         dtype={"isced_f_scope": str},
     )
+    assert len(crosswalk) == 29
+    assert crosswalk["panel_key"].is_unique
+    assert crosswalk["panel_label"].is_unique
+
+    required_labels = {
+        "Earth and Environmental Sciences and Technologies",
+        "Materials Science and Engineering, and Nanotechnology",
+        "Mechanical Engineering and Engineering systems",
+        "Civil and Geological engineering",
+        "Chemical and Biological Engineering",
+        "Chemistry",
+        "Computer Science and Information Technologies",
+        "Architecture and Urbanism",
+        "Biological Sciences Biodiversity and Ecosystems",
+        "Electrical and Computer Engineering",
+        "Mathematics",
+        "Physics",
+    }
+    assert required_labels <= set(crosswalk["panel_label"])
+
     primary = crosswalk.loc[crosswalk["primary_study_c_scope"].astype(bool)]
-    assert not primary.empty
+    assert len(primary) == 12
     assert set(primary["isced_f_scope"]) <= {"05", "06", "07"}
-    assert primary["panel_key"].is_unique
+    assert set(primary["panel_label"]) == required_labels
 
 
 def test_raides_contract_keeps_pipeline_components_separate() -> None:
