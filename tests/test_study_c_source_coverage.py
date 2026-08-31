@@ -16,19 +16,21 @@ def test_study_c_coverage_gate_remains_closed_while_primary_blockers_exist() -> 
     assert audit["unit_exposure_allowed"] is False
     blockers = audit["primary_blockers_before_unit_exposure"]
     assert blockers
-    assert "canonical_fct_final_results_file_not_retrieved" in blockers
-    assert "raides_official_file_bytes_not_validated_for_full_window" in blockers
+    assert "formal_unit_institution_participation_not_resolved" in blockers
+    assert "unit_institution_field_weights_not_built" in blockers
     assert "institution_field_component_coverage_not_computed" in blockers
 
 
-def test_raides_semantics_are_resolved_but_file_validation_is_still_pending() -> None:
+def test_raides_full_window_bytes_and_semantics_are_validated() -> None:
     audit = _audit()
     raides = audit["raides"]
     assert raides["official_annual_inscritos_tables_exist"] is True
     assert raides["official_annual_diplomados_tables_exist"] is True
     assert raides["component_semantics_resolved"] is True
-    assert raides["official_file_bytes_validated_full_window"] is False
-    assert raides["institution_field_component_coverage_computable"] is False
+    assert raides["official_file_bytes_validated_full_window"] is True
+    assert raides["institution_course_field_cycle_schema_full_window_verified"] is True
+    assert raides["institution_field_component_coverage_computable"] is True
+    assert raides["institution_field_component_coverage_computed"] is False
 
 
 def test_raides_schema_keeps_five_registered_components_separate() -> None:
@@ -41,9 +43,20 @@ def test_raides_schema_keeps_five_registered_components_separate() -> None:
         "doctoral_enrolments",
         "doctoral_graduates",
     ]
+    assert all(c["status"] == "semantic_and_file_schema_validated" for c in components.values())
     assert schema["aggregation_rules"]["allocate_national_totals_downwards"] is False
     assert schema["aggregation_rules"]["allocate_sector_totals_downwards"] is False
     assert schema["aggregation_rules"]["minimum_comparable_annual_observations"] == 5
+
+
+def test_fct_registry_and_ratings_are_available_but_weights_are_not() -> None:
+    audit = _audit()
+    fct = audit["fct"]
+    assert fct["approved_units_total"] == 313
+    assert fct["unit_registry_available"] is True
+    assert fct["rating_complete_for_approved_units"] is True
+    assert fct["institution_mapping_auditable_from_final_results_file"] is False
+    assert fct["unit_weights_auditable"] is False
 
 
 def test_ipctn_is_context_only_and_does_not_block_primary_feeder_exposure() -> None:
