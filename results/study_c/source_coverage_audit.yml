@@ -1,4 +1,4 @@
-version: 4
+version: 5
 study: C
 audit_type: source_availability_and_granularity
 unit_exposure_allowed: false
@@ -19,10 +19,19 @@ fct:
   rating_complete_for_approved_units: true
   institution_mapping_auditable_from_final_results_file: false
   unit_weights_auditable: false
+  organisational_participation:
+    handoff_contract: data/source_manifests/study_c_fct_participation.yml
+    validator: scripts/validate_study_c_fct_participation.py
+    public_fct_evaluation_process_identified: true
+    public_results_complete_formal_participant_universe: false
+    authorised_application_snapshot_required: true
+    current_membership_may_replace_application_snapshot: false
+    management_institution_may_replace_participant_universe: false
+    handoff_validated: false
   note: >-
     The final-results workbook resolves the approved-unit registry, canonical panel labels and ratings,
-    but it does not contain participating-institution columns. A separate official FCT organisational
-    source is still required for unit-to-institution weights.
+    but it does not contain the complete formal participating-institution universe. The next gate requires
+    an authorised 2023/2024 application-snapshot participation export for all 120 primary-scope units.
 
 raides:
   frozen_window: 2018/19-2024/25
@@ -75,3 +84,5 @@ rules:
   unavailable_dimensions_remain_unavailable: true
   exposure_calculation_before_primary_blockers_resolved: false
   context_only_ipctn_may_be_missing_without_blocking_feeder_exposure: true
+  current_unit_membership_may_not_replace_evaluation_application_snapshot: true
+  management_institution_may_not_stand_in_for_complete_participating_institution_set: true
