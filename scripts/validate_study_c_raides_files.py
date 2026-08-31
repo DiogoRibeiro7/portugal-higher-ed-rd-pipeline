@@ -11,6 +11,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INVENTORY = ROOT / "data/source_manifests/study_c_raides_file_inventory.yml"
+SUPPORTED_EXCEL_SUFFIXES = (".xlsx", ".xlsb")
 
 
 def sha256(path: Path) -> str:
@@ -27,10 +28,10 @@ def normalise_header(value: Any) -> str:
     return " ".join(str(value).strip().lower().split())
 
 
-def canonical_staging_filename(family: str, academic_year: str) -> str:
-    """Return the repo-local handoff name, not a guessed provider filename."""
+def canonical_staging_stem(family: str, academic_year: str) -> str:
+    """Return the repo-local handoff stem, not a guessed provider filename."""
     safe_year = academic_year.replace("/", "_")
-    return f"{family}_{safe_year}.xlsx"
+    return f"{family}_{safe_year}"
 
 
 def annual_slots(inventory: dict[str, Any]) -> list[dict[str, str]]:
@@ -50,7 +51,7 @@ def annual_slots(inventory: dict[str, Any]) -> list[dict[str, str]]:
                 {
                     "academic_year": academic_year,
                     "family": family,
-                    "local_filename": canonical_staging_filename(family, academic_year),
+                    "local_stem": canonical_staging_stem(family, academic_year),
                 }
             )
 
@@ -59,11 +60,20 @@ def annual_slots(inventory: dict[str, Any]) -> list[dict[str, str]]:
     return slots
 
 
+def resolve_staged_file(input_dir: Path, stem: str) -> Path | None:
+    matches = [input_dir / f"{stem}{suffix}" for suffix in SUPPORTED_EXCEL_SUFFIXES]
+    present = [path for path in matches if path.exists()]
+    if len(present) > 1:
+        raise ValueError(f"Multiple staged files found for {stem}: {present}")
+    return present[0] if present else None
+
+
 def workbook_fingerprint(path: Path) -> dict[str, Any]:
-    book = pd.ExcelFile(path)
+    engine = "pyxlsb" if path.suffix.lower() == ".xlsb" else None
+    book = pd.ExcelFile(path, engine=engine)
     sheets: dict[str, Any] = {}
     for sheet in book.sheet_names:
-        frame = pd.read_excel(path, sheet_name=sheet, nrows=25, header=None)
+        frame = pd.read_excel(path, sheet_name=sheet, nrows=25, header=None, engine=engine)
         rows = []
         for _, row in frame.iterrows():
             vals = [normalise_header(v) for v in row.tolist()]
@@ -84,14 +94,15 @@ def validate(inventory_path: Path, input_dir: Path) -> dict[str, Any]:
     records = []
     missing = []
     for item in slots:
-        path = input_dir / item["local_filename"]
-        if not path.exists():
+        path = resolve_staged_file(input_dir, item["local_stem"])
+        if path is None:
             missing.append(
                 {
                     "academic_year": item["academic_year"],
                     "family": item["family"],
                     "reason": "file_missing",
-                    "canonical_staging_filename": item["local_filename"],
+                    "canonical_staging_stem": item["local_stem"],
+                    "accepted_suffixes": list(SUPPORTED_EXCEL_SUFFIXES),
                 }
             )
             continue
@@ -99,7 +110,7 @@ def validate(inventory_path: Path, input_dir: Path) -> dict[str, Any]:
             {
                 "academic_year": item["academic_year"],
                 "family": item["family"],
-                "filename": item["local_filename"],
+                "filename": path.name,
                 "sha256": sha256(path),
                 "fingerprint": workbook_fingerprint(path),
             }
