@@ -14,23 +14,22 @@ scope:
   primary_scope_units: 120
 
 source_boundary:
-  public_sciproj:
-    authority: FCT/FCCN
-    system: PTCRIS SciPROJ
-    portal: https://sciproj.ptcris.pt/
-    programme_label: Avaliação UID 2023/2024
-    current_funded_activity_records_available: true
-    complete_formal_participant_universe_publicly_exposed: false
-    management_or_funding_institutions_may_be_visible: true
+  public_fct:
+    authority: Fundacao para a Ciencia e a Tecnologia
+    competition_page: https://www.fct.pt/concursos/programa-plurianual-de-financiamento-de-unidades-de-i-d-2023-2024-1-1
+    final_approved_units: 313
+    evaluation_team_registration_was_part_of_application_process: true
+    public_results_resolve_complete_formal_participant_universe: false
+    management_institution_is_not_participating_institution_universe: true
     may_close_formal_participation_gate: false
-  ptcris_research_unit_api:
-    authority: FCT/FCCN
-    openapi: https://etl.ptcris.pt/openapi-unified.json
-    unit_endpoint: /api/v1/unidades/{unit_id}
-    unit_persons_endpoint: /api/v1/unidades/{unit_id}/persons
-    authentication_required: true
+  authorised_participation_source:
+    accepted_source_systems:
+      - pct_evaluation_application_export
+      - ptcris_authorised_research_unit_export
+      - fct_authorised_unit_participation_export
+    authentication_or_author_access_may_be_required: true
     unauthorised_scraping_or_credential_workaround: forbidden
-    authorised_export_accepted: true
+    application_snapshot_required: true
   regulatory_definition:
     formal_participating_institution: >-
       Legal entity to which integrated doctoral researchers of the R&D unit are affiliated.
@@ -69,6 +68,6 @@ weight_preparation:
   final_unit_institution_field_weights_built_in_this_gate: false
 
 scientific_boundary:
-  current_sciproj_management_lists_may_not_be_promoted_to_full_participation: true
-  current_2026_membership_may_not_replace_2023_2024_application_membership: true
+  public_management_lists_may_not_be_promoted_to_full_participation: true
+  current_membership_may_not_replace_2023_2024_application_membership: true
   no_unit_exposure_computed: true
