@@ -1,0 +1,45 @@
+\section{Study B: demand, regionality, and ranking information}
+
+\subsection{Registered five-programme demand/selectivity panel}
+
+The registered Study B demand analysis extends the initial matched-course pilot to five exact DGES programme identities: Economia (9081), Engenharia Informática (9119), Gestão (9147), Psicologia (9219), and Enfermagem (9500). The first-phase comparison covers 2018--2020 using the official DGES comparative course tables.
+
+The source layer contains 348 rows for 87 programme--establishment units. All 87 duplicated 2019 observations agree exactly across the two publication vintages on the registered count and grade measures. Deduplication therefore yields 261 canonical programme--establishment--year observations. The stable-establishment counts are 13 for Economia, 23 for Engenharia Informática, 22 for Gestão, 8 for Psicologia, and 21 for Enfermagem. One Economia observation at the University of the Azores lacks a published 2018 general-contingent cut-off and remains missing rather than being imputed.
+
+Within each programme and year, the registered descriptive model is
+\[
+y_{ipt}=\alpha_{pt}+\beta_{pt}\log\left(\frac{A_{ipt}}{V_{ipt}}\right)+\varepsilon_{ipt},
+\]
+where $A_{ipt}$ is total applicants and $V_{ipt}$ initial vacancies for institution $i$, programme $p$, and year $t$.
+
+Across the 15 programme--year cells, the general-contingent cut-off regressions have median $R^2=0.598$ and interquartile range $[0.489,0.669]$. Ten of the 15 cells have $R^2\geq0.50$, none reaches $R^2\geq0.80$, and the observed range is 0.320--0.743. For the mean application grade of placed candidates, median $R^2=0.552$, the interquartile range is $[0.419,0.580]$, nine of 15 cells have $R^2\geq0.50$, none reaches 0.80, and the range is 0.186--0.766.
+
+All 30 fitted log-demand coefficients are positive. Demand pressure is therefore a consistently positive descriptive predictor of entry grades in the registered panel, but its explanatory strength is heterogeneous across programmes and years. The contrast between Enfermagem and Engenharia Informática illustrates that heterogeneity: cut-off $R^2$ values are 0.320, 0.323, and 0.484 for Enfermagem, compared with 0.647, 0.559, and 0.743 for Engenharia Informática.
+
+The registered evidence consequently supports a narrower statement than ``demand explains entry grades'': applicants per vacancy contains substantial and consistently positive information about cross-institution selectivity, but it does not explain cross-institution grade differences almost completely under the pre-specified $R^2=0.80$ benchmark.
+
+\subsection{Regionality of first choice and realised placement}
+
+The regionality analysis uses the registered DGES origin--destination mobility matrices for 2023--2025. Comparable district-origin coverage is high in every year and flow type, ranging from 94.7\% to 95.3\% of all published flows. Autonomous regions remain in the full matrices but are not relabelled as districts in the primary same-area calculation.
+
+The same-district share of first choices is 64.03\% in 2023, 65.24\% in 2024, and 63.97\% in 2025. The corresponding same-district placement shares are 55.55\%, 57.26\%, and 57.87\%. The placement-minus-first-choice contrast is therefore negative in every year: $-8.47$, $-7.98$, and $-6.10$ percentage points, respectively.
+
+Thus student choice is strongly regional in this recent window, but realised placement is systematically less geographically concentrated than first preference. The off-diagonal diagnostics point in the same direction: conditional destination entropy is higher for placement than for first choice in every year, while normalised mutual information is lower. Realised placements are therefore more geographically dispersed and less tightly associated with origin area than first-choice flows.
+
+This contrast is descriptive rather than causal. Programme availability, grades, capacity, competition, and other constraints can all move realised placements away from expressed first preference. The evidence does not identify which mechanism accounts for the gap.
+
+\subsection{Incremental ranking information}
+
+The ranking analysis treats QS, Times Higher Education (THE), and ARWU separately. Only historical editions published before the registered application deadline are eligible. Exact ranks are used numerically only when officially published; official rank bands remain categorical and are never replaced by midpoints. Provider values are not redistributed.
+
+For each provider, the predictive comparison uses leave-one-parent-institution-out validation. All programme rows belonging to one parent university are held out together. Baseline and ranking-augmented models are fitted on identical provider-ranked training rows and scored on identical held-out rows for which both structural programme/year levels and the ranking representation are supported by the training fold. Unsupported held-out observations remain visible as validation attrition rather than being mapped to a reference category.
+
+THE provides the broadest validation support: 112 of 116 eligible programme rows are scored across all 11 eligible parent universities. Before conditioning on demand, adding THE rank bands improves both grade outcomes. For the last placed general-contingent grade, RMSE falls from 19.914 to 18.240, a reduction of 1.673 points (8.40\%), while MAE falls from 15.740 to 14.507. For the mean placed application grade, RMSE falls from 15.435 to 14.051, a reduction of 1.383 points (8.96\%), and MAE falls from 12.324 to 11.749.
+
+THE information also modestly improves prediction of applicants per vacancy: RMSE moves from 3.503 to 3.369 and MAE from 2.876 to 2.689. Once contemporaneous demand is included in the grade models, however, the incremental THE gain disappears. The last-placed-grade RMSE changes from 13.080 to 13.090 ($\Delta\mathrm{RMSE}=+0.010$), and the mean-grade RMSE from 11.087 to 11.114 ($\Delta\mathrm{RMSE}=+0.028$); MAE also worsens slightly in both comparisons.
+
+The strongest Study B ranking result is therefore an attenuation pattern: THE ranking information contains out-of-institution predictive information for grades and modest information for observed demand, but essentially no residual grade-prediction gain once contemporaneous demand is included. This is consistent with demand already containing much of the predictive information associated with institutional ranking or reputation. It is not evidence of causal mediation.
+
+QS and ARWU provide much narrower usable validation support and do not support a broad incremental-ranking claim. QS scores 30 of 54 eligible programme rows across four of six ranked parents; adding ranking substantially worsens both grade outcomes with or without demand. ARWU scores 27 of 47 eligible rows across three of six ranked parents; its grade results are mixed, with one demand-conditioned cut-off RMSE improvement accompanied by worse MAE and no consistent improvement across the other registered outcomes.
+
+Taken together, the provider-specific evidence does not support the statement that rankings are uniformly irrelevant. Instead, the broad THE sample shows a measurable total predictive association that becomes negligible after contemporaneous demand is included, while the narrower QS and ARWU validations provide no stable incremental advantage.
