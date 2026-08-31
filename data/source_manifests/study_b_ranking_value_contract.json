@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "purpose": "Bind the non-redistributed provider-specific historical ranking panel used for Study B before model fitting.",
+  "private_panel_path": "data/private/rankings/study_b_rankings.csv",
+  "private_panel_tracked": false,
+  "canonical_sha256": "f6bbf50d7544937e4e16da66a0cbeec6bda34c29c82ddce7c28dd14e130aaad0",
+  "canonicalisation": {
+    "encoding": "utf-8",
+    "line_ending": "LF",
+    "sort_columns": ["provider", "admission_year", "parent_institution_id"],
+    "column_order": [
+      "admission_year",
+      "provider",
+      "parent_institution_id",
+      "publication_date",
+      "application_deadline",
+      "rank",
+      "rank_band",
+      "edition",
+      "source_key"
+    ]
+  },
+  "expected_rows": 64,
+  "expected_provider_year_counts": {
+    "QS": {"2018": 6, "2019": 6, "2020": 6},
+    "Times Higher Education": {"2018": 9, "2019": 11, "2020": 11},
+    "ARWU": {"2018": 5, "2019": 4, "2020": 6}
+  },
+  "rules": {
+    "exact_rank_and_band_mutually_exclusive": true,
+    "rank_band_midpoints_forbidden": true,
+    "candidate_only_entries_excluded": true,
+    "publication_after_application_deadline_forbidden": true,
+    "provider_values_must_not_be_committed": true
+  }
+}
