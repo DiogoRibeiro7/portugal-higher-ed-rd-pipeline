@@ -1,0 +1,44 @@
+version: 1
+study: C
+audit_type: fct_final_results_byte_and_registry
+status: final_results_validated_institution_mapping_pending
+source_file:
+  uploaded_name: Tabela de divulgação de resultados finais_publicar.xlsx
+  sha256: 079bc1c4cbfe797961eead378fb2361f49514dd2a075aa820661a846bd512d50
+  sheet: Resultados Apos AP
+  header_row_1_based: 5
+registry:
+  approved_units: 313
+  unique_application_references: 313
+  unique_unit_names: 313
+  evaluation_panels: 29
+  duplicate_application_references: 0
+  application_reference_pattern: UID/NNNNN/2023
+  all_references_match_pattern: true
+  missing_panel: 0
+  missing_unit_name: 0
+  missing_rating: 0
+ratings:
+  Excellent: 136
+  Very Good: 116
+  Good: 61
+  complete_for_all_approved_units: true
+primary_study_c_scope:
+  panels: 12
+  approved_units: 120
+  share_of_approved_units: 0.383387
+  isced_f_05_units: 58
+  isced_f_06_units: 11
+  isced_f_07_units: 51
+  ratings:
+    Excellent: 56
+    Very Good: 48
+    Good: 16
+institution_mapping:
+  participating_institution_columns_present: false
+  final_results_file_can_define_unit_to_institution_weights: false
+  separate_official_fct_organisational_registry_required: true
+scientific_boundary:
+  rating_role: current_exposure_stratifier_only
+  rating_as_downstream_outcome: false
+  unit_exposure_computed: false
