@@ -33,7 +33,7 @@ class RankingPolicy:
 
 @dataclass(frozen=True)
 class LopoComparisonResult:
-    """Paired LOPO metrics on identical ranking-supported observations."""
+    """Paired LOPO metrics on identical supported observations."""
 
     baseline_rmse: float
     ranking_rmse: float
@@ -44,6 +44,8 @@ class LopoComparisonResult:
     supported_rows: int
     unsupported_rows: int
     supported_parents: int
+    unsupported_ranking_rows: int = 0
+    unsupported_structural_rows: int = 0
 
     @property
     def delta_rmse(self) -> float:
@@ -203,6 +205,17 @@ def _ranking_support_mask(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
     return supported
 
 
+def _structural_support_mask(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
+    """Return rows whose registered structural categories occur in training."""
+
+    train_programmes = set(train["programme_code"].astype(str))
+    train_years = set(train["year"].astype(str))
+    return (
+        test["programme_code"].astype(str).isin(train_programmes)
+        & test["year"].astype(str).isin(train_years)
+    )
+
+
 def _design_schema(
     frame: pd.DataFrame,
     *,
@@ -257,10 +270,10 @@ def leave_one_parent_out_comparison(
 ) -> LopoComparisonResult:
     """Compare baseline and ranking models on identical supported LOPO rows.
 
-    Both models are trained on the same provider-ranked rows. A held-out banded row
-    is scored only when its exact official band occurs in training. A held-out exact
-    rank is scored only when training contains at least two distinct exact ranks.
-    Unsupported rows are counted but never silently mapped to the reference category.
+    Both models are trained on the same provider-ranked rows. A held-out row is
+    scored only when its programme/year categories occur in training and its
+    ranking representation is supported there. Unsupported rows are reported
+    explicitly and are never mapped to a reference category.
     """
 
     required = (
@@ -286,7 +299,8 @@ def leave_one_parent_out_comparison(
     baseline_predictions: list[float] = []
     ranking_predictions: list[float] = []
     observed: list[float] = []
-    unsupported_rows = 0
+    unsupported_ranking_rows = 0
+    unsupported_structural_rows = 0
     supported_parent_ids: set[str] = set()
 
     for parent in sorted(data["parent_institution_id"].astype(str).unique()):
@@ -295,8 +309,13 @@ def leave_one_parent_out_comparison(
         if test.empty or train.empty:
             continue
 
-        support_mask = _ranking_support_mask(train, test)
-        unsupported_rows += int((~support_mask).sum())
+        ranking_support = _ranking_support_mask(train, test)
+        structural_support = _structural_support_mask(train, test)
+        unsupported_ranking_rows += int((~ranking_support).sum())
+        unsupported_structural_rows += int(
+            (ranking_support & ~structural_support).sum()
+        )
+        support_mask = ranking_support & structural_support
         supported_test = test.loc[support_mask].copy()
         if supported_test.empty:
             continue
@@ -353,6 +372,7 @@ def leave_one_parent_out_comparison(
     observed_array = np.asarray(observed)
     baseline_residual = observed_array - np.asarray(baseline_predictions)
     ranking_residual = observed_array - np.asarray(ranking_predictions)
+    unsupported_rows = unsupported_ranking_rows + unsupported_structural_rows
     return LopoComparisonResult(
         baseline_rmse=float(np.sqrt(np.mean(baseline_residual**2))),
         ranking_rmse=float(np.sqrt(np.mean(ranking_residual**2))),
@@ -363,6 +383,8 @@ def leave_one_parent_out_comparison(
         supported_rows=int(len(observed)),
         unsupported_rows=unsupported_rows,
         supported_parents=len(supported_parent_ids),
+        unsupported_ranking_rows=unsupported_ranking_rows,
+        unsupported_structural_rows=unsupported_structural_rows,
     )
 
 
@@ -401,10 +423,15 @@ def leave_one_parent_out_rmse(
         train = data.loc[data["parent_institution_id"].astype(str) != parent]
         if test.empty or train.empty:
             continue
+
+        structural_support = _structural_support_mask(train, test)
         if include_ranking:
-            test = test.loc[_ranking_support_mask(train, test)].copy()
-            if test.empty:
-                continue
+            ranking_support = _ranking_support_mask(train, test)
+            test = test.loc[structural_support & ranking_support].copy()
+        else:
+            test = test.loc[structural_support].copy()
+        if test.empty:
+            continue
 
         schema = _design_schema(train, include_ranking=include_ranking)
         train_design = _design(
