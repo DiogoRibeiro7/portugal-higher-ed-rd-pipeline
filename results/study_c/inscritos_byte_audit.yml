@@ -1,0 +1,87 @@
+version: 1
+study: C
+audit_type: raides_inscritos_byte_and_schema
+status: inscritos_validated_diplomados_and_fct_pending
+source_archive:
+  uploaded_name: Inscritos_2004_200511.zip
+  sha256: 8552440981da0e67ad88355caa0119cdef8af39c9bca6bae44ac85f498f02bdc
+  contains_frozen_window: true
+frozen_window:
+  academic_years:
+    - 2018/19
+    - 2019/20
+    - 2020/21
+    - 2021/22
+    - 2022/23
+    - 2023/24
+    - 2024/25
+validated_inscritos_files:
+  - academic_year: 2018/19
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2018_2019.xlsb
+    sha256: 6990201d0e25426a91558e78b4f76f71e3e4d4afbc95d5b36933582ad0d31491
+    columns: 37
+  - academic_year: 2019/20
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2019_2020.xlsb
+    sha256: bbe3d162e6a49c4f75d3a528e28398203003bd135653a7062151e046be627a1f
+    columns: 37
+  - academic_year: 2020/21
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2020_2021.xlsb
+    sha256: f68a965f5e9fb6dc19b2032c112abc3f9e268e761839e8368050a88307e7a07c
+    columns: 37
+  - academic_year: 2021/22
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2021_2022.xlsb
+    sha256: 02a08ea9a3e9671461e52b5fc085620d1e24e9e77f5779cd0b0fe3b534715541
+    columns: 37
+  - academic_year: 2022/23
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2022_2023.xlsb
+    sha256: 0b821c0a77f036998f16ccc62cabfeba71a5f604db62c9916c04f698fda2dca5
+    columns: 37
+  - academic_year: 2023/24
+    provider_filename: DGEEC_DSEE_DEES_2024_PL_TDES_Inscritos_2023_2024.xlsb
+    sha256: 4e325fec513de6a03c0543ccb0bb2fc060fbe2b9e548e69b057ede88e67240c2
+    columns: 37
+  - academic_year: 2024/25
+    provider_filename: DGEEC_DSEE_DEES_2025_PL_TDES_Inscritos_2024_2025.xlsb
+    sha256: fe5768666ae6ec2c3f2522c89b408e7918c8fb1ef4eb4ad48818a8a49c295339
+    columns: 38
+schema:
+  sheets_identical_all_years: true
+  sheet_names:
+    - Tabela1
+    - Fonte_Notas
+  core_variables_present_all_years:
+    - Ano letivo
+    - Código do estabelecimento de ensino
+    - Código da unidade orgânica
+    - Código do curso
+    - Curso/Ciclo de estudos
+    - Área de educação e formação - Código da área geral
+    - Área de educação e formação - Código da área específica
+    - Área de educação e formação - Código da área detalhada
+    - Primeira vez
+    - N
+  endpoint_change_2024_25:
+    added:
+      - País de residência
+      - NUTSI de residência
+    removed:
+      - NUTSI - Residência do aluno
+    affects_registered_study_c_core_variables: false
+  sample_semantics_verified_at_endpoints:
+    primeira_vez_values:
+      - N
+      - S
+    cycle_labels_include:
+      - Licenciatura 1.º ciclo
+      - Mestrado 2.º ciclo
+      - Doutoramento 3.º ciclo
+    isced_general_codes_include:
+      - '05'
+      - '06'
+      - '07'
+remaining_blockers:
+  - seven_diplomados_workbooks_not_supplied
+  - fct_final_results_file_not_supplied
+  - full_raides_semantic_concordance_not_yet_frozen
+  - institution_field_component_coverage_not_yet_computed
+unit_exposure_allowed: false
