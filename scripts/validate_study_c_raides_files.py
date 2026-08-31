@@ -27,6 +27,38 @@ def normalise_header(value: Any) -> str:
     return " ".join(str(value).strip().lower().split())
 
 
+def canonical_staging_filename(family: str, academic_year: str) -> str:
+    """Return the repo-local handoff name, not a guessed provider filename."""
+    safe_year = academic_year.replace("/", "_")
+    return f"{family}_{safe_year}.xlsx"
+
+
+def annual_slots(inventory: dict[str, Any]) -> list[dict[str, str]]:
+    years = inventory["frozen_window"]["academic_years"]
+    families = inventory["annual_publication_families"]
+    expected = inventory["byte_level_validation"]["total_expected_annual_files"]
+
+    slots: list[dict[str, str]] = []
+    for family, spec in families.items():
+        if spec["expected_files"] != len(years):
+            raise ValueError(
+                f"Family {family!r} expects {spec['expected_files']} files, "
+                f"but frozen window contains {len(years)} years"
+            )
+        for academic_year in years:
+            slots.append(
+                {
+                    "academic_year": academic_year,
+                    "family": family,
+                    "local_filename": canonical_staging_filename(family, academic_year),
+                }
+            )
+
+    if len(slots) != expected:
+        raise ValueError(f"Inventory resolves to {len(slots)} files; expected {expected}")
+    return slots
+
+
 def workbook_fingerprint(path: Path) -> dict[str, Any]:
     book = pd.ExcelFile(path)
     sheets: dict[str, Any] = {}
@@ -46,34 +78,32 @@ def workbook_fingerprint(path: Path) -> dict[str, Any]:
 
 def validate(inventory_path: Path, input_dir: Path) -> dict[str, Any]:
     inventory = yaml.safe_load(inventory_path.read_text(encoding="utf-8"))
-    annual = inventory["annual_files"]
-    expected = inventory["expected_annual_file_count"]
-    if len(annual) != expected:
-        raise ValueError(f"Inventory contains {len(annual)} files; expected {expected}")
+    slots = annual_slots(inventory)
+    expected = inventory["byte_level_validation"]["total_expected_annual_files"]
 
-    seen = set()
     records = []
     missing = []
-    for item in annual:
-        key = (item["academic_year"], item["family"])
-        if key in seen:
-            raise ValueError(f"Duplicate inventory slot: {key}")
-        seen.add(key)
-        filename = item.get("local_filename")
-        if not filename:
-            missing.append({"academic_year": key[0], "family": key[1], "reason": "local_filename_missing"})
-            continue
-        path = input_dir / filename
+    for item in slots:
+        path = input_dir / item["local_filename"]
         if not path.exists():
-            missing.append({"academic_year": key[0], "family": key[1], "reason": "file_missing", "filename": filename})
+            missing.append(
+                {
+                    "academic_year": item["academic_year"],
+                    "family": item["family"],
+                    "reason": "file_missing",
+                    "canonical_staging_filename": item["local_filename"],
+                }
+            )
             continue
-        records.append({
-            "academic_year": key[0],
-            "family": key[1],
-            "filename": filename,
-            "sha256": sha256(path),
-            "fingerprint": workbook_fingerprint(path),
-        })
+        records.append(
+            {
+                "academic_year": item["academic_year"],
+                "family": item["family"],
+                "filename": item["local_filename"],
+                "sha256": sha256(path),
+                "fingerprint": workbook_fingerprint(path),
+            }
+        )
 
     if missing:
         return {
@@ -88,9 +118,11 @@ def validate(inventory_path: Path, input_dir: Path) -> dict[str, Any]:
 
     by_key = {(r["academic_year"], r["family"]): r for r in records}
     endpoint_equal: dict[str, bool] = {}
-    for family in inventory["families"]:
-        first = by_key[(inventory["window"]["first_academic_year"], family)]["fingerprint"]
-        last = by_key[(inventory["window"]["last_academic_year"], family)]["fingerprint"]
+    first_year = inventory["frozen_window"]["first_academic_year"]
+    last_year = inventory["frozen_window"]["last_academic_year"]
+    for family in inventory["annual_publication_families"]:
+        first = by_key[(first_year, family)]["fingerprint"]
+        last = by_key[(last_year, family)]["fingerprint"]
         endpoint_equal[family] = first["sheet_names"] == last["sheet_names"]
 
     return {
