@@ -36,8 +36,8 @@ def test_registered_provider_row_denominators() -> None:
     the = coverage.loc[
         coverage["provider"] == "Times Higher Education"
     ].sort_values("admission_year")
-    assert the["verified_ranked_parent_institutions"].tolist() == [11, 11, 11]
-    assert the["verified_ranked_rows"].tolist() == [42, 42, 42]
+    assert the["verified_ranked_parent_institutions"].tolist() == [9, 11, 11]
+    assert the["verified_ranked_rows"].tolist() == [32, 42, 42]
     assert the["unresolved_parent_institutions"].tolist() == [1, 1, 1]
     assert the["unresolved_rows"].tolist() == [5, 5, 5]
 
@@ -46,5 +46,6 @@ def test_registered_provider_row_denominators() -> None:
     assert arwu["verified_ranked_rows"].tolist() == [16, 13, 18]
 
     assert isclose(float(qs.iloc[0]["verified_row_coverage"]), 18 / 52)
-    assert isclose(float(the.iloc[0]["verified_row_coverage"]), 42 / 52)
+    assert isclose(float(the.iloc[0]["verified_row_coverage"]), 32 / 52)
+    assert isclose(float(the.iloc[1]["verified_row_coverage"]), 42 / 52)
     assert isclose(float(arwu.iloc[0]["verified_row_coverage"]), 16 / 52)
