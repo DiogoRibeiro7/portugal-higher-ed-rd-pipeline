@@ -6,7 +6,9 @@ import pytest
 
 from pt_he_pipeline.study_b_rankings import (
     _design,
+    _ranking_support_mask,
     build_ranking_coverage,
+    leave_one_parent_out_comparison,
     leave_one_parent_out_rmse,
     validate_ranking_rows,
 )
@@ -51,6 +53,27 @@ def _panel() -> pd.DataFrame:
                         "mean_application_grade_placed": (
                             130.0 + 3 * index + year - 2018
                         ),
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
+def _band_panel() -> pd.DataFrame:
+    rows = []
+    bands = {"u1": "401-500", "u2": "401-500", "u3": "501-600"}
+    for year in (2018, 2019, 2020):
+        for programme in ("9081", "9119"):
+            for index, parent in enumerate(("u1", "u2", "u3"), start=1):
+                rows.append(
+                    {
+                        "year": year,
+                        "programme_code": programme,
+                        "parent_institution_id": parent,
+                        "applicants_per_vacancy": 1.0 + index,
+                        "rank": None,
+                        "rank_band": bands[parent],
+                        "last_placed_general_contingent_grade": 120.0 + 4 * index,
+                        "mean_application_grade_placed": 130.0 + 3 * index,
                     }
                 )
     return pd.DataFrame(rows)
@@ -107,6 +130,32 @@ def test_rank_bands_are_categorical_not_numeric_midpoints() -> None:
     band_rows = _panel()["rank_band"].notna()
     assert (design.loc[band_rows, "ranking_exact"] == 0.0).all()
     assert (design.loc[band_rows, "ranking_exact_observed"] == 0.0).all()
+
+
+def test_unseen_held_out_band_is_not_supported() -> None:
+    panel = _band_panel()
+    train = panel.loc[panel["parent_institution_id"].isin(["u1", "u2"])]
+    test = panel.loc[panel["parent_institution_id"] == "u3"]
+    support = _ranking_support_mask(train, test)
+    assert not support.any()
+
+
+def test_paired_lopo_comparison_uses_only_identical_supported_rows() -> None:
+    panel = _band_panel()
+    result = leave_one_parent_out_comparison(
+        panel,
+        outcome="last_placed_general_contingent_grade",
+        include_demand=False,
+    )
+    assert result.eligible_rows == len(panel)
+    assert result.eligible_parents == 3
+    assert result.supported_rows == 12
+    assert result.unsupported_rows == 6
+    assert result.supported_parents == 2
+    assert result.baseline_rmse >= 0
+    assert result.ranking_rmse >= 0
+    assert result.baseline_mae >= 0
+    assert result.ranking_mae >= 0
 
 
 def test_leave_one_parent_out_runs_for_registered_model_sequence() -> None:
