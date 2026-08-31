@@ -1,0 +1,67 @@
+version: 1
+study: C
+source_family: RAIDES
+status: publication_inventory_frozen
+canonical_data_page: https://www.dgeec.medu.pt/art/ensino-superior/bases-de-dados/todas/652ff89abd5c2b00958292d7
+
+frozen_window:
+  first_academic_year: 2018/19
+  last_academic_year: 2024/25
+  academic_years:
+    - 2018/19
+    - 2019/20
+    - 2020/21
+    - 2021/22
+    - 2022/23
+    - 2023/24
+    - 2024/25
+
+annual_publication_families:
+  inscritos:
+    expected_files: 7
+    publication_entries_verified: 7
+    actual_spreadsheet_payloads_retrieved: false
+    required_for_components:
+      - first_time_entrants
+      - doctoral_enrolments
+  diplomados:
+    expected_files: 7
+    publication_entries_verified: 7
+    actual_spreadsheet_payloads_retrieved: false
+    required_for_components:
+      - graduates_first_cycle
+      - graduates_second_cycle
+      - doctoral_graduates
+
+first_time_entry_series:
+  official_series_identified: true
+  published_span: 2012/13-2024/25
+  concept: first_year_first_time_in_initial_higher_education_programmes
+  institution_course_granularity_stated_by_dgeec: true
+  spreadsheet_payload_retrieved: false
+
+byte_level_validation:
+  total_expected_annual_files: 14
+  total_retrieved_annual_files: 0
+  endpoint_schema_compared: false
+  full_window_schema_compared: false
+  stable_institution_identifier_verified: false
+  stable_course_identifier_verified: false
+  stable_field_or_cnaef_variable_verified: false
+  stable_cycle_or_degree_type_verified: false
+  five_year_institution_field_component_support_computable: false
+
+rules:
+  publication_listing_is_not_byte_validation: true
+  no_filename_guessing: true
+  official_dgeec_files_only: true
+  no_top_down_allocation: true
+  unit_exposure_allowed_from_raides_before_byte_validation: false
+
+next_gate:
+  - retrieve_or_author_supply_14_official_annual_spreadsheets
+  - record_sha256_for_each_file
+  - compare_2018_19_and_2024_25_schemas
+  - verify_all_intervening_year_schemas
+  - build_institution_course_field_cycle_concordance
+  - compute_institution_field_component_support_counts
