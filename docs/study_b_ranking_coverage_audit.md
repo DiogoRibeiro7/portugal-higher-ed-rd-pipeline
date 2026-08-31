@@ -28,21 +28,29 @@ Historical and institutional evidence supports a stable core of six registered p
 
 Several exclusions can be verified independently rather than inferred from a missing search hit. Universidade do Algarve states that its first inclusion in the overall QS World University Rankings was the 2026 edition. Universidade da Beira Interior states that its first inclusion was the 2027 edition. ISCTE documents entry into QS World University Rankings by Subject in 2019 rather than the overall ranking. These institutions must therefore not be treated as covered by QS overall in the frozen 2019-2021 editions.
 
-The remaining smaller registered parents are retained as not covered only where historical evidence is consistent with non-membership. Provider data themselves are not redistributed in this repository.
+Provider ranking tables themselves are not redistributed in this repository.
 
 ## Verified THE coverage pattern
 
-THE is materially broader than QS in the relevant period.
+THE is materially broader than QS, but the coverage set is edition-specific rather than constant over 2018-2020.
 
-Historical sources verify that Universidade da Beira Interior and Universidade de Tras-os-Montes e Alto Douro were already present in the overall THE World University Rankings in 2018-2020. Universidade de Evora is verified in the 2018 and 2019 editions. A 2021 Portuguese higher-education data project using THE 2020/2021 data also records overall THE coverage for Universidade do Algarve, Universidade da Beira Interior, ISCTE, Universidade do Minho and the core Lisbon/Porto/Coimbra/Aveiro/NOVA universities, while explicitly noting that UTAD and Evora were present in the 2020 publication but absent from the 2021 publication.
+For THE 2018, the historical annual table verifies nine registered parents: Universidade do Porto, Universidade de Aveiro, Universidade de Coimbra, Universidade de Lisboa, Universidade NOVA de Lisboa, Universidade da Beira Interior, Universidade do Minho, Universidade do Algarve and ISCTE. Universidade de Tras-os-Montes e Alto Douro and Universidade de Evora are not present in that edition and are therefore not coded as covered for 2018 admissions.
 
-Universidade dos Acores is not observed in the overall THE ranking until much later (2024 in the recovered historical series), so it is not eligible as covered in the frozen 2018-2020 editions. Historical overall coverage for Universidade da Madeira was not verified during this audit and must remain unresolved rather than being silently coded as unranked.
+For THE 2019 and THE 2020, historical evidence verifies eleven registered parents, adding UTAD and Evora to the 2018 set. Universidade dos Acores is a later entrant and is not covered in the frozen editions. Universidade da Madeira remains unresolved in all three years rather than being silently coded as unranked.
 
-## ARWU status
+The resulting verified programme-row coverage is therefore 32/52 for 2018 and 42/52 for both 2019 and 2020, with five Madeira rows unresolved in each year.
 
-The eligible overall ARWU editions are 2017, 2018 and 2020. Historical provider pages do not expose sufficiently reproducible complete Portugal membership through the interfaces available to this audit, and the repository contract prohibits redistributing provider ranking tables.
+## Verified ARWU coverage pattern
 
-ARWU coverage therefore remains `unresolved` at this gate. This is a data-provenance limitation, not evidence of non-coverage. No ARWU model may be fitted until the provider/year parent membership has been verified from an admissible source.
+The eligible overall ARWU editions are 2017, 2018 and 2020. Historical University of Porto ARWU tables provide an admissible reconstruction of Portuguese membership under the repository contract.
+
+The verified parent counts are:
+
+- ARWU 2017 / 2018 admissions: five parents;
+- ARWU 2018 / 2019 admissions: four parents;
+- ARWU 2020 / 2020 admissions: six parents.
+
+Earlier tables separately identify candidate institutions outside the Top 500. Those candidate groups are not promoted to ranking bands. In particular, NOVA in ARWU 2017 and NOVA plus Coimbra in ARWU 2018 are not treated as ranked observations.
 
 ## Common-sample requirement
 
@@ -58,4 +66,4 @@ This requirement does not alter the registered models. It makes their comparison
 
 ## Scientific boundary
 
-This audit contains no ranking coefficients, no ranking values, and no model results. Its purpose is to determine whether each provider supplies enough historically valid institutional coverage to support the preregistered analysis without hiding sample selection.
+This audit contains no ranking coefficients and no ranking-model results. Its purpose is to determine whether each provider supplies enough historically valid institutional coverage to support the preregistered analysis without hiding sample selection.
