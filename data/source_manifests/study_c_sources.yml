@@ -9,10 +9,10 @@ sources:
     public_call_page: https://www.fct.pt/concursos/avaliacao-de-unidades-de-id-2023-2024/
     official_competition_page: https://www.fct.pt/concursos/programa-plurianual-de-financiamento-de-unidades-de-i-d-2023-2024-1-1
     final_results_published: '2025-07-21'
-    final_results_document_url: 'https://myfct.fct.pt/LibDocument/FileDisplay.aspx?EcrypDoctId=ocSoN5+Wv24gEnivBgQPZly5ZHH2zRKsd0JL9oc4KKgvnq8MbZ9hzyJXh8oXN3GzSkHAyTWJfUR16RKrRXKlc3u8nFM9cnq8vrJagDhNBlBrYu8bu+uM0SRxcJ71n0xmkMP8gtECVHEgglBZhSIEEjmsojbKS6nkwIaQCf+NIpU%3D'
-    final_results_access: exact_myFCT_document_endpoint_identified
+    final_results_document_url: 'https://myfct.fct.pt/LibDocument/FileDisplay.aspx?EcrypDoctId=ocSoN5+Wv24gEnivBgQPZly5ZHH2zRKsd0JL9oc4KKgvnq8MbZ9hzyJXh8oXN3GzSkHAyTWJfUR16RKrRXKlc3u8nFM9cnq8vrJagDhNBlD4BbXE20nYd5zYPlPreEye+sPnux4WzBsEETEG1ULsE20ithemq0cSUDEb6H1gGuw%3D'
+    final_results_access: live_myFCT_document_endpoint_identified_from_official_page
     retrieval_mode: manual_author_supplied_required
-    retrieval_note: exact official endpoint is known but myFCT cannot be resolved from the current execution environment
+    retrieval_note: live official endpoint is known but myFCT cannot be resolved from the current execution environment
     canonical_file_required_before_unit_results: true
     use_as_downstream_outcome: false
     role: current_exposure_stratifier
