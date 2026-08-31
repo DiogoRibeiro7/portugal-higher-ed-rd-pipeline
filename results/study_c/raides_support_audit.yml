@@ -1,0 +1,113 @@
+version: 1
+study: C
+audit_type: raides_institution_field_component_support
+status: raides_support_gate_passed_fct_institution_weights_pending
+support_rule:
+  minimum_comparable_annual_observations: 5
+  year_is_supported_only_when_actual_record_exists: true
+  absent_row_is_not_promoted_to_zero: true
+  fields:
+  - '05'
+  - '06'
+  - '07'
+summary:
+  institution_field_component_series: 494
+  eligible_series: 363
+  institution_field_pairs: 160
+  pairs_with_all_five_components_eligible: 31
+  institution_codes: 74
+  codes_in_both_raides_families: 69
+component_summary:
+- component: first_time_entrants
+  series_total: 156
+  series_meeting_five_year_minimum: 118
+  median_supported_years: 7.0
+  supported_year_distribution:
+    1: 8
+    2: 4
+    3: 13
+    4: 13
+    5: 5
+    6: 10
+    7: 103
+- component: graduates_first_cycle
+  series_total: 130
+  series_meeting_five_year_minimum: 92
+  median_supported_years: 7.0
+  supported_year_distribution:
+    1: 9
+    2: 3
+    3: 11
+    4: 15
+    5: 5
+    6: 6
+    7: 81
+- component: graduates_second_cycle
+  series_total: 106
+  series_meeting_five_year_minimum: 77
+  median_supported_years: 7.0
+  supported_year_distribution:
+    1: 6
+    2: 3
+    3: 9
+    4: 11
+    5: 6
+    6: 10
+    7: 61
+- component: doctoral_enrolments
+  series_total: 56
+  series_meeting_five_year_minimum: 39
+  median_supported_years: 7.0
+  supported_year_distribution:
+    1: 6
+    3: 6
+    4: 5
+    7: 39
+- component: doctoral_graduates
+  series_total: 46
+  series_meeting_five_year_minimum: 37
+  median_supported_years: 7.0
+  supported_year_distribution:
+    1: 5
+    2: 2
+    3: 1
+    4: 1
+    5: 1
+    6: 8
+    7: 28
+eligible_component_distribution:
+  0: 33
+  1: 25
+  2: 33
+  3: 35
+  4: 3
+  5: 31
+field_summary:
+- field: '05'
+  institution_field_pairs: 45
+  pairs_with_all_five_components_eligible: 14
+  median_eligible_components: 2
+- field: '06'
+  institution_field_pairs: 55
+  pairs_with_all_five_components_eligible: 5
+  median_eligible_components: 2
+- field: '07'
+  institution_field_pairs: 60
+  pairs_with_all_five_components_eligible: 12
+  median_eligible_components: 3.0
+institution_code_concordance:
+  inscritos_codes: 74
+  diplomados_codes: 69
+  shared_codes: 69
+  inscritos_only_codes:
+  - '4104'
+  - '4106'
+  - '4107'
+  - '4200'
+  - '4354'
+  diplomados_only_codes: []
+  names_are_labels_not_join_keys: true
+unit_exposure_allowed: false
+remaining_primary_blockers:
+- formal_fct_unit_institution_participation_not_resolved
+- unit_institution_field_weights_not_built
