@@ -1,0 +1,21 @@
+panel_key,panel_label,isced_f_scope,primary_study_c_scope,notes
+ENG-1,Engineering Sciences and Technologies - Civil Engineering,07,true,Engineering/manufacturing/construction
+ENG-2,Engineering Sciences and Technologies - Electrical and Computer Engineering,07,true,Engineering/manufacturing/construction including computing-adjacent engineering
+ENG-3,Engineering Sciences and Technologies - Mechanical Engineering,07,true,Engineering/manufacturing/construction
+ENG-4,Engineering Sciences and Technologies - Chemical Engineering,07,true,Engineering/manufacturing/construction
+ENG-5,Engineering Sciences and Technologies - Materials Engineering,07,true,Engineering/manufacturing/construction
+ENG-6,Engineering Sciences and Technologies - Medical Engineering,07,true,Engineering/manufacturing/construction
+ENG-7,Engineering Sciences and Technologies - Environmental Engineering,07,true,Engineering/manufacturing/construction
+ENG-8,Engineering Sciences and Technologies - Environmental Biotechnology,07,true,Engineering/manufacturing/construction
+ENG-9,Engineering Sciences and Technologies - Industrial Biotechnology,07,true,Engineering/manufacturing/construction
+ENG-10,Engineering Sciences and Technologies - Nano-technology,07,true,Engineering/manufacturing/construction
+NAT-1,Natural Sciences - Mathematics,05,true,Natural sciences mathematics and statistics
+NAT-2,Natural Sciences - Computer and Information Sciences,06,true,Information and communication technologies
+NAT-3,Natural Sciences - Physical Sciences,05,true,Natural sciences mathematics and statistics
+NAT-4,Natural Sciences - Chemical Sciences,05,true,Natural sciences mathematics and statistics
+NAT-5,Natural Sciences - Earth and related Environmental Sciences,05,true,Natural sciences mathematics and statistics
+NAT-6,Natural Sciences - Biological Sciences,05,true,Natural sciences mathematics and statistics
+MED,Medical and Health Sciences,,false,Outside primary feeder scope
+AGR,Agricultural and Veterinary Sciences,,false,Outside primary feeder scope
+SOC,Social Sciences,,false,Outside primary feeder scope
+HUM,Humanities and the Arts,,false,Outside primary feeder scope
