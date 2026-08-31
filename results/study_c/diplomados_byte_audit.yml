@@ -1,0 +1,120 @@
+version: 1
+study: C
+audit_type: raides_diplomados_byte_and_schema
+status: diplomados_validated_full_window
+source_archive:
+  uploaded_name: DGEEC_DSEE_DEES_2019_diplom_site_2017_20.zip
+  sha256: f9398991a988e818cf2c09c49663b15bd8c80b9066c3e2b28840be1b961ce9b2
+  contains_frozen_window: true
+  extra_pre_window_years:
+  - 2017/18
+frozen_window:
+  academic_years:
+  - 2018/19
+  - 2019/20
+  - 2020/21
+  - 2021/22
+  - 2022/23
+  - 2023/24
+  - 2024/25
+validated_diplomados_files:
+- academic_year: 2018/19
+  file: DGEEC_DSEE_DEES_2020_diplom_site_2018_20.xlsx
+  sha256: 2fb181080ccb8acd845ca6d6c28d6313938dfc0cf86b783654c975adf4672d53
+  sheet: agregados_2018_2019
+  rows: 4169
+  columns: 29
+  count_column: Total
+- academic_year: 2019/20
+  file: DGEEC_DSEE_DEES_2021_diplom_site_2019_20.xlsx
+  sha256: 62e60f88ab5ec6c221f6d65f6cb81303e876860225ef444e28dcb635ebc90bb3
+  sheet: agregados_2019_2020
+  rows: 4149
+  columns: 29
+  count_column: Total
+- academic_year: 2020/21
+  file: DGEEC_DSEE_DEES_2022_diplom_site_2020_21.xlsx
+  sha256: 9e269f27d56d3e8ee9f5e5271b2562bdd177a1f6dce1ba8c2a6248cb885a0255
+  sheet: agregados_2020_2021
+  rows: 4307
+  columns: 29
+  count_column: Total
+- academic_year: 2021/22
+  file: DGEEC_DSEE_DEES_2023_diplom_site_2021_222.xlsx
+  sha256: f406f10bde4557428401f96ffed5455d7436a8b606bb713e1369d7b87829400c
+  sheet: Diplomados2021_2022
+  rows: 24256
+  columns: 28
+  count_column: N
+- academic_year: 2022/23
+  file: DGEEC_DSEE_DEES_2024_diplom_site_2022_23.xlsx
+  sha256: a1029f1453e2f4cf6de4ce2bdc8e2572f5881fe60e597e8d459fd7dae991d095
+  sheet: Diplomados2022_2023
+  rows: 26144
+  columns: 28
+  count_column: N
+- academic_year: 2023/24
+  file: DGEEC_DSEE_DEES_2025_diplom_site_2023_24.xlsx
+  sha256: 47c855d61d7cbb21a46d737f05fe099ef44089a823543d50d605eae4d74f6507
+  sheet: Diplomados2023_2024
+  rows: 27412
+  columns: 28
+  count_column: N
+- academic_year: 2024/25
+  file: DGEEC_DSEE_DEES_2026_diplom_site_2024_25.xlsx
+  sha256: 88c5ae36776cab3c9663d6a040cd2c6a7a5804381c66aade14b315b9203c8ee0
+  sheet: Diplomados2024_2025
+  rows: 29462
+  columns: 28
+  count_column: N
+schema:
+  core_dimensions_present_all_years:
+  - Código Estabelecimento
+  - Código Curso
+  - Curso/Ciclo de Estudos
+  - Área de Educação e Formação - Código Área Geral
+  - Área de Educação e Formação - Código Área Específica
+  - Área de Educação e Formação - Código Área Detalhada
+  header_normalisation:
+    2018_19_to_2020_21: Código Estabelecimento has a trailing space and is normalised before joins
+    2021_22_to_2024_25: Código Estabelecimento without trailing space
+  count_regime:
+    2018_19_to_2020_21:
+      table_type: course-level aggregates
+      count_column: Total
+    2021_22_to_2024_25:
+      table_type: granular demographic rows
+      count_column: N
+      aggregation_required: sum N after filtering to institution x field x registered cycle component
+  field_code_normalisation: normalise general field codes to zero-padded two-digit strings before restricting to 05, 06, 07
+  cycle_labels_observed:
+  - Curso técnico superior profissional
+  - Doutoramento
+  - Doutoramento 3.º ciclo
+  - Licenciatura 1.º ciclo
+  - Licenciatura de mestrado integrado
+  - Mestrado 2.º ciclo
+  - Mestrado integrado
+  - Mestrado integrado terminal
+  registered_cycle_mapping:
+    graduates_first_cycle:
+    - Licenciatura 1.º ciclo
+    graduates_second_cycle:
+    - Mestrado 2.º ciclo
+    - Mestrado integrado
+    - Mestrado integrado terminal
+    doctoral_graduates:
+    - Doutoramento 3.º ciclo
+    - Doutoramento
+    excluded_from_primary_components:
+    - Curso técnico superior profissional
+    - Licenciatura de mestrado integrado
+    rationale:
+      integrated_master_final_awards: Mestrado integrado and Mestrado integrado terminal are treated as second-cycle-equivalent final awards
+      integrated_master_licenciatura: Licenciatura de mestrado integrado is excluded to avoid counting an intermediate integrated-master first-cycle award as an independent feeder stage
+      legacy_doctorate: Doutoramento is included with third-cycle doctorate because it is a doctoral award and occurs only in the early frozen years
+  institution_course_field_cycle_semantics_comparable_full_window: true
+remaining_raides_gate:
+- compute_institution_field_component_support_matrix
+- reconcile_semantic_concordance_with_inscritos
+unit_exposure_allowed: false
