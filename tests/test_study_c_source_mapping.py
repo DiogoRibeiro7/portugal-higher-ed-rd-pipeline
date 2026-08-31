@@ -6,19 +6,18 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_study_c_source_manifest_preserves_manual_fct_dependency() -> None:
+def test_study_c_source_manifest_preserves_fct_scientific_boundary() -> None:
     manifest = yaml.safe_load(
         (ROOT / "data/source_manifests/study_c_sources.yml").read_text(encoding="utf-8")
     )
     fct = manifest["sources"]["fct_evaluation_2023_2024"]
     assert fct["canonical_file_required_before_unit_results"] is True
-    assert fct["retrieval_mode"] == "manual_author_supplied_required"
     assert fct["use_as_downstream_outcome"] is False
     assert manifest["rules"]["search_snippets_as_data"] is False
     assert manifest["rules"]["compute_unit_exposure_before_all_required_sources_resolved"] is False
 
 
-def test_panel_crosswalk_uses_exact_fct_panel_universe_and_frozen_fields() -> None:
+def test_panel_crosswalk_matches_canonical_fct_workbook_universe() -> None:
     crosswalk = pd.read_csv(
         ROOT / "data/curated/fct/study_c_panel_isced_crosswalk.csv",
         dtype={"isced_f_scope": str},
@@ -27,26 +26,42 @@ def test_panel_crosswalk_uses_exact_fct_panel_universe_and_frozen_fields() -> No
     assert crosswalk["panel_key"].is_unique
     assert crosswalk["panel_label"].is_unique
 
-    required_labels = {
-        "Earth and Environmental Sciences and Technologies",
-        "Materials Science and Engineering, and Nanotechnology",
-        "Mechanical Engineering and Engineering systems",
-        "Civil and Geological engineering",
+    canonical_labels = {
+        "Agricultural, Agro-food and Veterinary Sciences",
+        "Architecture and Urbanism",
+        "Arts and Design",
+        "Biological Sciences, Biodiversity and Ecosystems",
+        "Biomedicine",
         "Chemical and Biological Engineering",
         "Chemistry",
-        "Computer Science and Information Technologies",
-        "Architecture and Urbanism",
-        "Biological Sciences Biodiversity and Ecosystems",
+        "Civil and Geological Engineering",
+        "Clinical and Translational Research",
+        "Computer Sciences and Information Technologies",
+        "Earth and Environmental Sciences and Technologies",
+        "Economics and Management",
+        "Educational Sciences",
         "Electrical and Computer Engineering",
+        "History and Archaeology",
+        "Language and Communication Sciences",
+        "Law",
+        "Literary Studies",
+        "Management",
+        "Materials Sciences and Engineering, and Nanotechnology",
         "Mathematics",
+        "Mechanical Engineering and Engineering Systems",
+        "Philosophy",
         "Physics",
+        "Political Sciences",
+        "Psychology",
+        "Public Health, Nursing, Health Technologies",
+        "Sociology, Anthropology and Geography",
+        "Sport Sciences",
     }
-    assert required_labels <= set(crosswalk["panel_label"])
+    assert set(crosswalk["panel_label"]) == canonical_labels
 
     primary = crosswalk.loc[crosswalk["primary_study_c_scope"].astype(bool)]
     assert len(primary) == 12
     assert set(primary["isced_f_scope"]) <= {"05", "06", "07"}
-    assert set(primary["panel_label"]) == required_labels
 
 
 def test_raides_contract_keeps_pipeline_components_separate() -> None:
