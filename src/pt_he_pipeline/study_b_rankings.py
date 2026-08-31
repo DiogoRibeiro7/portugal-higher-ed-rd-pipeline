@@ -58,6 +58,15 @@ class LopoComparisonResult:
         return self.ranking_mae - self.baseline_mae
 
 
+@dataclass(frozen=True)
+class DesignSchema:
+    """Training-owned categorical levels and references for one LOPO fold."""
+
+    programme_levels: tuple[str, ...]
+    year_levels: tuple[str, ...]
+    ranking_band_levels: tuple[str, ...] = ()
+
+
 def validate_ranking_rows(
     rankings: pd.DataFrame,
     *,
@@ -100,7 +109,10 @@ def validate_ranking_rows(
 
     numeric_rank = pd.to_numeric(frame["rank"], errors="coerce")
     has_rank = numeric_rank.notna()
-    has_band = frame["rank_band"].notna() & frame["rank_band"].astype(str).str.strip().ne("")
+    has_band = (
+        frame["rank_band"].notna()
+        & frame["rank_band"].astype(str).str.strip().ne("")
+    )
     if (has_rank & has_band).any():
         raise ValueError("ranking row must use exact rank or rank band, not both")
     if (numeric_rank.loc[has_rank] <= 0).any():
@@ -124,7 +136,9 @@ def build_ranking_coverage(
     ]
     rows: list[dict[str, object]] = []
     for year, subset in panel.groupby("year", sort=True):
-        eligible_parents = subset["parent_institution_id"].dropna().astype(str).nunique()
+        eligible_parents = (
+            subset["parent_institution_id"].dropna().astype(str).nunique()
+        )
         keys = set(
             zip(
                 ranked.loc[
@@ -147,7 +161,9 @@ def build_ranking_coverage(
                     .astype(str)
                     .nunique()
                 ),
-                "eligible_rows": int(subset["parent_institution_id"].notna().sum()),
+                "eligible_rows": int(
+                    subset["parent_institution_id"].notna().sum()
+                ),
                 "ranked_rows": int(ranked_mask.sum()),
             }
         )
@@ -168,7 +184,11 @@ def _ranking_support_mask(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
     train_exact = pd.to_numeric(train["rank"], errors="coerce").dropna()
     exact_supported = train_exact.nunique() >= 2
     train_bands = set(
-        train["rank_band"].fillna("").astype(str).str.strip().loc[lambda s: s.ne("")]
+        train["rank_band"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .loc[lambda s: s.ne("")]
     )
 
     test_exact = pd.to_numeric(test["rank"], errors="coerce")
@@ -181,6 +201,52 @@ def _ranking_support_mask(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
         supported.loc[exact_rows] = True
     supported.loc[band_rows] = test_band.loc[band_rows].isin(train_bands)
     return supported
+
+
+def _design_schema(
+    frame: pd.DataFrame,
+    *,
+    include_ranking: bool,
+) -> DesignSchema:
+    """Freeze categorical levels from one training fold."""
+
+    programme_levels = tuple(sorted(frame["programme_code"].astype(str).unique()))
+    year_levels = tuple(sorted(frame["year"].astype(str).unique()))
+    ranking_band_levels: tuple[str, ...] = ()
+    if include_ranking:
+        rank_band = frame["rank_band"].fillna("").astype(str).str.strip()
+        encoded_band = rank_band.where(rank_band.ne(""), "__exact_rank__")
+        ranking_band_levels = tuple(sorted(encoded_band.unique()))
+    return DesignSchema(
+        programme_levels=programme_levels,
+        year_levels=year_levels,
+        ranking_band_levels=ranking_band_levels,
+    )
+
+
+def _categorical_dummies(
+    values: pd.Series,
+    *,
+    levels: tuple[str, ...],
+    prefix: str,
+) -> pd.DataFrame:
+    """Encode values against training-owned levels and a fixed first reference."""
+
+    text = values.astype(str)
+    unknown = sorted(set(text.unique()) - set(levels))
+    if unknown:
+        raise ValueError(
+            f"held-out {prefix} levels are absent from training: {unknown}"
+        )
+    categorical = pd.Categorical(text, categories=list(levels), ordered=True)
+    dummies = pd.get_dummies(
+        categorical,
+        prefix=prefix,
+        drop_first=True,
+        dtype=float,
+    )
+    dummies.index = values.index
+    return dummies
 
 
 def leave_one_parent_out_comparison(
@@ -236,41 +302,53 @@ def leave_one_parent_out_comparison(
             continue
         supported_parent_ids.add(parent)
 
+        baseline_schema = _design_schema(train, include_ranking=False)
         baseline_train_design = _design(
             train,
             include_demand=include_demand,
             include_ranking=False,
+            schema=baseline_schema,
         )
         baseline_test_design = _design(
             supported_test,
             include_demand=include_demand,
             include_ranking=False,
+            schema=baseline_schema,
             columns=list(baseline_train_design.columns),
         )
+        ranking_schema = _design_schema(train, include_ranking=True)
         ranking_train_design = _design(
             train,
             include_demand=include_demand,
             include_ranking=True,
+            schema=ranking_schema,
         )
         ranking_test_design = _design(
             supported_test,
             include_demand=include_demand,
             include_ranking=True,
+            schema=ranking_schema,
             columns=list(ranking_train_design.columns),
         )
 
         baseline_model = sm.OLS(
             train[outcome].astype(float), baseline_train_design
         ).fit()
-        ranking_model = sm.OLS(train[outcome].astype(float), ranking_train_design).fit()
+        ranking_model = sm.OLS(
+            train[outcome].astype(float), ranking_train_design
+        ).fit()
         baseline_predictions.extend(
             baseline_model.predict(baseline_test_design).tolist()
         )
-        ranking_predictions.extend(ranking_model.predict(ranking_test_design).tolist())
+        ranking_predictions.extend(
+            ranking_model.predict(ranking_test_design).tolist()
+        )
         observed.extend(supported_test[outcome].astype(float).tolist())
 
     if not observed:
-        raise ValueError("leave-one-parent-out comparison produced no supported test observations")
+        raise ValueError(
+            "leave-one-parent-out comparison produced no supported test observations"
+        )
 
     observed_array = np.asarray(observed)
     baseline_residual = observed_array - np.asarray(baseline_predictions)
@@ -327,22 +405,28 @@ def leave_one_parent_out_rmse(
             test = test.loc[_ranking_support_mask(train, test)].copy()
             if test.empty:
                 continue
+
+        schema = _design_schema(train, include_ranking=include_ranking)
         train_design = _design(
             train,
             include_demand=include_demand,
             include_ranking=include_ranking,
+            schema=schema,
         )
         test_design = _design(
             test,
             include_demand=include_demand,
             include_ranking=include_ranking,
+            schema=schema,
             columns=list(train_design.columns),
         )
         model = sm.OLS(train[outcome].astype(float), train_design).fit()
         predictions.extend(model.predict(test_design).tolist())
         observed.extend(test[outcome].astype(float).tolist())
     if not observed:
-        raise ValueError("leave-one-parent-out validation produced no supported test observations")
+        raise ValueError(
+            "leave-one-parent-out validation produced no supported test observations"
+        )
     residual = np.asarray(observed) - np.asarray(predictions)
     return float(np.sqrt(np.mean(residual**2)))
 
@@ -352,18 +436,25 @@ def _design(
     *,
     include_demand: bool,
     include_ranking: bool,
+    schema: DesignSchema | None = None,
     columns: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Build one registered model matrix without numerically encoding rank bands."""
+    """Build a model matrix using fixed training-owned categorical references."""
 
+    schema = schema or _design_schema(frame, include_ranking=include_ranking)
     data = pd.DataFrame(index=frame.index)
-    categorical = pd.get_dummies(
-        frame[["programme_code", "year"]].astype(str),
-        prefix=["programme", "year"],
-        drop_first=True,
-        dtype=float,
+
+    programme = _categorical_dummies(
+        frame["programme_code"],
+        levels=schema.programme_levels,
+        prefix="programme",
     )
-    data = pd.concat([data, categorical], axis=1)
+    year = _categorical_dummies(
+        frame["year"].astype(str),
+        levels=schema.year_levels,
+        prefix="year",
+    )
+    data = pd.concat([data, programme, year], axis=1)
 
     if include_demand:
         data["log_applicants_per_vacancy"] = np.log(
@@ -376,11 +467,11 @@ def _design(
         data["ranking_exact"] = exact_rank.fillna(0.0).astype(float)
 
         rank_band = frame["rank_band"].fillna("").astype(str).str.strip()
-        band_dummies = pd.get_dummies(
-            rank_band.where(rank_band.ne(""), "__exact_rank__"),
+        encoded_band = rank_band.where(rank_band.ne(""), "__exact_rank__")
+        band_dummies = _categorical_dummies(
+            encoded_band,
+            levels=schema.ranking_band_levels,
             prefix="ranking_band",
-            drop_first=True,
-            dtype=float,
         )
         data = pd.concat([data, band_dummies], axis=1)
 

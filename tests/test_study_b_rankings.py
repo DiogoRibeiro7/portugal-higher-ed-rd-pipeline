@@ -6,6 +6,7 @@ import pytest
 
 from pt_he_pipeline.study_b_rankings import (
     _design,
+    _design_schema,
     _ranking_support_mask,
     build_ranking_coverage,
     leave_one_parent_out_comparison,
@@ -132,6 +133,58 @@ def test_rank_bands_are_categorical_not_numeric_midpoints() -> None:
     assert (design.loc[band_rows, "ranking_exact_observed"] == 0.0).all()
 
 
+def test_test_design_uses_training_reference_levels() -> None:
+    train = pd.DataFrame(
+        {
+            "programme_code": ["9081", "9119", "9081", "9119"],
+            "year": [2018, 2018, 2019, 2020],
+            "applicants_per_vacancy": [2.0, 3.0, 4.0, 5.0],
+            "rank": [None, None, None, None],
+            "rank_band": ["401-500", "501-600", "401-500", "501-600"],
+        }
+    )
+    test = pd.DataFrame(
+        {
+            "programme_code": ["9119"],
+            "year": [2019],
+            "applicants_per_vacancy": [6.0],
+            "rank": [None],
+            "rank_band": ["501-600"],
+        },
+        index=[99],
+    )
+    schema = _design_schema(train, include_ranking=True)
+    train_design = _design(
+        train,
+        include_demand=False,
+        include_ranking=True,
+        schema=schema,
+    )
+    test_design = _design(
+        test,
+        include_demand=False,
+        include_ranking=True,
+        schema=schema,
+        columns=list(train_design.columns),
+    )
+    assert test_design.loc[99, "programme_9119"] == 1.0
+    assert test_design.loc[99, "year_2019"] == 1.0
+    assert test_design.loc[99, "ranking_band_501-600"] == 1.0
+
+
+def test_unseen_structural_level_fails_closed() -> None:
+    train = _band_panel().loc[lambda x: x["programme_code"] == "9081"]
+    test = _band_panel().loc[lambda x: x["programme_code"] == "9119"].iloc[:1]
+    schema = _design_schema(train, include_ranking=True)
+    with pytest.raises(ValueError, match="held-out programme levels"):
+        _design(
+            test,
+            include_demand=False,
+            include_ranking=True,
+            schema=schema,
+        )
+
+
 def test_unseen_held_out_band_is_not_supported() -> None:
     panel = _band_panel()
     train = panel.loc[panel["parent_institution_id"].isin(["u1", "u2"])]
@@ -159,7 +212,7 @@ def test_paired_lopo_comparison_uses_only_identical_supported_rows() -> None:
 
 
 def test_leave_one_parent_out_runs_for_registered_model_sequence() -> None:
-    panel = _panel()
+    panel = _band_panel()
     baseline = leave_one_parent_out_rmse(
         panel,
         outcome="last_placed_general_contingent_grade",
