@@ -93,6 +93,23 @@ def _load_unit_fields(expected_path: Path, panel_crosswalk_path: Path) -> pd.Dat
     return unit_fields[["unit_reference", "panel_label", "isced_f_scope"]]
 
 
+def _validate_mapping_statuses(concordance: pd.DataFrame, contract: dict) -> None:
+    allowed = set(contract["allowed_mapping_statuses"])
+    invalid = sorted(set(concordance["mapping_status"]) - allowed)
+    if invalid:
+        raise ValueError(f"Unsupported participant mapping_status values: {invalid}")
+
+    mapped = concordance["mapping_status"] == "mapped_to_dgeec_establishment"
+    non_he = concordance["mapping_status"] == "not_higher_education_establishment"
+
+    if (concordance.loc[mapped, "dgeec_institution_code"] == "").any():
+        raise ValueError("Mapped higher-education participants require a DGEEC code")
+    if (concordance.loc[mapped, "dgeec_institution_name"] == "").any():
+        raise ValueError("Mapped higher-education participants require a DGEEC name")
+    if (concordance.loc[non_he, "dgeec_institution_code"] != "").any():
+        raise ValueError("Non-higher-education participants must not carry a DGEEC code")
+
+
 def build_weights(
     contract_path: Path,
     participation_path: Path,
@@ -123,7 +140,9 @@ def build_weights(
     if participation.duplicated(["unit_reference", "participant_institution_id"]).any():
         raise ValueError("Participation input contains duplicate unit-participant rows")
     if concordance["participant_institution_id"].duplicated().any():
-        raise ValueError("Concordance must map each participant_institution_id exactly once")
+        raise ValueError("Concordance must classify each participant_institution_id exactly once")
+
+    _validate_mapping_statuses(concordance, contract)
 
     concordance = concordance.rename(
         columns={
@@ -137,14 +156,14 @@ def build_weights(
         how="left",
         validate="many_to_one",
     )
-    if (joined["dgeec_institution_code"].fillna("") == "").any():
+    if joined["mapping_status"].fillna("").eq("").any():
         missing_ids = sorted(
             joined.loc[
-                joined["dgeec_institution_code"].fillna("") == "",
+                joined["mapping_status"].fillna("").eq(""),
                 "participant_institution_id",
             ].unique()
         )
-        raise ValueError(f"Missing participant→DGEEC concordance: {missing_ids[:10]}")
+        raise ValueError(f"Missing participant concordance classification: {missing_ids[:10]}")
 
     joined = joined.merge(
         unit_fields,
@@ -181,6 +200,7 @@ def build_weights(
                     "concordance_participant_institution_name": row[
                         "participant_institution_name_concordance"
                     ],
+                    "mapping_status": row["mapping_status"],
                     "dgeec_institution_code": row["dgeec_institution_code"],
                     "isced_f_scope": row["isced_f_scope"],
                     "weight": weight,
