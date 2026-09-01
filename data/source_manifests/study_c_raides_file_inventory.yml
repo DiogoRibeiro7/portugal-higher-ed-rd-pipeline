@@ -1,7 +1,7 @@
 version: 2
 study: C
 source_family: RAIDES
-status: full_byte_validation_pending_support_audit
+status: byte_and_support_validation_complete_fct_linkage_pending
 canonical_data_page: https://www.dgeec.medu.pt/art/ensino-superior/bases-de-dados/todas/652ff89abd5c2b00958292d7
 
 frozen_window:
@@ -69,6 +69,5 @@ rules:
   unit_exposure_allowed_from_raides_before_support_audit: false
 
 next_gate:
-  - build_institution_course_field_cycle_concordance
-  - compute_institution_field_component_support_counts
-  - validate_fct_unit_to_institution_weights
+  - resolve_formal_fct_unit_participation_from_authorised_2023_2024_application_snapshot
+  - build_unit_institution_field_weights
