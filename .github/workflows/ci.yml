@@ -42,8 +42,29 @@ jobs:
 
           printf 'Linting changed Python files:\n%s\n' "${python_files[*]}"
           poetry run ruff check "${python_files[@]}"
-      - name: Mypy
-        run: poetry run mypy src
+      - name: Mypy changed source files
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            base="${{ github.event.before }}"
+            if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+              base="${{ github.sha }}^"
+            fi
+          fi
+
+          mapfile -t source_files < <(
+            git diff --name-only --diff-filter=ACMR "$base" "${{ github.sha }}" -- 'src/**/*.py'
+          )
+
+          if (( ${#source_files[@]} == 0 )); then
+            echo "No changed source Python files to type-check."
+            exit 0
+          fi
+
+          printf 'Type-checking changed source files:\n%s\n' "${source_files[*]}"
+          poetry run mypy "${source_files[@]}"
       - name: Tests
         run: poetry run pytest --cov=pt_he_pipeline --cov-report=term-missing
       - name: Rebuild Study A recent baseline
