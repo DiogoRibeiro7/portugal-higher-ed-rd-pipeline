@@ -45,12 +45,18 @@ def _base_participation() -> pd.DataFrame:
 def test_handoff_contract_preserves_fail_closed_source_boundary() -> None:
     contract = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
     source = contract["source_boundary"]
+    accepted = set(source["authorised_participation_source"]["accepted_source_systems"])
+    route = contract["acquisition_route"]
     assert (
         source["public_fct"]["public_results_resolve_complete_formal_participant_universe"]
         is False
     )
     assert source["public_fct"]["may_close_formal_participation_gate"] is False
     assert source["authorised_participation_source"]["application_snapshot_required"] is True
+    assert route["preferred_source_system"] == "pct_evaluation_application_export"
+    assert route["preferred_source_system"] in accepted
+    assert set(route["fallback_source_systems"]) <= accepted
+    assert route["ptcris_route_requires_authorised_submitted_application_snapshot"] is True
     assert contract["handoff"]["expected_units_required_columns"] == [
         "unit_reference",
         "panel_label",
@@ -121,8 +127,22 @@ def test_complete_formal_participation_handoff_validates_without_building_weight
     assert result["participation_rows"] == 121
     assert result["formal_participation_resolved"] is True
     assert result["unit_weights_ready"] is False
+    assert result["source_systems"] == ["pct_evaluation_application_export"]
     assert result["weight_basis_units"] == {"count_derived": 1, "equal_share": 119}
     assert result["next_gate"] == "build_canonical_unit_institution_field_weights"
+
+
+def test_unsupported_source_system_is_rejected(tmp_path: Path) -> None:
+    expected = tmp_path / "expected.csv"
+    participation = tmp_path / "participation.csv"
+    _write_expected_units(expected)
+
+    frame = _base_participation()
+    frame["source_system"] = "current_unit_website"
+    frame.to_csv(participation, index=False)
+
+    with pytest.raises(ValueError, match="unsupported source_system"):
+        validate(CONTRACT, participation, expected)
 
 
 def test_partial_counts_within_unit_are_rejected(tmp_path: Path) -> None:
