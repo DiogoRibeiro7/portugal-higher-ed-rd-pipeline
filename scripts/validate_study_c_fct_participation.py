@@ -88,6 +88,17 @@ def validate(contract_path: Path, participation_path: Path, expected_path: Path)
     if frame.empty:
         raise ValueError("Participation handoff is empty")
 
+    accepted_source_systems = set(
+        contract["source_boundary"]["authorised_participation_source"]["accepted_source_systems"]
+    )
+    observed_source_systems = set(frame["source_system"])
+    invalid_source_systems = sorted(observed_source_systems - accepted_source_systems)
+    if invalid_source_systems:
+        raise ValueError(
+            "Participation export uses unsupported source_system values: "
+            f"{invalid_source_systems}"
+        )
+
     invalid_refs = sorted(
         ref for ref in frame["unit_reference"].unique() if UNIT_REFERENCE_RE.fullmatch(ref) is None
     )
@@ -137,6 +148,7 @@ def validate(contract_path: Path, participation_path: Path, expected_path: Path)
         "participation_rows": len(frame),
         "formal_participation_resolved": True,
         "unit_weights_ready": False,
+        "source_systems": sorted(observed_source_systems),
         "weight_basis_units": {
             "count_derived": sum(mode == "count_derived" for mode in count_modes.values()),
             "equal_share": sum(mode == "equal_share" for mode in count_modes.values()),
