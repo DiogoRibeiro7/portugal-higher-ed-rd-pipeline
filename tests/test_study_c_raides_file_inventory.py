@@ -29,10 +29,11 @@ def test_raides_inventory_freezes_all_seven_years_and_fourteen_annual_files() ->
 
 def test_publication_inventory_records_completed_file_byte_validation() -> None:
     inv = _inventory()
-    assert inv["annual_publication_families"]["inscritos"]["publication_entries_verified"] == 7
-    assert inv["annual_publication_families"]["diplomados"]["publication_entries_verified"] == 7
-    assert inv["annual_publication_families"]["inscritos"]["actual_spreadsheet_payloads_retrieved"] is True
-    assert inv["annual_publication_families"]["diplomados"]["actual_spreadsheet_payloads_retrieved"] is True
+    families = inv["annual_publication_families"]
+    assert families["inscritos"]["publication_entries_verified"] == 7
+    assert families["diplomados"]["publication_entries_verified"] == 7
+    assert families["inscritos"]["actual_spreadsheet_payloads_retrieved"] is True
+    assert families["diplomados"]["actual_spreadsheet_payloads_retrieved"] is True
     assert inv["byte_level_validation"]["total_retrieved_annual_files"] == 14
     assert inv["byte_level_validation"]["full_two_family_window_schema_compared"] is True
 
