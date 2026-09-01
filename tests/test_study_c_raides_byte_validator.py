@@ -44,20 +44,21 @@ def test_real_inventory_resolves_exact_two_families_across_seven_years() -> None
     }
 
 
-def test_canonical_staging_names_are_deterministic_and_local() -> None:
+def test_canonical_staging_stems_are_deterministic_and_local() -> None:
     slots = annual_slots(_inventory())
-    names = {x["local_filename"] for x in slots}
-    assert "inscritos_2018_19.xlsx" in names
-    assert "diplomados_2024_25.xlsx" in names
-    assert len(names) == 14
+    stems = {x["local_stem"] for x in slots}
+    assert "inscritos_2018_19" in stems
+    assert "diplomados_2024_25" in stems
+    assert len(stems) == 14
 
 
-def test_schema_validation_cannot_be_declared_from_publication_discovery() -> None:
+def test_inventory_records_completed_byte_and_schema_validation() -> None:
     inventory = _inventory()
     byte_validation = inventory["byte_level_validation"]
-    assert byte_validation["total_retrieved_annual_files"] == 0
-    assert byte_validation["endpoint_schema_compared"] is False
-    assert byte_validation["full_window_schema_compared"] is False
+    assert byte_validation["total_retrieved_annual_files"] == 14
+    assert byte_validation["inscritos_endpoint_schema_compared"] is True
+    assert byte_validation["full_two_family_window_schema_compared"] is True
+    assert byte_validation["five_year_institution_field_component_support_computable"] is True
     assert inventory["rules"]["publication_listing_is_not_byte_validation"] is True
 
 
@@ -67,6 +68,6 @@ def test_inventory_and_validator_contract_are_end_to_end_compatible(tmp_path: Pa
     assert len(slots) == inventory["byte_level_validation"]["total_expected_annual_files"]
     result = validate(INVENTORY, tmp_path)
     assert result["expected_files"] == len(slots)
-    assert {m["canonical_staging_filename"] for m in result["missing"]} == {
-        s["local_filename"] for s in slots
+    assert {m["canonical_staging_stem"] for m in result["missing"]} == {
+        s["local_stem"] for s in slots
     }

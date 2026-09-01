@@ -14,8 +14,15 @@ Authorised source data remain untracked under `data/private/fct/`.
 
 Prepare:
 
-- `study_c_primary_units.csv` with exactly the 120 primary-scope canonical FCT references;
+- `study_c_primary_units.csv` with exactly the 120 primary-scope canonical FCT references and their canonical FCT evaluation-panel labels;
 - `study_c_unit_participation.csv` with one row per formal participating legal entity per unit.
+
+The primary-unit registry requires:
+
+- `unit_reference`;
+- `panel_label`.
+
+`panel_label` must be the canonical label from the validated FCT final-results workbook. The private staging file does **not** carry an ISCED-F assignment. The later weight gate derives `isced_f_scope` by joining this canonical panel label to the committed `study_c_panel_isced_crosswalk.csv`.
 
 The participation file requires these columns:
 

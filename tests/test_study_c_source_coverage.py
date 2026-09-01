@@ -77,6 +77,15 @@ def test_fct_registry_and_ratings_are_available_but_weights_are_not() -> None:
     assert fct["unit_weights_auditable"] is False
 
 
+def test_unit_weight_gate_is_executable_but_not_run_without_private_handoff() -> None:
+    gate = _audit()["fct"]["unit_weight_gate"]
+    assert gate["deterministic_weight_builder_available"] is True
+    assert gate["participant_dgeec_concordance_required"] is True
+    assert gate["output_built"] is False
+    assert gate["sum_to_one_validation_required"] is True
+    assert gate["missing_raides_support_may_trigger_weight_renormalisation"] is False
+
+
 def test_ipctn_is_context_only_and_does_not_block_primary_feeder_exposure() -> None:
     audit = _audit()
     ipctn = audit["ipctn"]
@@ -96,3 +105,9 @@ def test_no_top_down_allocation_is_allowed() -> None:
     assert rules["search_snippets_may_not_define_registry_or_coverage"] is True
     assert rules["unavailable_dimensions_remain_unavailable"] is True
     assert rules["exposure_calculation_before_primary_blockers_resolved"] is False
+    assert (
+        rules[
+            "formal_participant_weights_may_not_be_renormalised_around_missing_raides_support"
+        ]
+        is True
+    )
