@@ -108,6 +108,8 @@ def _validate_mapping_statuses(concordance: pd.DataFrame, contract: dict) -> Non
         raise ValueError("Mapped higher-education participants require a DGEEC name")
     if (concordance.loc[non_he, "dgeec_institution_code"] != "").any():
         raise ValueError("Non-higher-education participants must not carry a DGEEC code")
+    if (concordance.loc[non_he, "dgeec_institution_name"] != "").any():
+        raise ValueError("Non-higher-education participants must not carry a DGEEC name")
 
 
 def build_weights(
