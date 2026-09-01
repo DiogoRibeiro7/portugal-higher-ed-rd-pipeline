@@ -1,4 +1,4 @@
-version: 5
+version: 6
 study: C
 audit_type: source_availability_and_granularity
 unit_exposure_allowed: false
@@ -28,10 +28,21 @@ fct:
     current_membership_may_replace_application_snapshot: false
     management_institution_may_replace_participant_universe: false
     handoff_validated: false
+  unit_weight_gate:
+    contract: data/source_manifests/study_c_unit_weights.yml
+    builder: scripts/build_study_c_unit_weights.py
+    participant_dgeec_concordance_required: true
+    deterministic_weight_builder_available: true
+    output_file: results/study_c/unit_institution_field_weights.csv
+    output_built: false
+    sum_to_one_validation_required: true
+    missing_raides_support_may_trigger_weight_renormalisation: false
   note: >-
     The final-results workbook resolves the approved-unit registry, canonical panel labels and ratings,
-    but it does not contain the complete formal participating-institution universe. The next gate requires
-    an authorised 2023/2024 application-snapshot participation export for all 120 primary-scope units.
+    but it does not contain the complete formal participating-institution universe. An authorised
+    2023/2024 application-snapshot participation export remains required. Once supplied, the merged
+    participant-to-DGEEC concordance and weight gate can deterministically construct unit institution
+    field weights without conditioning those weights on RAIDES data availability.
 
 raides:
   frozen_window: 2018/19-2024/25
@@ -86,3 +97,4 @@ rules:
   context_only_ipctn_may_be_missing_without_blocking_feeder_exposure: true
   current_unit_membership_may_not_replace_evaluation_application_snapshot: true
   management_institution_may_not_stand_in_for_complete_participating_institution_set: true
+  formal_participant_weights_may_not_be_renormalised_around_missing_raides_support: true
