@@ -226,6 +226,19 @@ def test_non_higher_education_status_rejects_fake_dgeec_code(tmp_path: Path) -> 
         build_weights(CONTRACT, participation, concordance, expected, crosswalk)
 
 
+def test_non_higher_education_status_rejects_fake_dgeec_name(tmp_path: Path) -> None:
+    participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
+    frame = pd.read_csv(concordance, dtype=str, keep_default_na=False)
+    mask = frame["participant_institution_id"] == "PTCRIS:B"
+    frame.loc[mask, "mapping_status"] = "not_higher_education_establishment"
+    frame.loc[mask, "dgeec_institution_code"] = ""
+    frame.loc[mask, "dgeec_institution_name"] = "DGEEC B"
+    frame.to_csv(concordance, index=False)
+
+    with pytest.raises(ValueError, match="must not carry a DGEEC name"):
+        build_weights(CONTRACT, participation, concordance, expected, crosswalk)
+
+
 def test_build_weights_rejects_partial_researcher_counts(tmp_path: Path) -> None:
     participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
     frame = pd.read_csv(participation, dtype=str, keep_default_na=False)
