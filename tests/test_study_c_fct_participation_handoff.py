@@ -16,7 +16,12 @@ def _expected_units() -> list[str]:
 
 
 def _write_expected_units(path: Path) -> None:
-    pd.DataFrame({"unit_reference": _expected_units()}).to_csv(path, index=False)
+    pd.DataFrame(
+        {
+            "unit_reference": _expected_units(),
+            "panel_label": ["Chemistry"] * 120,
+        }
+    ).to_csv(path, index=False)
 
 
 def _base_participation() -> pd.DataFrame:
@@ -43,6 +48,12 @@ def test_handoff_contract_preserves_fail_closed_source_boundary() -> None:
     assert source["public_fct"]["public_results_resolve_complete_formal_participant_universe"] is False
     assert source["public_fct"]["may_close_formal_participation_gate"] is False
     assert source["authorised_participation_source"]["application_snapshot_required"] is True
+    assert contract["handoff"]["expected_units_required_columns"] == [
+        "unit_reference",
+        "panel_label",
+    ]
+    assert contract["handoff"]["expected_unit_isced_scope_is_not_staged"] is True
+    assert contract["weight_preparation"]["panel_to_isced_scope_derived_from_committed_crosswalk"] is True
     assert contract["weight_preparation"]["management_only_rows_as_substitute_for_participants"] is False
     assert contract["scientific_boundary"]["no_unit_exposure_computed"] is True
 
