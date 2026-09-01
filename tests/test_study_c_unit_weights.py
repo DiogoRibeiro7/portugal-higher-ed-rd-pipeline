@@ -129,10 +129,16 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
 def test_weight_gate_contract_preserves_fail_closed_rules() -> None:
     contract = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
     rules = contract["rules"]
+    checklist = contract["inputs"]["participant_dgeec_concordance_required_columns"]
+    assert "mapping_status" in checklist
+    assert checklist == contract["concordance_required_columns"]
     assert rules["canonical_join_key"] == "participant_institution_id"
     assert rules["participant_names_are_audit_labels_not_join_keys"] is True
     assert rules["fuzzy_name_matching_in_production"] is False
     assert rules["dgeec_code_required_when_mapping_status_is_mapped"] is True
+    assert rules["dgeec_name_required_when_mapping_status_is_mapped"] is True
+    assert rules["blank_dgeec_code_required_when_mapping_status_is_not_higher_education"] is True
+    assert rules["blank_dgeec_name_required_when_mapping_status_is_not_higher_education"] is True
     assert rules["non_higher_education_participants_keep_formal_weight"] is True
     assert rules["panel_field_source"] == "canonical_fct_panel_crosswalk"
     assert rules["staged_unit_registry_carries_panel_label_not_isced_scope"] is True
