@@ -1,4 +1,4 @@
-version: 2
+version: 3
 study: C
 artifact: fct_formal_participation_handoff
 status: authorised_export_required
@@ -40,8 +40,12 @@ acquisition_route:
   authoritative_system_abbreviation: PCT
   application_submission_only_through_pct: true
   other_submission_means_not_accepted: true
-  preferred_authorised_source: applicant_or_coordinator_export_from_submitted_2023_2024_application
-  fallback_authorised_source: fct_supplied_participation_export_for_submitted_2023_2024_application
+  preferred_source_system: pct_evaluation_application_export
+  fallback_source_systems:
+    - fct_authorised_unit_participation_export
+    - ptcris_authorised_research_unit_export
+  ptcris_route_requires_authorised_submitted_application_snapshot: true
+  route_source_systems_must_be_accepted_source_systems: true
   official_evaluation_contact: avalunidades@fct.pt
   public_download_of_submitted_formal_participant_universe_identified: false
   public_current_unit_page_may_replace_submitted_snapshot: false
