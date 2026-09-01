@@ -107,7 +107,8 @@ def validate(contract_path: Path, participation_path: Path, expected_path: Path)
     snapshots = set(frame["snapshot_basis"])
     if snapshots != {expected_snapshot}:
         raise ValueError(
-            f"Participation export must use snapshot {expected_snapshot!r}; found {sorted(snapshots)}"
+            f"Participation export must use snapshot {expected_snapshot!r}; "
+            f"found {sorted(snapshots)}"
         )
 
     duplicate_key = frame.duplicated(["unit_reference", "participant_institution_id"])
