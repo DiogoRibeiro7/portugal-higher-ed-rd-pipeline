@@ -105,4 +105,9 @@ def test_no_top_down_allocation_is_allowed() -> None:
     assert rules["search_snippets_may_not_define_registry_or_coverage"] is True
     assert rules["unavailable_dimensions_remain_unavailable"] is True
     assert rules["exposure_calculation_before_primary_blockers_resolved"] is False
-    assert rules["formal_participant_weights_may_not_be_renormalised_around_missing_raides_support"] is True
+    assert (
+        rules[
+            "formal_participant_weights_may_not_be_renormalised_around_missing_raides_support"
+        ]
+        is True
+    )
