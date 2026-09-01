@@ -155,7 +155,10 @@ def test_build_weights_fails_when_participant_has_no_dgeec_mapping(tmp_path: Pat
 def test_build_weights_rejects_partial_researcher_counts(tmp_path: Path) -> None:
     participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
     frame = pd.read_csv(participation, dtype=str, keep_default_na=False)
-    frame.loc[frame["participant_institution_id"] == "PTCRIS:D", "integrated_researcher_count"] = "2"
+    frame.loc[
+        frame["participant_institution_id"] == "PTCRIS:D",
+        "integrated_researcher_count",
+    ] = "2"
     frame.to_csv(participation, index=False)
 
     with pytest.raises(ValueError, match="Mixed count availability"):
