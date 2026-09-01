@@ -47,14 +47,47 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
     )
     concordance = pd.DataFrame(
         [
-            ["PTCRIS:A", "Institution A", "1001", "DGEEC A", "manual_review", "ref:a"],
-            ["PTCRIS:B", "Institution B", "1002", "DGEEC B", "manual_review", "ref:b"],
-            ["PTCRIS:C", "Institution C", "1003", "DGEEC C", "manual_review", "ref:c"],
-            ["PTCRIS:D", "Institution D", "1004", "DGEEC D", "manual_review", "ref:d"],
+            [
+                "PTCRIS:A",
+                "Institution A",
+                "mapped_to_dgeec_establishment",
+                "1001",
+                "DGEEC A",
+                "manual_review",
+                "ref:a",
+            ],
+            [
+                "PTCRIS:B",
+                "Institution B",
+                "mapped_to_dgeec_establishment",
+                "1002",
+                "DGEEC B",
+                "manual_review",
+                "ref:b",
+            ],
+            [
+                "PTCRIS:C",
+                "Institution C",
+                "mapped_to_dgeec_establishment",
+                "1003",
+                "DGEEC C",
+                "manual_review",
+                "ref:c",
+            ],
+            [
+                "PTCRIS:D",
+                "Institution D",
+                "mapped_to_dgeec_establishment",
+                "1004",
+                "DGEEC D",
+                "manual_review",
+                "ref:d",
+            ],
         ],
         columns=[
             "participant_institution_id",
             "participant_institution_name",
+            "mapping_status",
             "dgeec_institution_code",
             "dgeec_institution_name",
             "mapping_basis",
@@ -99,7 +132,8 @@ def test_weight_gate_contract_preserves_fail_closed_rules() -> None:
     assert rules["canonical_join_key"] == "participant_institution_id"
     assert rules["participant_names_are_audit_labels_not_join_keys"] is True
     assert rules["fuzzy_name_matching_in_production"] is False
-    assert rules["dgeec_code_required_for_every_participant"] is True
+    assert rules["dgeec_code_required_when_mapping_status_is_mapped"] is True
+    assert rules["non_higher_education_participants_keep_formal_weight"] is True
     assert rules["panel_field_source"] == "canonical_fct_panel_crosswalk"
     assert rules["staged_unit_registry_carries_panel_label_not_isced_scope"] is True
     assert rules["weights_sum_to_one_per_unit"] is True
@@ -142,13 +176,47 @@ def test_build_weights_joins_concordance_by_id_when_names_differ(tmp_path: Path)
     assert row["concordance_participant_institution_name"] == "Institution A legal name"
 
 
-def test_build_weights_fails_when_participant_has_no_dgeec_mapping(tmp_path: Path) -> None:
+def test_non_higher_education_participant_keeps_weight_without_dgeec_code(
+    tmp_path: Path,
+) -> None:
+    participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
+    frame = pd.read_csv(concordance, dtype=str, keep_default_na=False)
+    mask = frame["participant_institution_id"] == "PTCRIS:B"
+    frame.loc[mask, "mapping_status"] = "not_higher_education_establishment"
+    frame.loc[mask, "dgeec_institution_code"] = ""
+    frame.loc[mask, "dgeec_institution_name"] = ""
+    frame.to_csv(concordance, index=False)
+
+    output = build_weights(CONTRACT, participation, concordance, expected, crosswalk)
+    first = output.loc[output["unit_reference"] == "UID/00001/2023"]
+    non_he = first.loc[first["participant_institution_id"] == "PTCRIS:B"].iloc[0]
+
+    assert non_he["mapping_status"] == "not_higher_education_establishment"
+    assert non_he["dgeec_institution_code"] == ""
+    assert non_he["weight"] == 0.25
+    assert first["weight"].sum() == 1.0
+
+
+def test_build_weights_fails_when_participant_has_no_concordance_classification(
+    tmp_path: Path,
+) -> None:
     participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
     frame = pd.read_csv(concordance, dtype=str)
     frame = frame.loc[frame["participant_institution_id"] != "PTCRIS:B"]
     frame.to_csv(concordance, index=False)
 
-    with pytest.raises(ValueError, match="Missing participant→DGEEC concordance"):
+    with pytest.raises(ValueError, match="Missing participant concordance classification"):
+        build_weights(CONTRACT, participation, concordance, expected, crosswalk)
+
+
+def test_non_higher_education_status_rejects_fake_dgeec_code(tmp_path: Path) -> None:
+    participation, concordance, expected, crosswalk = _write_inputs(tmp_path)
+    frame = pd.read_csv(concordance, dtype=str, keep_default_na=False)
+    mask = frame["participant_institution_id"] == "PTCRIS:B"
+    frame.loc[mask, "mapping_status"] = "not_higher_education_establishment"
+    frame.to_csv(concordance, index=False)
+
+    with pytest.raises(ValueError, match="must not carry a DGEEC code"):
         build_weights(CONTRACT, participation, concordance, expected, crosswalk)
 
 
