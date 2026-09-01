@@ -43,6 +43,9 @@ handoff:
   current_membership_substitution_for_application_snapshot: false
   expected_units_required_columns:
     - unit_reference
+    - panel_label
+  expected_unit_panel_source: validated_fct_final_results_workbook
+  expected_unit_isced_scope_is_not_staged: true
   participation_required_columns:
     - unit_reference
     - participant_institution_id
@@ -60,6 +63,7 @@ handoff:
   source_files_tracked_in_git: false
 
 weight_preparation:
+  panel_to_isced_scope_derived_from_committed_crosswalk: true
   count_derived_when_complete_positive_counts_exist: true
   equal_share_when_counts_are_unavailable_for_all_participants_in_unit: true
   mixed_count_availability_within_unit: forbidden
