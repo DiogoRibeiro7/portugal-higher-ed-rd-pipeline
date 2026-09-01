@@ -1,4 +1,4 @@
-version: 1
+version: 2
 study: C
 artifact: unit_institution_field_weight_gate
 status: participation_and_concordance_required
@@ -14,10 +14,15 @@ inputs:
 concordance_required_columns:
   - participant_institution_id
   - participant_institution_name
+  - mapping_status
   - dgeec_institution_code
   - dgeec_institution_name
   - mapping_basis
   - source_reference
+
+allowed_mapping_statuses:
+  - mapped_to_dgeec_establishment
+  - not_higher_education_establishment
 
 weight_output:
   tracked_output_csv: results/study_c/unit_institution_field_weights.csv
@@ -26,6 +31,7 @@ weight_output:
     - participant_institution_id
     - participant_institution_name
     - concordance_participant_institution_name
+    - mapping_status
     - dgeec_institution_code
     - isced_f_scope
     - weight
@@ -36,7 +42,10 @@ rules:
   canonical_join_key: participant_institution_id
   participant_names_are_audit_labels_not_join_keys: true
   fuzzy_name_matching_in_production: false
-  dgeec_code_required_for_every_participant: true
+  dgeec_code_required_when_mapping_status_is_mapped: true
+  blank_dgeec_code_required_when_mapping_status_is_not_higher_education: true
+  non_higher_education_participants_keep_formal_weight: true
+  non_higher_education_participants_are_unavailable_for_raides_linkage: true
   panel_field_source: canonical_fct_panel_crosswalk
   staged_unit_registry_carries_panel_label_not_isced_scope: true
   unit_field_inference_from_unit_name: false
