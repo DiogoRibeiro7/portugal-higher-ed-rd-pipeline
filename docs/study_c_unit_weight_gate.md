@@ -7,7 +7,7 @@ This gate converts a validated formal FCT participation handoff into explicit in
 Three private inputs and one committed crosswalk are required:
 
 1. `data/private/fct/study_c_unit_participation.csv`, validated against the 2023/2024 evaluation-application snapshot contract;
-2. `data/private/fct/study_c_participant_dgeec_concordance.csv`, containing one explicit participant-institution to DGEEC institution mapping per formal participant;
+2. `data/private/fct/study_c_participant_dgeec_concordance.csv`, containing one explicit reviewed classification per formal participant;
 3. `data/private/fct/study_c_primary_units.csv`, containing the canonical `UID/NNNNN/2023` reference and canonical FCT evaluation-panel label for each primary unit;
 4. `data/curated/fct/study_c_panel_isced_crosswalk.csv`, which maps that canonical panel label to the frozen broad ISCED-F scope.
 
@@ -17,10 +17,18 @@ The participant concordance must contain:
 
 - `participant_institution_id`;
 - `participant_institution_name`;
+- `mapping_status`;
 - `dgeec_institution_code`;
 - `dgeec_institution_name`;
 - `mapping_basis`;
 - `source_reference`.
+
+`mapping_status` is one of:
+
+- `mapped_to_dgeec_establishment`;
+- `not_higher_education_establishment`.
+
+For `mapped_to_dgeec_establishment`, both `dgeec_institution_code` and `dgeec_institution_name` must be nonblank. For `not_higher_education_establishment`, both DGEEC fields must be blank. This prevents non-higher-education participants from being forced into a fabricated RAIDES establishment mapping.
 
 The production concordance join uses `participant_institution_id` only. Participant names from the participation export and reviewed concordance are retained as separate audit labels, so benign spelling or legal-name differences do not invalidate an explicit ID mapping. Fuzzy-name matching is not accepted as a production mapping.
 
@@ -38,7 +46,7 @@ Each primary unit has one frozen broad feeder field derived from its canonical F
 
 The weight table represents the organisational exposure structure. It is not conditioned on whether RAIDES contains an eligible institution x field series.
 
-A formal participant must not be dropped merely because its downstream feeder series is unsupported. The weight is retained. Later exposure calculations must report that component as unavailable rather than renormalising the remaining institutions to one.
+A formal participant must not be dropped merely because its downstream feeder series is unsupported or because it is not a higher-education establishment. The weight is retained. Later exposure calculations must report that component as unavailable rather than renormalising the remaining institutions to one.
 
 ## Command
 
