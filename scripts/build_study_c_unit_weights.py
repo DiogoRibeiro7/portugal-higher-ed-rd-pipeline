@@ -12,6 +12,7 @@ DEFAULT_CONTRACT: Final[Path] = ROOT / "data/source_manifests/study_c_unit_weigh
 DEFAULT_PARTICIPATION: Final[Path] = ROOT / "data/private/fct/study_c_unit_participation.csv"
 DEFAULT_CONCORDANCE: Final[Path] = ROOT / "data/private/fct/study_c_participant_dgeec_concordance.csv"
 DEFAULT_EXPECTED: Final[Path] = ROOT / "data/private/fct/study_c_primary_units.csv"
+DEFAULT_PANEL_CROSSWALK: Final[Path] = ROOT / "data/curated/fct/study_c_panel_isced_crosswalk.csv"
 DEFAULT_OUTPUT: Final[Path] = ROOT / "results/study_c/unit_institution_field_weights.csv"
 
 
@@ -39,23 +40,48 @@ def _parse_count(value: str) -> int | None:
     return count
 
 
-def _load_unit_fields(expected_path: Path) -> pd.DataFrame:
-    frame = pd.read_csv(expected_path, dtype=str, keep_default_na=False)
-    required = ["unit_reference", "isced_f_scope"]
-    missing = [column for column in required if column not in frame.columns]
-    if missing:
-        raise ValueError(
-            "Primary-unit registry must include canonical unit_reference and isced_f_scope before weights "
-            f"can be built; missing={missing}"
-        )
-    frame = frame[required].copy()
-    frame["unit_reference"] = frame["unit_reference"].map(_normalise)
-    frame["isced_f_scope"] = frame["isced_f_scope"].map(_normalise)
-    if frame["unit_reference"].duplicated().any():
+def _load_unit_fields(expected_path: Path, panel_crosswalk_path: Path) -> pd.DataFrame:
+    units = _load_csv(expected_path, ["unit_reference", "panel_label"])[
+        ["unit_reference", "panel_label"]
+    ].copy()
+    units["unit_reference"] = units["unit_reference"].map(_normalise)
+    units["panel_label"] = units["panel_label"].map(_normalise)
+    if units["unit_reference"].duplicated().any():
         raise ValueError("Primary-unit registry contains duplicate unit_reference values")
-    if not set(frame["isced_f_scope"]) <= {"05", "06", "07"}:
-        raise ValueError("Primary-unit registry contains fields outside frozen 05/06/07 scope")
-    return frame
+    if (units["panel_label"] == "").any():
+        raise ValueError("Primary-unit registry contains blank canonical panel labels")
+
+    crosswalk = _load_csv(
+        panel_crosswalk_path,
+        ["panel_label", "isced_f_scope", "primary_study_c_scope"],
+    )[["panel_label", "isced_f_scope", "primary_study_c_scope"]].copy()
+    crosswalk["panel_label"] = crosswalk["panel_label"].map(_normalise)
+    crosswalk["isced_f_scope"] = crosswalk["isced_f_scope"].map(_normalise)
+    crosswalk["primary_study_c_scope"] = crosswalk["primary_study_c_scope"].map(
+        lambda value: _normalise(value).lower()
+    )
+    if crosswalk["panel_label"].duplicated().any():
+        raise ValueError("Canonical panel crosswalk contains duplicate panel labels")
+
+    primary = crosswalk.loc[crosswalk["primary_study_c_scope"] == "true"].copy()
+    if not set(primary["isced_f_scope"]) <= {"05", "06", "07"}:
+        raise ValueError("Canonical primary panel crosswalk contains fields outside frozen 05/06/07 scope")
+
+    unit_fields = units.merge(
+        primary[["panel_label", "isced_f_scope"]],
+        on="panel_label",
+        how="left",
+        validate="many_to_one",
+    )
+    if unit_fields["isced_f_scope"].isna().any():
+        missing_panels = sorted(
+            unit_fields.loc[unit_fields["isced_f_scope"].isna(), "panel_label"].unique()
+        )
+        raise ValueError(
+            "Primary-unit registry contains panel labels absent from the canonical primary crosswalk: "
+            f"{missing_panels[:10]}"
+        )
+    return unit_fields[["unit_reference", "panel_label", "isced_f_scope"]]
 
 
 def build_weights(
@@ -63,6 +89,7 @@ def build_weights(
     participation_path: Path,
     concordance_path: Path,
     expected_path: Path,
+    panel_crosswalk_path: Path = DEFAULT_PANEL_CROSSWALK,
 ) -> pd.DataFrame:
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     participation_required = [
@@ -77,7 +104,7 @@ def build_weights(
         concordance_path,
         list(contract["concordance_required_columns"]),
     ).copy()
-    unit_fields = _load_unit_fields(expected_path)
+    unit_fields = _load_unit_fields(expected_path, panel_crosswalk_path)
 
     for column in ["unit_reference", "participant_institution_id", "participant_institution_name"]:
         participation[column] = participation[column].map(_normalise)
@@ -89,12 +116,17 @@ def build_weights(
     if concordance["participant_institution_id"].duplicated().any():
         raise ValueError("Concordance must map each participant_institution_id exactly once")
 
+    concordance = concordance.rename(
+        columns={
+            "participant_institution_name": "participant_institution_name_concordance",
+            "source_reference": "source_reference_concordance",
+        }
+    )
     joined = participation.merge(
         concordance,
-        on=["participant_institution_id", "participant_institution_name"],
+        on="participant_institution_id",
         how="left",
         validate="many_to_one",
-        suffixes=("_participation", "_concordance"),
     )
     if (joined["dgeec_institution_code"].fillna("") == "").any():
         missing_ids = sorted(
@@ -131,11 +163,15 @@ def build_weights(
                 {
                     "unit_reference": unit_reference,
                     "participant_institution_id": row["participant_institution_id"],
+                    "participant_institution_name": row["participant_institution_name"],
+                    "concordance_participant_institution_name": row[
+                        "participant_institution_name_concordance"
+                    ],
                     "dgeec_institution_code": row["dgeec_institution_code"],
                     "isced_f_scope": row["isced_f_scope"],
                     "weight": weight,
                     "weight_basis": basis,
-                    "source_reference": row["source_reference_participation"],
+                    "source_reference": row["source_reference"],
                 }
             )
 
@@ -154,6 +190,7 @@ def main() -> None:
     parser.add_argument("--participation", type=Path, default=DEFAULT_PARTICIPATION)
     parser.add_argument("--concordance", type=Path, default=DEFAULT_CONCORDANCE)
     parser.add_argument("--expected-units", type=Path, default=DEFAULT_EXPECTED)
+    parser.add_argument("--panel-crosswalk", type=Path, default=DEFAULT_PANEL_CROSSWALK)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
 
@@ -163,6 +200,7 @@ def main() -> None:
             args.participation,
             args.concordance,
             args.expected_units,
+            args.panel_crosswalk,
         )
     except FileNotFoundError as exc:
         print(f"blocked_missing_private_input: {exc}")
