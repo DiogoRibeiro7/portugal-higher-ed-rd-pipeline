@@ -1,4 +1,4 @@
-version: 1
+version: 2
 study: C
 artifact: fct_formal_participation_handoff
 status: authorised_export_required
@@ -34,6 +34,19 @@ source_boundary:
     formal_participating_institution: >-
       Legal entity to which integrated doctoral researchers of the R&D unit are affiliated.
     management_institution_is_not_automatically_participating_institution: true
+
+acquisition_route:
+  authoritative_submission_system: Portal de Ciencia e Tecnologia da FCT
+  authoritative_system_abbreviation: PCT
+  application_submission_only_through_pct: true
+  other_submission_means_not_accepted: true
+  preferred_authorised_source: applicant_or_coordinator_export_from_submitted_2023_2024_application
+  fallback_authorised_source: fct_supplied_participation_export_for_submitted_2023_2024_application
+  official_evaluation_contact: avalunidades@fct.pt
+  public_download_of_submitted_formal_participant_universe_identified: false
+  public_current_unit_page_may_replace_submitted_snapshot: false
+  management_list_may_replace_submitted_snapshot: false
+  inferred_affiliations_may_replace_submitted_snapshot: false
 
 handoff:
   expected_units_staging_file: data/private/fct/study_c_primary_units.csv
