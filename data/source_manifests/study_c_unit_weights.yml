@@ -7,6 +7,7 @@ inputs:
   participation_contract: data/source_manifests/study_c_fct_participation.yml
   participation_csv: data/private/fct/study_c_unit_participation.csv
   expected_units_csv: data/private/fct/study_c_primary_units.csv
+  expected_units_panel_column: panel_label
   participant_dgeec_concordance_csv: data/private/fct/study_c_participant_dgeec_concordance.csv
   panel_isced_crosswalk_csv: data/curated/fct/study_c_panel_isced_crosswalk.csv
 
@@ -23,6 +24,8 @@ weight_output:
   required_columns:
     - unit_reference
     - participant_institution_id
+    - participant_institution_name
+    - concordance_participant_institution_name
     - dgeec_institution_code
     - isced_f_scope
     - weight
@@ -31,9 +34,11 @@ weight_output:
 
 rules:
   canonical_join_key: participant_institution_id
+  participant_names_are_audit_labels_not_join_keys: true
   fuzzy_name_matching_in_production: false
   dgeec_code_required_for_every_participant: true
   panel_field_source: canonical_fct_panel_crosswalk
+  staged_unit_registry_carries_panel_label_not_isced_scope: true
   unit_field_inference_from_unit_name: false
   count_derived_weights_when_complete_counts_exist: true
   equal_share_when_counts_are_entirely_absent_within_unit: true
