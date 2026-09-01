@@ -9,10 +9,16 @@ import yaml
 
 ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 DEFAULT_CONTRACT: Final[Path] = ROOT / "data/source_manifests/study_c_unit_weights.yml"
-DEFAULT_PARTICIPATION: Final[Path] = ROOT / "data/private/fct/study_c_unit_participation.csv"
-DEFAULT_CONCORDANCE: Final[Path] = ROOT / "data/private/fct/study_c_participant_dgeec_concordance.csv"
+DEFAULT_PARTICIPATION: Final[Path] = (
+    ROOT / "data/private/fct/study_c_unit_participation.csv"
+)
+DEFAULT_CONCORDANCE: Final[Path] = (
+    ROOT / "data/private/fct/study_c_participant_dgeec_concordance.csv"
+)
 DEFAULT_EXPECTED: Final[Path] = ROOT / "data/private/fct/study_c_primary_units.csv"
-DEFAULT_PANEL_CROSSWALK: Final[Path] = ROOT / "data/curated/fct/study_c_panel_isced_crosswalk.csv"
+DEFAULT_PANEL_CROSSWALK: Final[Path] = (
+    ROOT / "data/curated/fct/study_c_panel_isced_crosswalk.csv"
+)
 DEFAULT_OUTPUT: Final[Path] = ROOT / "results/study_c/unit_institution_field_weights.csv"
 
 
@@ -65,7 +71,10 @@ def _load_unit_fields(expected_path: Path, panel_crosswalk_path: Path) -> pd.Dat
 
     primary = crosswalk.loc[crosswalk["primary_study_c_scope"] == "true"].copy()
     if not set(primary["isced_f_scope"]) <= {"05", "06", "07"}:
-        raise ValueError("Canonical primary panel crosswalk contains fields outside frozen 05/06/07 scope")
+        raise ValueError(
+            "Canonical primary panel crosswalk contains fields outside frozen "
+            "05/06/07 scope"
+        )
 
     unit_fields = units.merge(
         primary[["panel_label", "isced_f_scope"]],
@@ -78,8 +87,8 @@ def _load_unit_fields(expected_path: Path, panel_crosswalk_path: Path) -> pd.Dat
             unit_fields.loc[unit_fields["isced_f_scope"].isna(), "panel_label"].unique()
         )
         raise ValueError(
-            "Primary-unit registry contains panel labels absent from the canonical primary crosswalk: "
-            f"{missing_panels[:10]}"
+            "Primary-unit registry contains panel labels absent from the canonical "
+            f"primary crosswalk: {missing_panels[:10]}"
         )
     return unit_fields[["unit_reference", "panel_label", "isced_f_scope"]]
 
@@ -137,7 +146,12 @@ def build_weights(
         )
         raise ValueError(f"Missing participant→DGEEC concordance: {missing_ids[:10]}")
 
-    joined = joined.merge(unit_fields, on="unit_reference", how="left", validate="many_to_one")
+    joined = joined.merge(
+        unit_fields,
+        on="unit_reference",
+        how="left",
+        validate="many_to_one",
+    )
     if joined["isced_f_scope"].isna().any():
         raise ValueError("Participation contains units absent from frozen primary-unit registry")
 
@@ -181,7 +195,9 @@ def build_weights(
     bad = sums[(sums - 1.0).abs() > tolerance]
     if not bad.empty:
         raise ValueError(f"Unit weights do not sum to one: {bad.to_dict()}")
-    return output.sort_values(["unit_reference", "participant_institution_id"]).reset_index(drop=True)
+    return output.sort_values(
+        ["unit_reference", "participant_institution_id"]
+    ).reset_index(drop=True)
 
 
 def main() -> None:
