@@ -9,6 +9,14 @@ inputs:
   expected_units_csv: data/private/fct/study_c_primary_units.csv
   expected_units_panel_column: panel_label
   participant_dgeec_concordance_csv: data/private/fct/study_c_participant_dgeec_concordance.csv
+  participant_dgeec_concordance_required_columns:
+    - participant_institution_id
+    - participant_institution_name
+    - mapping_status
+    - dgeec_institution_code
+    - dgeec_institution_name
+    - mapping_basis
+    - source_reference
   panel_isced_crosswalk_csv: data/curated/fct/study_c_panel_isced_crosswalk.csv
 
 concordance_required_columns:
@@ -43,7 +51,9 @@ rules:
   participant_names_are_audit_labels_not_join_keys: true
   fuzzy_name_matching_in_production: false
   dgeec_code_required_when_mapping_status_is_mapped: true
+  dgeec_name_required_when_mapping_status_is_mapped: true
   blank_dgeec_code_required_when_mapping_status_is_not_higher_education: true
+  blank_dgeec_name_required_when_mapping_status_is_not_higher_education: true
   non_higher_education_participants_keep_formal_weight: true
   non_higher_education_participants_are_unavailable_for_raides_linkage: true
   panel_field_source: canonical_fct_panel_crosswalk
