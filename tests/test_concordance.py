@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
+from dataexcept import MissingColumnError
 
 from pt_he_pipeline.concordance import build_concordance_candidates, concordance_key
 
@@ -21,3 +23,8 @@ def test_concordance_candidates_preserve_raw_ids() -> None:
     )
     result = build_concordance_candidates(frame)
     assert result["source_pair_key"].tolist() == ["0160/8083", "0160/8083"]
+
+
+def test_concordance_candidates_rejects_missing_schema_with_dataexcept() -> None:
+    with pytest.raises(MissingColumnError):
+        build_concordance_candidates(pd.DataFrame({"year": [2025]}))
