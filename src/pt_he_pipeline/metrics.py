@@ -94,7 +94,10 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
             "matrix must contain positive total flow",
         )
 
-    diagonal = sum(float(values.loc[label, label]) for label in values.index)
+    labels = [str(label) for label in values.index]
+    values.index = labels
+    values.columns = [str(label) for label in values.columns]
+    diagonal = sum(float(values.loc[label, label]) for label in labels)
     same_share = diagonal / total
 
     # Conditional destination entropy averaged over origins, normalised to [0, 1].
@@ -105,7 +108,8 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
     for label, row_total in row_totals.items():
         if row_total <= 0:
             continue
-        probabilities = (values.loc[label] / row_total).to_numpy(dtype=float)
+        label_str = str(label)
+        probabilities = (values.loc[label_str] / row_total).to_numpy(dtype=float)
         positive = probabilities[probabilities > 0]
         entropy = -float(np.sum(positive * np.log(positive))) / entropy_scale
         weighted_entropy += (float(row_total) / total) * entropy
@@ -173,4 +177,5 @@ def compound_annual_growth(start: float, end: float, years: int) -> float:
         raise ValueError("start must be positive and end must be non-negative")
     if end == 0:
         return -1.0
-    return (end / start) ** (1.0 / years) - 1.0
+    growth = (float(end) / float(start)) ** (1.0 / float(years)) - 1.0
+    return float(growth)
