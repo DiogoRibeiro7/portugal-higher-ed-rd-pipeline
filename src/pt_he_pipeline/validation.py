@@ -79,7 +79,11 @@ def validate_pair_panel(frame: pd.DataFrame) -> None:
             "year must be numeric and within the registered study range",
         )
     if phases.isna().any() or ~phases.isin([1, 2, 3]).all():
-        raise DataValidationError("phase", frame["phase"].tolist(), "phase must be one of 1, 2 or 3")
+        raise DataValidationError(
+            "phase",
+            frame["phase"].tolist(),
+            "phase must be one of 1, 2 or 3",
+        )
 
     pair_keys = ["year", "phase", "institution_id", "course_id"]
     if frame.duplicated(pair_keys).any():
