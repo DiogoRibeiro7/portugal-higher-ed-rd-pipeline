@@ -6,6 +6,7 @@ import re
 import unicodedata
 
 import pandas as pd
+from dataexcept import MissingColumnError
 
 
 def concordance_key(value: str) -> str:
@@ -34,7 +35,7 @@ def build_concordance_candidates(frame: pd.DataFrame) -> pd.DataFrame:
     )
     missing = sorted(set(required).difference(frame.columns))
     if missing:
-        raise ValueError(f"missing concordance columns: {missing}")
+        raise MissingColumnError(missing[0], dataframe="concordance_frame")
 
     result = frame[list(required)].copy()
     result["institution_label_key"] = result["institution_name"].astype(str).map(concordance_key)
