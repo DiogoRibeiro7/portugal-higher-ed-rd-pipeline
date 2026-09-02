@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
+from dataexcept import DataValidationError, MissingColumnError
 
-from pt_he_pipeline.validation import validate_mobility_flows, validate_pair_panel
+from pt_he_pipeline.validation import require_columns, validate_mobility_flows, validate_pair_panel
 
 SHA_PAIR = "a" * 64
 SHA_PLACEMENT = "b" * 64
@@ -36,24 +37,30 @@ def test_validate_pair_panel_accepts_valid_frame() -> None:
     validate_pair_panel(_valid_frame())
 
 
+def test_require_columns_raises_structured_missing_column_error() -> None:
+    frame = _valid_frame().drop(columns=["placements"])
+    with pytest.raises(MissingColumnError, match="placements"):
+        require_columns(frame, ["placements"])
+
+
 def test_validate_pair_panel_rejects_more_placements_than_applicants() -> None:
     frame = _valid_frame()
     frame.loc[0, "placements"] = 60
-    with pytest.raises(ValueError, match="placements cannot exceed applicants"):
+    with pytest.raises(DataValidationError, match="placements cannot exceed applicants"):
         validate_pair_panel(frame)
 
 
 def test_validate_pair_panel_rejects_first_choices_above_applicants() -> None:
     frame = _valid_frame()
     frame.loc[0, "first_choice_applicants"] = 60
-    with pytest.raises(ValueError, match="first_choice_applicants"):
+    with pytest.raises(DataValidationError, match="first_choice_applicants"):
         validate_pair_panel(frame)
 
 
 def test_validate_pair_panel_rejects_bad_digest() -> None:
     frame = _valid_frame()
     frame.loc[0, "source_sha256"] = "not-a-hash"
-    with pytest.raises(ValueError, match="source_sha256"):
+    with pytest.raises(DataValidationError, match="source_sha256"):
         validate_pair_panel(frame)
 
 
