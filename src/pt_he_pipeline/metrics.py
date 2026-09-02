@@ -22,7 +22,7 @@ def safe_ratio(numerator: float, denominator: float) -> float:
 
 
 def add_access_metrics(frame: pd.DataFrame) -> pd.DataFrame:
-    """Add demand and occupancy ratios to a CNA course–institution panel.
+    """Add demand and occupancy ratios to a CNA course-institution panel.
 
     Missing/zero denominators yield ``NaN`` rather than infinity or an invented
     zero. The input frame is not mutated.
