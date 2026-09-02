@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
+from dataexcept import DataValidationError, MissingColumnError
 
 from pt_he_pipeline.reporting import pair_coverage_report
 
@@ -23,3 +25,15 @@ def test_pair_coverage_report_exposes_missingness() -> None:
     report = pair_coverage_report(frame)
     assert report.loc[0, "rows"] == 2
     assert report.loc[0, "missing_mean_application_grade_placed_share"] == 0.5
+
+
+def test_pair_coverage_report_rejects_missing_schema_with_dataexcept() -> None:
+    frame = pd.DataFrame({"year": [2025]})
+    with pytest.raises(MissingColumnError):
+        pair_coverage_report(frame)
+
+
+def test_pair_coverage_report_rejects_empty_frame_with_dataexcept() -> None:
+    frame = pd.DataFrame(columns=["year", "phase", "institution_id", "course_id"])
+    with pytest.raises(DataValidationError, match="frame must not be empty"):
+        pair_coverage_report(frame)
