@@ -79,7 +79,7 @@ def build_cna_pairs(pair_statistics: pd.DataFrame, placements: pd.DataFrame) -> 
     table_placements = pd.to_numeric(merged["placements_placement"], errors="raise")
     mismatch = pair_placements.ne(table_placements)
     if mismatch.any():
-        bad = merged.loc[mismatch, _PAIR_KEYS + ["placements_pair", "placements_placement"]]
+        bad = merged.loc[mismatch, [*_PAIR_KEYS, "placements_pair", "placements_placement"]]
         examples = bad.to_dict("records")[:3]
         raise DataValidationError(
             "placements",
