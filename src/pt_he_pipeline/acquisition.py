@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import pandas as pd
+from dataexcept import DataValidationError, MissingDataError
 
 from pt_he_pipeline.dges import discover_documents
 from pt_he_pipeline.io import fetch_with_receipt
@@ -25,7 +26,11 @@ def _safe_remote_filename(url: str, *, fallback: str) -> str:
     if not name:
         name = fallback
     if name in {".", ".."} or "/" in name or "\\" in name:
-        raise ValueError(f"unsafe source filename: {name!r}")
+        raise DataValidationError(
+            "source_filename",
+            name,
+            f"unsafe source filename: {name!r}",
+        )
     return name
 
 
@@ -51,7 +56,10 @@ def acquire_standard_dges_vintage(
     discovered = discover_documents(year, timeout_seconds=timeout_seconds)
     missing = [key for key in STANDARD_REQUIRED_DOCUMENTS if key not in discovered]
     if missing:
-        raise ValueError(f"DGES annual index is missing required documents: {missing}")
+        raise MissingDataError(
+            "DGES annual documents",
+            f"DGES annual index is missing required documents: {missing}",
+        )
 
     year_dir = raw_root / "dges" / str(year)
     rows: list[dict[str, object]] = []

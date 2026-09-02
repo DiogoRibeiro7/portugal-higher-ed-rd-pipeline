@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
+from dataexcept import DataValidationError, MissingColumnError
 
 from pt_he_pipeline.ingestion import build_cna_pairs, combined_sha256
 
@@ -59,8 +60,14 @@ def test_build_cna_pairs_checks_and_binds_sources() -> None:
     assert result.loc[0, "source_sha256"] == combined_sha256(SHA_PAIR, SHA_PLACEMENT)
 
 
+def test_build_cna_pairs_rejects_missing_source_column() -> None:
+    pair = _pair().drop(columns=["applicants"])
+    with pytest.raises(MissingColumnError, match="applicants"):
+        build_cna_pairs(pair, _placement())
+
+
 def test_build_cna_pairs_rejects_cross_source_placement_mismatch() -> None:
     placement = _placement()
     placement.loc[0, "placements"] = 21
-    with pytest.raises(ValueError, match="placement count mismatch"):
+    with pytest.raises(DataValidationError, match="placement count mismatch"):
         build_cna_pairs(_pair(), placement)

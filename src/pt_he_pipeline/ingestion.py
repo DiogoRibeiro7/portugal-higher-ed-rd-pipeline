@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 
 import pandas as pd
+from dataexcept import DataValidationError, MissingColumnError
 
 from pt_he_pipeline.validation import validate_pair_panel
 
@@ -25,12 +26,7 @@ def combined_sha256(*digests: str) -> str:
 
 
 def build_cna_pairs(pair_statistics: pd.DataFrame, placements: pd.DataFrame) -> pd.DataFrame:
-    """Join DGES pair statistics to vacancy/placement records one-to-one.
-
-    Placement counts appear in both source families and are used as a hard
-    consistency check. The canonical row carries both source digests plus a
-    combined fingerprint, making the two-source lineage explicit.
-    """
+    """Join DGES pair statistics to vacancy/placement records one-to-one."""
 
     required_pair = set(_PAIR_KEYS) | {
         "institution_name",
@@ -48,14 +44,22 @@ def build_cna_pairs(pair_statistics: pd.DataFrame, placements: pd.DataFrame) -> 
     missing_pair = sorted(required_pair.difference(pair_statistics.columns))
     missing_placement = sorted(required_placement.difference(placements.columns))
     if missing_pair:
-        raise ValueError(f"pair-statistics columns missing: {missing_pair}")
+        raise MissingColumnError(missing_pair[0], dataframe="pair_statistics")
     if missing_placement:
-        raise ValueError(f"placement columns missing: {missing_placement}")
+        raise MissingColumnError(missing_placement[0], dataframe="placements")
 
     if pair_statistics.duplicated(_PAIR_KEYS).any():
-        raise ValueError("pair statistics contain duplicate year/phase/institution/course keys")
+        raise DataValidationError(
+            "pair_keys",
+            None,
+            "pair statistics contain duplicate year/phase/institution/course keys",
+        )
     if placements.duplicated(_PAIR_KEYS).any():
-        raise ValueError("placement table contains duplicate year/phase/institution/course keys")
+        raise DataValidationError(
+            "pair_keys",
+            None,
+            "placement table contains duplicate year/phase/institution/course keys",
+        )
 
     merged = pair_statistics.merge(
         placements,
@@ -65,15 +69,23 @@ def build_cna_pairs(pair_statistics: pd.DataFrame, placements: pd.DataFrame) -> 
         suffixes=("_pair", "_placement"),
     )
     if merged.empty:
-        raise ValueError("pair statistics and placement tables have no overlapping keys")
+        raise DataValidationError(
+            "pair_keys",
+            None,
+            "pair statistics and placement tables have no overlapping keys",
+        )
 
     pair_placements = pd.to_numeric(merged["placements_pair"], errors="raise")
     table_placements = pd.to_numeric(merged["placements_placement"], errors="raise")
     mismatch = pair_placements.ne(table_placements)
     if mismatch.any():
-        bad = merged.loc[mismatch, _PAIR_KEYS + ["placements_pair", "placements_placement"]]
+        bad = merged.loc[mismatch, [*_PAIR_KEYS, "placements_pair", "placements_placement"]]
         examples = bad.to_dict("records")[:3]
-        raise ValueError(f"placement count mismatch across DGES sources: {examples}")
+        raise DataValidationError(
+            "placements",
+            examples,
+            f"placement count mismatch across DGES sources: {examples}",
+        )
 
     result = pd.DataFrame({key: merged[key] for key in _PAIR_KEYS})
     result["source_institution_id"] = merged["institution_id"]
