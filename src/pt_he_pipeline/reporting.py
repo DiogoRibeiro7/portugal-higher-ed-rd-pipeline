@@ -36,8 +36,8 @@ def pair_coverage_report(frame: pd.DataFrame) -> pd.DataFrame:
     records: list[dict[str, object]] = []
     for (year, phase), group in frame.groupby(["year", "phase"], sort=True, dropna=False):
         record: dict[str, object] = {
-            "year": int(year),
-            "phase": int(phase),
+            "year": int(str(year)),
+            "phase": int(str(phase)),
             "rows": len(group),
             "institutions": int(group["institution_id"].nunique()),
             "courses": int(group["course_id"].nunique()),
