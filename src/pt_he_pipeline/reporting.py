@@ -38,7 +38,7 @@ def pair_coverage_report(frame: pd.DataFrame) -> pd.DataFrame:
         record: dict[str, object] = {
             "year": int(year),
             "phase": int(phase),
-            "rows": int(len(group)),
+            "rows": len(group),
             "institutions": int(group["institution_id"].nunique()),
             "courses": int(group["course_id"].nunique()),
         }
