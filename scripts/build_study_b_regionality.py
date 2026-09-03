@@ -34,7 +34,10 @@ def _load_source(path: Path = SOURCE) -> pd.DataFrame:
             if sum(counts) != int(origin["published_total"]):
                 raise ValueError("mobility matrix row does not match its published total")
             matrix_total += sum(counts)
-            column_totals = [left + right for left, right in zip(column_totals, counts, strict=True)]
+            column_totals = [
+                left + right
+                for left, right in zip(column_totals, counts, strict=True)
+            ]
             for destination, count in zip(destinations, counts, strict=True):
                 rows.append(
                     {

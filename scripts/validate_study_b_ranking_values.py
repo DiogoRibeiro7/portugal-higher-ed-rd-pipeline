@@ -36,7 +36,8 @@ def validate_private_panel(path: Path | None = None) -> pd.DataFrame:
     panel_path = path or ROOT / str(contract["private_panel_path"])
     if not panel_path.exists():
         raise FileNotFoundError(
-            f"authorised ranking panel not found at {panel_path}; provider values are intentionally not committed"
+            f"authorised ranking panel not found at {panel_path}; "
+            "provider values are intentionally not committed"
         )
 
     frame = pd.read_csv(panel_path, dtype={"parent_institution_id": str})
