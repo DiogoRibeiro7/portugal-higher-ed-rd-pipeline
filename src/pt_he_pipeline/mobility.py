@@ -8,6 +8,7 @@ from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 import pandas as pd
+from dataexcept import DataTransformationError
 
 from pt_he_pipeline.dges_pair import extract_pdf_pages
 from pt_he_pipeline.io import sha256_file
@@ -58,27 +59,14 @@ def classify_origin_area(label: str) -> str:
     return "access_area"
 
 
-def parse_mobility_row(
+def _parse_mobility_row(
     line: str,
     *,
     year: int,
     flow_type: str,
-    source_document_year: int | None = None,
-    destinations: Sequence[str] = DESTINATION_DISTRICTS,
+    source_document_year: int | None,
+    destinations: Sequence[str],
 ) -> list[MobilityFlow]:
-    """Parse one flattened mobility row with complete destination cells.
-
-    A valid row contains one origin label, one integer per destination and a
-    final total. The total is verified but not emitted as a flow. If the PDF
-    extractor drops a blank cell, this function fails instead of shifting all
-    remaining destinations by one column.
-    """
-
-    if flow_type not in {"first_choice", "placement"}:
-        raise ValueError("flow_type must be 'first_choice' or 'placement'")
-    if not line.strip():
-        raise ValueError("line must not be empty")
-
     matches = list(_INTEGER_RE.finditer(line))
     required_numbers = len(destinations) + 1
     if len(matches) != required_numbers:
@@ -116,6 +104,33 @@ def parse_mobility_row(
     ]
 
 
+def parse_mobility_row(
+    line: str,
+    *,
+    year: int,
+    flow_type: str,
+    source_document_year: int | None = None,
+    destinations: Sequence[str] = DESTINATION_DISTRICTS,
+) -> list[MobilityFlow]:
+    """Parse one flattened mobility row with complete destination cells."""
+
+    if flow_type not in {"first_choice", "placement"}:
+        raise ValueError("flow_type must be 'first_choice' or 'placement'")
+    if not line.strip():
+        raise DataTransformationError("parse_mobility_row", "line must not be empty")
+
+    try:
+        return _parse_mobility_row(
+            line,
+            year=year,
+            flow_type=flow_type,
+            source_document_year=source_document_year,
+            destinations=destinations,
+        )
+    except ValueError as exc:
+        raise DataTransformationError("parse_mobility_row", str(exc)) from exc
+
+
 def parse_mobility_rows(
     lines: Iterable[str],
     *,
@@ -126,10 +141,12 @@ def parse_mobility_rows(
 ) -> pd.DataFrame:
     """Parse all complete mobility rows from an extracted matrix section."""
 
+    if flow_type not in {"first_choice", "placement"}:
+        raise ValueError("flow_type must be 'first_choice' or 'placement'")
+
     records: list[dict[str, object]] = []
     failures: list[str] = []
     for line in lines:
-        # Header/footer and totals are not origin rows.
         if _fold(line).startswith("total "):
             continue
         if len(_INTEGER_RE.findall(line)) < len(destinations):
@@ -142,7 +159,7 @@ def parse_mobility_rows(
                 source_document_year=source_document_year,
                 destinations=destinations,
             )
-        except ValueError as exc:
+        except DataTransformationError as exc:
             failures.append(str(exc))
             continue
         records.extend(
@@ -152,9 +169,15 @@ def parse_mobility_rows(
 
     if failures:
         examples = "; ".join(failures[:3])
-        raise ValueError(f"one or more candidate mobility rows were malformed: {examples}")
+        raise DataTransformationError(
+            "parse_mobility_rows",
+            f"one or more candidate mobility rows were malformed: {examples}",
+        )
     if not records:
-        raise ValueError("no mobility rows were parsed")
+        raise DataTransformationError(
+            "parse_mobility_rows",
+            "no mobility rows were parsed",
+        )
     return pd.DataFrame.from_records(records)
 
 
@@ -182,58 +205,67 @@ def parse_mobility_page_text(
     """Parse one DGES mobility-matrix page from extracted text."""
 
     if not text.strip():
-        raise ValueError("text must not be empty")
-    year = _page_data_year(text)
-    flow_type = _page_flow_type(text)
-    return parse_mobility_rows(
-        text.splitlines(),
-        year=year,
-        flow_type=flow_type,
-        source_document_year=source_document_year,
-    )
+        raise DataTransformationError(
+            "parse_mobility_page_text",
+            "text must not be empty",
+        )
+    try:
+        year = _page_data_year(text)
+        flow_type = _page_flow_type(text)
+        return parse_mobility_rows(
+            text.splitlines(),
+            year=year,
+            flow_type=flow_type,
+            source_document_year=source_document_year,
+        )
+    except ValueError as exc:
+        raise DataTransformationError("parse_mobility_page_text", str(exc)) from exc
 
 
 def parse_mobility_pdf(path: Path, *, source_document_year: int) -> pd.DataFrame:
-    """Parse all matrices in a DGES comparative mobility PDF.
-
-    Recent DGES mobility files contain the current and previous competition
-    year. Both are retained with ``source_document_year`` so duplicate copies
-    across annual files can be audited and deterministically deduplicated.
-    """
+    """Parse all matrices in a DGES comparative mobility PDF."""
 
     digest = sha256_file(path)
+    try:
+        pages = extract_pdf_pages(path)
+    except FileNotFoundError:
+        raise
+    except Exception as exc:
+        raise DataTransformationError(
+            "parse_mobility_pdf",
+            f"PDF read or text extraction failed: {exc}",
+        ) from exc
+
     chunks: list[pd.DataFrame] = []
-    for page_number, text in enumerate(extract_pdf_pages(path), start=1):
+    for page_number, text in enumerate(pages, start=1):
         try:
             frame = parse_mobility_page_text(
                 text,
                 source_document_year=source_document_year,
             )
-        except ValueError as exc:
-            # Cover pages have neither a matrix year nor a flow-type marker.
-            # Data-like pages that expose one of those markers must not fail
-            # silently, because that would create an invisible coverage hole.
+        except DataTransformationError as exc:
             folded = _fold(text)
             looks_like_data = bool(_YEAR_RE.search(text)) or "candidatura total" in folded
             if looks_like_data:
-                raise ValueError(f"failed to parse mobility page {page_number}: {exc}") from exc
+                raise DataTransformationError(
+                    "parse_mobility_pdf",
+                    f"page {page_number}: {exc}",
+                ) from exc
             continue
         frame["source_sha256"] = digest
         frame["source_page"] = page_number
         chunks.append(frame)
 
     if not chunks:
-        raise ValueError("no mobility matrices were parsed from PDF")
+        raise DataTransformationError(
+            "parse_mobility_pdf",
+            "no mobility matrices were parsed from PDF",
+        )
     return pd.concat(chunks, ignore_index=True)
 
 
 def select_preferred_mobility_vintage(frame: pd.DataFrame) -> pd.DataFrame:
-    """Deduplicate comparative mobility matrices across annual source files.
-
-    The preferred observation is the matrix carried by its own competition
-    year's document. A later comparative copy is used only when that source is
-    absent. Exact cell duplicates from equally preferred sources are rejected.
-    """
+    """Deduplicate comparative mobility matrices across annual source files."""
 
     required = {
         "year",
@@ -255,7 +287,7 @@ def select_preferred_mobility_vintage(frame: pd.DataFrame) -> pd.DataFrame:
         pd.to_numeric(working["source_document_year"], errors="raise")
         - pd.to_numeric(working["year"], errors="raise")
     ).abs()
-    working = working.sort_values(keys + ["_distance", "source_document_year"])
+    working = working.sort_values([*keys, "_distance", "source_document_year"])
 
     selected: list[pd.Series] = []
     for _, group in working.groupby(keys, sort=False, dropna=False):
@@ -263,16 +295,13 @@ def select_preferred_mobility_vintage(frame: pd.DataFrame) -> pd.DataFrame:
         candidates = group.loc[group["_distance"] == best_distance]
         if len(candidates) > 1 and candidates["count"].nunique(dropna=False) > 1:
             raise ValueError("conflicting mobility cells at the same preferred vintage distance")
-        # Prefer the earliest source document when two copies have identical
-        # distance; this privileges the contemporaneous publication direction.
         selected.append(candidates.sort_values("source_document_year").iloc[0])
 
-    result = pd.DataFrame(selected).drop(columns="_distance").reset_index(drop=True)
-    return result
+    return pd.DataFrame(selected).drop(columns="_distance").reset_index(drop=True)
 
 
 def comparable_same_district_flows(frame: pd.DataFrame) -> pd.DataFrame:
-    """Return only district/autonomous-region origins suitable for diagonal metrics."""
+    """Return district/autonomous-region origins suitable for diagonal metrics."""
 
     required = {"origin_area", "origin_area_type", "destination_district", "count"}
     missing = sorted(required.difference(frame.columns))

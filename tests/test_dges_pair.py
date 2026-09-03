@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import pytest
+from dataexcept import DataTransformationError
 
-from pt_he_pipeline.dges_pair import parse_pair_statistics_text
-
+from pt_he_pipeline.dges_pair import (
+    parse_pair_statistics_pdf,
+    parse_pair_statistics_text,
+)
 
 TEXT_2024 = """
 ACESSO AO ENSINO SUPERIOR 2024 1ª Fase do Concurso Nacional de Acesso
@@ -78,3 +81,33 @@ def test_parse_legacy_pair_statistics_without_general_cutoff() -> None:
     assert parsed.placements == 1
     assert parsed.mean_application_grade_placed == pytest.approx(136.0)
     assert parsed.last_placed_general_contingent_grade is None
+
+
+def test_pair_parser_classifies_malformed_source_as_transformation_error() -> None:
+    malformed = "Estabelecimento: 0160\nCurso Superior: 8083\n"
+    with pytest.raises(DataTransformationError, match="pair metadata is incomplete"):
+        parse_pair_statistics_text(malformed, year=2024, phase=1)
+
+
+def test_pair_parser_keeps_invalid_phase_as_value_error() -> None:
+    with pytest.raises(ValueError, match="phase must be"):
+        parse_pair_statistics_text(TEXT_2024, year=2024, phase=4)
+
+
+def test_pair_pdf_wraps_unreadable_pdf_as_transformation_error(tmp_path) -> None:
+    path = tmp_path / "broken.pdf"
+    path.write_bytes(b"not a PDF")
+    with pytest.raises(DataTransformationError, match="PDF read or text extraction failed"):
+        parse_pair_statistics_pdf(path, year=2024, phase=1)
+
+
+def test_pair_pdf_validates_phase_before_file_access(tmp_path) -> None:
+    missing = tmp_path / "missing.pdf"
+    with pytest.raises(ValueError, match="phase must be"):
+        parse_pair_statistics_pdf(missing, year=2024, phase=4)
+
+
+def test_pair_pdf_keeps_missing_file_as_file_error(tmp_path) -> None:
+    missing = tmp_path / "missing.pdf"
+    with pytest.raises(FileNotFoundError):
+        parse_pair_statistics_pdf(missing, year=2024, phase=1)
