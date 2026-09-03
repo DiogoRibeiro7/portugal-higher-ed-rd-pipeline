@@ -226,8 +226,18 @@ def parse_mobility_pdf(path: Path, *, source_document_year: int) -> pd.DataFrame
     """Parse all matrices in a DGES comparative mobility PDF."""
 
     digest = sha256_file(path)
+    try:
+        pages = extract_pdf_pages(path)
+    except FileNotFoundError:
+        raise
+    except Exception as exc:
+        raise DataTransformationError(
+            "parse_mobility_pdf",
+            f"PDF read or text extraction failed: {exc}",
+        ) from exc
+
     chunks: list[pd.DataFrame] = []
-    for page_number, text in enumerate(extract_pdf_pages(path), start=1):
+    for page_number, text in enumerate(pages, start=1):
         try:
             frame = parse_mobility_page_text(
                 text,
@@ -277,7 +287,7 @@ def select_preferred_mobility_vintage(frame: pd.DataFrame) -> pd.DataFrame:
         pd.to_numeric(working["source_document_year"], errors="raise")
         - pd.to_numeric(working["year"], errors="raise")
     ).abs()
-    working = working.sort_values(keys + ["_distance", "source_document_year"])
+    working = working.sort_values([*keys, "_distance", "source_document_year"])
 
     selected: list[pd.Series] = []
     for _, group in working.groupby(keys, sort=False, dropna=False):
