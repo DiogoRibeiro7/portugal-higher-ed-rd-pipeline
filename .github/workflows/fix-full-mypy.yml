@@ -92,8 +92,8 @@ jobs:
                   ('"year": int(keys[0]),', '"year": int(str(keys[0])),'),
                   ('"year": int(year),', '"year": int(str(year)),'),
                   (
-                      "\n\ndef validate_registry(\n",
-                      "\n\n_DEFAULT_MULTI_COURSE_POLICY = MultiCoursePolicy()\n\n\ndef validate_registry(\n",
+                      "\n\ndef validate_registry(programmes: Sequence[RegisteredProgramme]) -> None:\n",
+                      "\n\n_DEFAULT_MULTI_COURSE_POLICY = MultiCoursePolicy()\n\n\ndef validate_registry(programmes: Sequence[RegisteredProgramme]) -> None:\n",
                   ),
                   (
                       "policy: MultiCoursePolicy = MultiCoursePolicy(),",
