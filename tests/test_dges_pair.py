@@ -7,6 +7,7 @@ from pt_he_pipeline.dges_pair import (
     parse_pair_statistics_pdf,
     parse_pair_statistics_text,
 )
+
 TEXT_2024 = """
 ACESSO AO ENSINO SUPERIOR 2024 1ª Fase do Concurso Nacional de Acesso
 Estabelecimento: 0160
