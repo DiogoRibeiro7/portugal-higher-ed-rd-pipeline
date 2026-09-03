@@ -4,8 +4,9 @@ import argparse
 import hashlib
 import re
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import pandas as pd
 import yaml
@@ -62,35 +63,34 @@ def _sha256(path: Path) -> str:
 
 
 def _xlsb_rows(path: Path) -> Iterable[dict[str, Any]]:
-    with open_workbook(path) as book:
-        with book.get_sheet("Tabela1") as sheet:
-            header: list[Any] | None = None
-            index: dict[str, int] = {}
-            for row in sheet.rows():
-                values = [cell.v for cell in row]
-                if header is None:
-                    if "Código do estabelecimento de ensino" in values:
-                        header = values
-                        index = {str(v).strip(): i for i, v in enumerate(values) if v is not None}
-                    continue
+    with open_workbook(path) as book, book.get_sheet("Tabela1") as sheet:
+        header: list[Any] | None = None
+        index: dict[str, int] = {}
+        for row in sheet.rows():
+            values = [cell.v for cell in row]
+            if header is None:
+                if "Código do estabelecimento de ensino" in values:
+                    header = values
+                    index = {str(v).strip(): i for i, v in enumerate(values) if v is not None}
+                continue
 
-                def get(name: str) -> Any:
-                    i = index[name]
-                    return values[i] if i < len(values) else None
+            def get(name: str) -> Any:
+                i = index[name]
+                return values[i] if i < len(values) else None
 
-                yield {
-                    "academic_year": _short_year(str(get("Ano letivo"))),
-                    "institution_code": _normalise_code(
-                        get("Código do estabelecimento de ensino"), 4
-                    ),
-                    "institution_name": get("Estabelecimento de ensino"),
-                    "cycle": get("Curso/Ciclo de estudos"),
-                    "field": _normalise_code(
-                        get("Área de educação e formação - Código da área geral"), 2
-                    ),
-                    "first_time": get("Primeira vez"),
-                    "count": get("N"),
-                }
+            yield {
+                "academic_year": _short_year(str(get("Ano letivo"))),
+                "institution_code": _normalise_code(
+                    get("Código do estabelecimento de ensino"), 4
+                ),
+                "institution_name": get("Estabelecimento de ensino"),
+                "cycle": get("Curso/Ciclo de estudos"),
+                "field": _normalise_code(
+                    get("Área de educação e formação - Código da área geral"), 2
+                ),
+                "first_time": get("Primeira vez"),
+                "count": get("N"),
+            }
 
 
 def _choose_diplomados_sheet(book: Any) -> str:
@@ -295,7 +295,7 @@ def _audit(
         component_summary.append(
             {
                 "component": component,
-                "series_total": int(len(group)),
+                "series_total": len(group),
                 "series_meeting_five_year_minimum": int(
                     group["meets_five_year_minimum"].sum()
                 ),
@@ -318,11 +318,11 @@ def _audit(
             "fields": sorted(FIELDS),
         },
         "summary": {
-            "institution_field_component_series": int(len(support)),
+            "institution_field_component_series": len(support),
             "eligible_series": int(support["meets_five_year_minimum"].sum()),
-            "institution_field_pairs": int(len(pair)),
+            "institution_field_pairs": len(pair),
             "pairs_with_all_five_components_eligible": int(pair["all_five_eligible"].sum()),
-            "institution_codes": int(len(concordance)),
+            "institution_codes": len(concordance),
             "codes_in_both_raides_families": int(
                 (concordance["present_inscritos"] & concordance["present_diplomados"]).sum()
             ),
@@ -335,7 +335,7 @@ def _audit(
         "field_summary": [
             {
                 "field": str(field),
-                "institution_field_pairs": int(len(group)),
+                "institution_field_pairs": len(group),
                 "pairs_with_all_five_components_eligible": int(
                     group["all_five_eligible"].sum()
                 ),

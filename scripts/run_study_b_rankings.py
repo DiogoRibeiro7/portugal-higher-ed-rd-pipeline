@@ -14,6 +14,12 @@ from typing import Final
 
 import pandas as pd
 
+from pt_he_pipeline.study_b_multi_course import add_metrics, build_stable_panel, reconcile_sources
+from pt_he_pipeline.study_b_rankings import (
+    PRIMARY_OUTCOMES,
+    RankingPolicy,
+    leave_one_parent_out_comparison,
+)
 from scripts.build_study_b_multi_course import (
     DEFAULT_CONFIG,
     DEFAULT_SOURCE,
@@ -23,12 +29,6 @@ from scripts.build_study_b_multi_course import (
     _registry,
 )
 from scripts.validate_study_b_ranking_values import validate_private_panel
-from pt_he_pipeline.study_b_multi_course import add_metrics, build_stable_panel, reconcile_sources
-from pt_he_pipeline.study_b_rankings import (
-    PRIMARY_OUTCOMES,
-    RankingPolicy,
-    leave_one_parent_out_comparison,
-)
 
 ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 CONCORDANCE: Final[Path] = (

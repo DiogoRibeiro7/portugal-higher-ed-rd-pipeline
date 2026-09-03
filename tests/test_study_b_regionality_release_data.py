@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import numpy as np
 
-from scripts.build_study_b_regionality import _load_source
 from pt_he_pipeline.study_b_regionality import (
     build_first_choice_placement_contrast,
     build_regionality_summary,
     reconcile_overlapping_flows,
 )
+from scripts.build_study_b_regionality import _load_source
 
 
 def _rebuild():

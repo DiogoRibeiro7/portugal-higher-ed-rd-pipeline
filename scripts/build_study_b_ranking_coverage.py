@@ -12,6 +12,7 @@ from typing import Final
 
 import pandas as pd
 
+from pt_he_pipeline.study_b_multi_course import add_metrics, build_stable_panel, reconcile_sources
 from scripts.build_study_b_multi_course import (
     DEFAULT_CONFIG,
     DEFAULT_SOURCE,
@@ -20,7 +21,6 @@ from scripts.build_study_b_multi_course import (
     _policy,
     _registry,
 )
-from pt_he_pipeline.study_b_multi_course import add_metrics, build_stable_panel, reconcile_sources
 
 ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 CONCORDANCE: Final[Path] = ROOT / "data" / "curated" / "dges" / "study_b_parent_university_concordance.csv"
@@ -84,7 +84,7 @@ def build() -> pd.DataFrame:
                 "eligible_parent_institutions": len(eligible_parents),
                 "verified_ranked_parent_institutions": len(verified_in_panel),
                 "unresolved_parent_institutions": len(unresolved_in_panel),
-                "eligible_rows": int(len(year_panel)),
+                "eligible_rows": len(year_panel),
                 "verified_ranked_rows": int(verified_mask.sum()),
                 "unresolved_rows": int(unresolved_mask.sum()),
                 "verified_row_coverage": (
