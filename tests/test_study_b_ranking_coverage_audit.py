@@ -28,7 +28,10 @@ def test_independent_nursing_schools_are_not_reassigned() -> None:
 
 
 def test_timing_has_one_frozen_edition_per_provider_and_year() -> None:
-    frame = pd.read_csv(TIMING, parse_dates=["application_start", "application_deadline", "publication_date"])
+    frame = pd.read_csv(
+        TIMING,
+        parse_dates=["application_start", "application_deadline", "publication_date"],
+    )
     assert len(frame) == 9
     assert set(frame["provider"]) == {"QS", "Times Higher Education", "ARWU"}
     assert set(frame["admission_year"]) == {2018, 2019, 2020}
@@ -37,7 +40,10 @@ def test_timing_has_one_frozen_edition_per_provider_and_year() -> None:
 
 
 def test_arwu_2020_preserves_registered_deadline_rule_edge_case() -> None:
-    frame = pd.read_csv(TIMING, parse_dates=["application_start", "application_deadline", "publication_date"])
+    frame = pd.read_csv(
+        TIMING,
+        parse_dates=["application_start", "application_deadline", "publication_date"],
+    )
     row = frame.loc[(frame["admission_year"] == 2020) & (frame["provider"] == "ARWU")].iloc[0]
     assert row["application_start"] < row["publication_date"] <= row["application_deadline"]
     assert row["timing_status"] == "eligible_before_deadline_but_after_open"

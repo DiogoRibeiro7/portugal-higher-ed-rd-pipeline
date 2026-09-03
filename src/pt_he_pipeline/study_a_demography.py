@@ -56,11 +56,14 @@ class CohortProxyPolicy:
             raise ValueError("population_lag_years must be non-negative")
 
 
+_DEFAULT_COHORT_PROXY_POLICY = CohortProxyPolicy()
+
+
 def validate_population_15_24(
     population: pd.DataFrame,
     admission_years: list[int],
     *,
-    policy: CohortProxyPolicy = CohortProxyPolicy(),
+    policy: CohortProxyPolicy = _DEFAULT_COHORT_PROXY_POLICY,
 ) -> None:
     """Validate demographic coverage required by the admission-year sensitivity."""
 
@@ -102,7 +105,7 @@ def build_demographic_normalised_stem(
     stem_summary: pd.DataFrame,
     population: pd.DataFrame,
     *,
-    policy: CohortProxyPolicy = CohortProxyPolicy(),
+    policy: CohortProxyPolicy = _DEFAULT_COHORT_PROXY_POLICY,
 ) -> pd.DataFrame:
     """Attach a broad-cohort denominator to the observed all-STEM series.
 
@@ -150,7 +153,7 @@ def build_demographic_normalised_components(
     components: pd.DataFrame,
     population: pd.DataFrame,
     *,
-    policy: CohortProxyPolicy = CohortProxyPolicy(),
+    policy: CohortProxyPolicy = _DEFAULT_COHORT_PROXY_POLICY,
 ) -> pd.DataFrame:
     """Return component-level placement rates using the same cohort proxy."""
 

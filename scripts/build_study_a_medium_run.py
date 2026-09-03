@@ -230,7 +230,7 @@ def _write_findings(
         "",
         "## Descriptive fitted path",
         "",
-        f"Across all source-locked years, the all-STEM log-linear placement slope corresponds to",
+        "Across all source-locked years, the all-STEM log-linear placement slope corresponds to",
         f"{float(all_stem_trend['placement_annual_trend_percent']):+.2f}% per calendar year",
         f"(descriptive R-squared {float(all_stem_trend['placement_r_squared']):.3f}). "
         "The placement-share",
