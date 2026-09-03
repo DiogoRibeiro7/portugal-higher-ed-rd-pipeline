@@ -99,6 +99,27 @@ jobs:
               "N",
           ):
               text = text.replace(f'get("{label}")', f'_row_value(values, index, "{label}")')
+          text = text.replace(
+              '    with open_workbook(path) as book:\n        with book.get_sheet("Tabela1") as sheet:\n',
+              '    with open_workbook(path) as book, book.get_sheet("Tabela1") as sheet:\n',
+          )
+          nested = text.split('    with open_workbook(path) as book, book.get_sheet("Tabela1") as sheet:\n', 1)
+          if len(nested) != 2:
+              raise SystemExit("expected combined XLSB context marker not found")
+          prefix, remainder = nested
+          end_marker = "\n\ndef _choose_diplomados_sheet"
+          if end_marker not in remainder:
+              raise SystemExit("expected XLSB reader end marker not found")
+          body, suffix = remainder.split(end_marker, 1)
+          body = "\n".join(
+              line[4:] if line.startswith("        ") else line
+              for line in body.split("\n")
+          )
+          text = prefix + '    with open_workbook(path) as book, book.get_sheet("Tabela1") as sheet:\n' + body + end_marker + suffix
+          text = text.replace(
+              '                _row_value(values, index, "Área de educação e formação - Código da área geral"), 2\n',
+              '                _row_value(\n                    values,\n                    index,\n                    "Área de educação e formação - Código da área geral",\n                ),\n                2,\n',
+          )
           path.write_text(text, encoding="utf-8")
 
           path = Path("src/pt_he_pipeline/study_a_demography.py")
