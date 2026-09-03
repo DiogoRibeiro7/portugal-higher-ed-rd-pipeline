@@ -34,6 +34,18 @@ jobs:
                       '    data = sm.add_constant(data, has_constant="add")\n',
                       '    data = pd.DataFrame(sm.add_constant(data, has_constant="add"))\n',
                   ),
+                  (
+                      """        ranked_mask = subset[\"parent_institution_id\"].astype(str).map(\n            lambda value: (value,) in keys\n        )\n""",
+                      """        ranked_parent_ids = {key[0] for key in keys}\n        ranked_mask = subset[\"parent_institution_id\"].astype(str).isin(ranked_parent_ids)\n""",
+                  ),
+                  (
+                      "\n\ndef validate_ranking_rows(\n",
+                      "\n\n_DEFAULT_RANKING_POLICY = RankingPolicy()\n\n\ndef validate_ranking_rows(\n",
+                  ),
+                  (
+                      "policy: RankingPolicy = RankingPolicy(),",
+                      "policy: RankingPolicy = _DEFAULT_RANKING_POLICY,",
+                  ),
               ],
               "src/pt_he_pipeline/study_b_course_pilot.py": [
                   ('"year": int(key[0]),', '"year": int(str(key[0])),'),
@@ -41,6 +53,14 @@ jobs:
                   (
                       '    return sm.add_constant(design, has_constant="add")\n',
                       '    return pd.DataFrame(sm.add_constant(design, has_constant="add"))\n',
+                  ),
+                  (
+                      "\n\ndef validate_source_rows(\n",
+                      "\n\n_DEFAULT_MATCHED_COURSE_POLICY = MatchedCoursePolicy()\n\n\ndef validate_source_rows(\n",
+                  ),
+                  (
+                      "policy: MatchedCoursePolicy = MatchedCoursePolicy(),",
+                      "policy: MatchedCoursePolicy = _DEFAULT_MATCHED_COURSE_POLICY,",
                   ),
               ],
               "src/pt_he_pipeline/study_a.py": [
@@ -64,9 +84,21 @@ jobs:
                   ),
               ],
               "src/pt_he_pipeline/study_b_multi_course.py": [
+                  (
+                      "from dataclasses import dataclass\nfrom typing import Sequence\n",
+                      "from collections.abc import Sequence\nfrom dataclasses import dataclass\n",
+                  ),
                   ('        programme = registry[code]\n', '        programme = registry[str(code)]\n'),
                   ('"year": int(keys[0]),', '"year": int(str(keys[0])),'),
                   ('"year": int(year),', '"year": int(str(year)),'),
+                  (
+                      "\n\ndef validate_registry(\n",
+                      "\n\n_DEFAULT_MULTI_COURSE_POLICY = MultiCoursePolicy()\n\n\ndef validate_registry(\n",
+                  ),
+                  (
+                      "policy: MultiCoursePolicy = MultiCoursePolicy(),",
+                      "policy: MultiCoursePolicy = _DEFAULT_MULTI_COURSE_POLICY,",
+                  ),
               ],
           }
 
@@ -84,8 +116,19 @@ jobs:
       - name: Install locked dependencies
         run: poetry install --no-interaction
       - name: Check repaired source
+        shell: bash
         run: |
-          poetry run ruff check src
+          files=(
+            src/pt_he_pipeline/dges.py
+            src/pt_he_pipeline/dges_placements.py
+            src/pt_he_pipeline/study_a.py
+            src/pt_he_pipeline/study_b_course_pilot.py
+            src/pt_he_pipeline/study_b_multi_course.py
+            src/pt_he_pipeline/study_b_rankings.py
+            src/pt_he_pipeline/study_b_regionality.py
+          )
+          poetry run ruff check --fix --unsafe-fixes "${files[@]}"
+          poetry run ruff check "${files[@]}"
           poetry run mypy src
       - name: Commit repairs
         shell: bash
