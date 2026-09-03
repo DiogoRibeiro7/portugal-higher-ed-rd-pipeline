@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 import pandas as pd
+from dataexcept import DataTransformationError
 from pypdf import PdfReader
 
 from pt_he_pipeline.io import sha256_file
@@ -21,7 +22,9 @@ def _fold(value: str) -> str:
     """Return an accent-insensitive, whitespace-normalised lookup string."""
 
     decomposed = unicodedata.normalize("NFKD", value)
-    without_marks = "".join(char for char in decomposed if not unicodedata.combining(char))
+    without_marks = "".join(
+        char for char in decomposed if not unicodedata.combining(char)
+    )
     return " ".join(without_marks.casefold().split())
 
 
@@ -38,7 +41,11 @@ def _find_line_index(lines: list[str], needle: str, *, start: int = 0) -> int:
 
 
 def _extract_code(line: str, label: str) -> str:
-    match = re.search(rf"{re.escape(label)}\s*:\s*([0-9A-Za-z]{{4}})", line, flags=re.IGNORECASE)
+    match = re.search(
+        rf"{re.escape(label)}\s*:\s*([0-9A-Za-z]{{4}})",
+        line,
+        flags=re.IGNORECASE,
+    )
     if match is None:
         raise ValueError(f"could not parse {label!r} code")
     code = match.group(1).upper()
@@ -60,19 +67,12 @@ def _optional_float_after_label(lines: Iterable[str], label: str) -> float | Non
     return None
 
 
-def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairStatistics:
-    """Parse one text-extracted DGES pair-statistics page.
-
-    The parser uses semantic section markers rather than page coordinates. The
-    same core structure is observable in DGES pair sheets from at least 2004
-    through recent vintages.
-    """
-
-    if not text.strip():
-        raise ValueError("text must not be empty")
-    if phase not in {1, 2, 3}:
-        raise ValueError("phase must be 1, 2 or 3")
-
+def _parse_pair_statistics_text(
+    text: str,
+    *,
+    year: int,
+    phase: int,
+) -> DgesPairStatistics:
     lines = _clean_lines(text)
     institution_index = _find_line_index(lines, "Estabelecimento:")
     course_index = _find_line_index(lines, "Curso Superior:")
@@ -92,7 +92,11 @@ def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairS
         degree = None
 
     option_start = _find_line_index(lines, "OPÇÃO CANDIDATURA")
-    placement_start = _find_line_index(lines, "ETAPA COLOCAÇÃO", start=option_start + 1)
+    placement_start = _find_line_index(
+        lines,
+        "ETAPA COLOCAÇÃO",
+        start=option_start + 1,
+    )
 
     first_choice_applicants: int | None = None
     applicants: int | None = None
@@ -118,7 +122,13 @@ def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairS
 
     last_grade: float | None = None
     placement_end = len(lines)
-    for candidate in ("CURSO DO 12", "DISTRITO/", "MÉDIAS DOS COLOCADOS", "SEXO DOS CANDIDATOS"):
+    section_candidates = (
+        "CURSO DO 12",
+        "DISTRITO/",
+        "MÉDIAS DOS COLOCADOS",
+        "SEXO DOS CANDIDATOS",
+    )
+    for candidate in section_candidates:
         try:
             placement_end = min(
                 placement_end,
@@ -136,7 +146,10 @@ def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairS
     mean_grade: float | None = None
     try:
         means_start = _find_line_index(lines, "MÉDIAS DOS COLOCADOS")
-        mean_grade = _optional_float_after_label(lines[means_start + 1 :], "Nota de candidatura")
+        mean_grade = _optional_float_after_label(
+            lines[means_start + 1 :],
+            "Nota de candidatura",
+        )
     except ValueError:
         # Some historical or phase-specific sheets may omit the means block.
         mean_grade = None
@@ -155,6 +168,31 @@ def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairS
         mean_application_grade_placed=mean_grade,
         last_placed_general_contingent_grade=last_grade,
     )
+
+
+def parse_pair_statistics_text(text: str, *, year: int, phase: int) -> DgesPairStatistics:
+    """Parse one text-extracted DGES pair-statistics page.
+
+    The parser uses semantic section markers rather than page coordinates. The
+    same core structure is observable in DGES pair sheets from at least 2004
+    through recent vintages.
+    """
+
+    if phase not in {1, 2, 3}:
+        raise ValueError("phase must be 1, 2 or 3")
+    if not text.strip():
+        raise DataTransformationError(
+            "parse_pair_statistics_text",
+            "text must not be empty",
+        )
+
+    try:
+        return _parse_pair_statistics_text(text, year=year, phase=phase)
+    except ValueError as exc:
+        raise DataTransformationError(
+            "parse_pair_statistics_text",
+            str(exc),
+        ) from exc
 
 
 def extract_pdf_pages(path: Path) -> list[str]:
@@ -188,8 +226,11 @@ def parse_pair_statistics_pdf(path: Path, *, year: int, phase: int) -> pd.DataFr
             continue
         try:
             parsed = parse_pair_statistics_text(text, year=year, phase=phase)
-        except ValueError as exc:
-            raise ValueError(f"failed to parse pair-statistics page {page_number}: {exc}") from exc
+        except DataTransformationError as exc:
+            raise DataTransformationError(
+                "parse_pair_statistics_pdf",
+                f"page {page_number}: {exc}",
+            ) from exc
         row = {
             field: getattr(parsed, field)
             for field in parsed.__dataclass_fields__
@@ -199,5 +240,8 @@ def parse_pair_statistics_pdf(path: Path, *, year: int, phase: int) -> pd.DataFr
         records.append(row)
 
     if not records:
-        raise ValueError("no DGES pair-statistics pages were parsed")
+        raise DataTransformationError(
+            "parse_pair_statistics_pdf",
+            "no DGES pair-statistics pages were parsed",
+        )
     return pd.DataFrame.from_records(records)
