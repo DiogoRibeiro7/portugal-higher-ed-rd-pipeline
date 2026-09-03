@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from dataexcept import DataTransformationError
 
 from pt_he_pipeline.dges_pair import parse_pair_statistics_text
 
@@ -78,3 +79,14 @@ def test_parse_legacy_pair_statistics_without_general_cutoff() -> None:
     assert parsed.placements == 1
     assert parsed.mean_application_grade_placed == pytest.approx(136.0)
     assert parsed.last_placed_general_contingent_grade is None
+
+
+def test_pair_parser_classifies_malformed_source_as_transformation_error() -> None:
+    malformed = "Estabelecimento: 0160\nCurso Superior: 8083\n"
+    with pytest.raises(DataTransformationError, match="pair metadata is incomplete"):
+        parse_pair_statistics_text(malformed, year=2024, phase=1)
+
+
+def test_pair_parser_keeps_invalid_phase_as_value_error() -> None:
+    with pytest.raises(ValueError, match="phase must be"):
+        parse_pair_statistics_text(TEXT_2024, year=2024, phase=4)
