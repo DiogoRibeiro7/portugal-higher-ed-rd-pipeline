@@ -21,29 +21,8 @@ jobs:
         run: poetry check --lock
       - name: Install dependencies
         run: poetry install --no-interaction
-      - name: Ruff changed Python files
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            base="${{ github.event.pull_request.base.sha }}"
-          else
-            base="${{ github.event.before }}"
-            if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
-              base="${{ github.sha }}^"
-            fi
-          fi
-
-          mapfile -t python_files < <(
-            git diff --name-only --diff-filter=ACMR "$base" "${{ github.sha }}" -- '*.py'
-          )
-
-          if (( ${#python_files[@]} == 0 )); then
-            echo "No changed Python files to lint."
-            exit 0
-          fi
-
-          printf 'Linting changed Python files:\n%s\n' "${python_files[*]}"
-          poetry run ruff check "${python_files[@]}"
+      - name: Ruff full repository
+        run: poetry run ruff check .
       - name: Mypy full source tree
         run: poetry run mypy src
       - name: Tests
