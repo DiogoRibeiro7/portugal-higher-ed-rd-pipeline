@@ -6,6 +6,7 @@ import math
 
 import numpy as np
 import pandas as pd
+from dataexcept import DataValidationError, MissingColumnError
 
 from pt_he_pipeline.types import RegionalityMetrics, TrendSummary
 
@@ -21,16 +22,16 @@ def safe_ratio(numerator: float, denominator: float) -> float:
 
 
 def add_access_metrics(frame: pd.DataFrame) -> pd.DataFrame:
-    """Add demand and occupancy ratios to a CNA course–institution panel.
+    """Add demand and occupancy ratios to a CNA course-institution panel.
 
     Missing/zero denominators yield ``NaN`` rather than infinity or an invented
     zero. The input frame is not mutated.
     """
 
     required = {"applicants", "vacancies", "placements"}
-    missing = required.difference(frame.columns)
+    missing = sorted(required.difference(frame.columns))
     if missing:
-        raise ValueError(f"missing columns: {sorted(missing)}")
+        raise MissingColumnError(missing[0], dataframe="access_metrics_frame")
 
     output = frame.copy()
     vacancies = pd.to_numeric(output["vacancies"], errors="coerce")
@@ -56,21 +57,48 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
     """
 
     if matrix.empty:
-        raise ValueError("matrix must not be empty")
+        raise DataValidationError("matrix", None, "matrix must not be empty")
     if set(matrix.index) != set(matrix.columns):
-        raise ValueError("matrix must have matching origin and destination labels")
+        raise DataValidationError(
+            "matrix_labels",
+            {"origins": list(matrix.index), "destinations": list(matrix.columns)},
+            "matrix must have matching origin and destination labels",
+        )
 
-    values = matrix.astype(float)
+    try:
+        values = matrix.astype(float)
+    except (TypeError, ValueError) as exc:
+        raise DataValidationError(
+            "matrix_values",
+            matrix.to_dict(),
+            "matrix values must be numeric",
+        ) from exc
     if values.isna().any().any():
-        raise ValueError("matrix must not contain missing values")
+        raise DataValidationError(
+            "matrix_values",
+            values.to_dict(),
+            "matrix must not contain missing values",
+        )
     if (values.to_numpy() < 0).any():
-        raise ValueError("flows must be non-negative")
+        raise DataValidationError(
+            "matrix_values",
+            values.to_dict(),
+            "flows must be non-negative",
+        )
 
     total = float(values.to_numpy().sum())
     if total <= 0:
-        raise ValueError("matrix must contain positive total flow")
+        raise DataValidationError(
+            "total_flow",
+            total,
+            "matrix must contain positive total flow",
+        )
 
-    diagonal = sum(float(values.loc[label, label]) for label in values.index)
+    labels = [str(label) for label in values.index]
+    values.index = labels
+    values.columns = [str(label) for label in values.columns]
+    numeric_matrix = values.to_numpy(dtype=float)
+    diagonal = float(np.trace(numeric_matrix))
     same_share = diagonal / total
 
     # Conditional destination entropy averaged over origins, normalised to [0, 1].
@@ -81,13 +109,14 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
     for label, row_total in row_totals.items():
         if row_total <= 0:
             continue
-        probabilities = (values.loc[label] / row_total).to_numpy(dtype=float)
+        label_str = str(label)
+        probabilities = (values.loc[label_str] / row_total).to_numpy(dtype=float)
         positive = probabilities[probabilities > 0]
         entropy = -float(np.sum(positive * np.log(positive))) / entropy_scale
         weighted_entropy += (float(row_total) / total) * entropy
 
     # Mutual information between origin and destination, in nats.
-    joint = values.to_numpy(dtype=float) / total
+    joint = numeric_matrix / total
     p_origin = joint.sum(axis=1, keepdims=True)
     p_destination = joint.sum(axis=0, keepdims=True)
     expected = p_origin @ p_destination
@@ -113,7 +142,11 @@ def log_linear_trend(years: pd.Series, values: pd.Series) -> TrendSummary:
     x = x[valid]
     y = y[valid]
     if x.size < 3:
-        raise ValueError("at least three positive observations are required")
+        raise DataValidationError(
+            "trend_observations",
+            int(x.size),
+            "at least three positive observations are required",
+        )
 
     x_centered = x - x.mean()
     log_y = np.log(y)
@@ -145,4 +178,5 @@ def compound_annual_growth(start: float, end: float, years: int) -> float:
         raise ValueError("start must be positive and end must be non-negative")
     if end == 0:
         return -1.0
-    return (end / start) ** (1.0 / years) - 1.0
+    growth = (float(end) / float(start)) ** (1.0 / float(years)) - 1.0
+    return float(growth)

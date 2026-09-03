@@ -4,6 +4,7 @@ import math
 
 import pandas as pd
 import pytest
+from dataexcept import DataValidationError, MissingColumnError
 
 from pt_he_pipeline.metrics import (
     add_access_metrics,
@@ -33,6 +34,11 @@ def test_add_access_metrics() -> None:
     assert math.isnan(float(result.loc[1, "applicants_per_vacancy"]))
 
 
+def test_add_access_metrics_rejects_missing_column_with_dataexcept() -> None:
+    with pytest.raises(MissingColumnError):
+        add_access_metrics(pd.DataFrame({"applicants": [10], "vacancies": [5]}))
+
+
 def test_regionality_metrics_identify_diagonal_concentration() -> None:
     matrix = pd.DataFrame(
         [[80, 20], [10, 90]],
@@ -46,6 +52,12 @@ def test_regionality_metrics_identify_diagonal_concentration() -> None:
     assert result.mutual_information > 0.0
 
 
+def test_regionality_metrics_rejects_nonnumeric_flow_with_dataexcept() -> None:
+    matrix = pd.DataFrame([[1, "bad"], [2, 3]], index=["A", "B"], columns=["A", "B"])
+    with pytest.raises(DataValidationError, match="numeric"):
+        regionality_metrics(matrix)
+
+
 def test_log_linear_trend_recovers_constant_growth() -> None:
     years = pd.Series([2020, 2021, 2022, 2023])
     values = pd.Series([100.0, 110.0, 121.0, 133.1])
@@ -54,5 +66,17 @@ def test_log_linear_trend_recovers_constant_growth() -> None:
     assert result.r_squared == pytest.approx(1.0)
 
 
+def test_log_linear_trend_rejects_insufficient_data_with_dataexcept() -> None:
+    years = pd.Series([2020, 2021])
+    values = pd.Series([100.0, 110.0])
+    with pytest.raises(DataValidationError, match="three positive observations"):
+        log_linear_trend(years, values)
+
+
 def test_compound_annual_growth() -> None:
     assert compound_annual_growth(100.0, 121.0, 2) == pytest.approx(0.1)
+
+
+def test_compound_annual_growth_keeps_programmer_preconditions_as_value_error() -> None:
+    with pytest.raises(ValueError, match="years must be positive"):
+        compound_annual_growth(100.0, 121.0, 0)

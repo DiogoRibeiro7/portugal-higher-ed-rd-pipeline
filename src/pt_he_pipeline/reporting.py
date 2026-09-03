@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pandas as pd
+from dataexcept import DataValidationError, MissingColumnError
 
 
 def pair_coverage_report(frame: pd.DataFrame) -> pd.DataFrame:
@@ -11,9 +12,13 @@ def pair_coverage_report(frame: pd.DataFrame) -> pd.DataFrame:
     required = {"year", "phase", "institution_id", "course_id"}
     missing = sorted(required.difference(frame.columns))
     if missing:
-        raise ValueError(f"missing coverage columns: {missing}")
+        raise MissingColumnError(missing[0], dataframe="coverage_frame")
     if frame.empty:
-        raise ValueError("frame must not be empty")
+        raise DataValidationError(
+            "coverage_frame",
+            None,
+            "frame must not be empty",
+        )
 
     monitored = [
         column
@@ -31,9 +36,9 @@ def pair_coverage_report(frame: pd.DataFrame) -> pd.DataFrame:
     records: list[dict[str, object]] = []
     for (year, phase), group in frame.groupby(["year", "phase"], sort=True, dropna=False):
         record: dict[str, object] = {
-            "year": int(year),
-            "phase": int(phase),
-            "rows": int(len(group)),
+            "year": int(str(year)),
+            "phase": int(str(phase)),
+            "rows": len(group),
             "institutions": int(group["institution_id"].nunique()),
             "courses": int(group["course_id"].nunique()),
         }
