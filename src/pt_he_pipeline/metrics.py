@@ -58,6 +58,12 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
 
     if matrix.empty:
         raise DataValidationError("matrix", None, "matrix must not be empty")
+    if not matrix.index.is_unique or not matrix.columns.is_unique:
+        raise DataValidationError(
+            "matrix_labels",
+            {"origins": list(matrix.index), "destinations": list(matrix.columns)},
+            "matrix origin and destination labels must be unique",
+        )
     if set(matrix.index) != set(matrix.columns):
         raise DataValidationError(
             "matrix_labels",
@@ -94,23 +100,20 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
             "matrix must contain positive total flow",
         )
 
-    labels = [str(label) for label in values.index]
-    values.index = labels
-    values.columns = [str(label) for label in values.columns]
+    values = values.reindex(columns=values.index)
     numeric_matrix = values.to_numpy(dtype=float)
     diagonal = float(np.trace(numeric_matrix))
     same_share = diagonal / total
 
     # Conditional destination entropy averaged over origins, normalised to [0, 1].
-    n_destinations = values.shape[1]
+    n_destinations = numeric_matrix.shape[1]
     entropy_scale = math.log(n_destinations) if n_destinations > 1 else 1.0
     weighted_entropy = 0.0
-    row_totals = values.sum(axis=1)
-    for label, row_total in row_totals.items():
+    row_totals = numeric_matrix.sum(axis=1)
+    for row, row_total in zip(numeric_matrix, row_totals, strict=True):
         if row_total <= 0:
             continue
-        label_str = str(label)
-        probabilities = (values.loc[label_str] / row_total).to_numpy(dtype=float)
+        probabilities = row / row_total
         positive = probabilities[probabilities > 0]
         entropy = -float(np.sum(positive * np.log(positive))) / entropy_scale
         weighted_entropy += (float(row_total) / total) * entropy

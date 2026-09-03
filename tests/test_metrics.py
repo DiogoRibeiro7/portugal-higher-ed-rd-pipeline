@@ -52,6 +52,17 @@ def test_regionality_metrics_identify_diagonal_concentration() -> None:
     assert result.mutual_information > 0.0
 
 
+def test_regionality_metrics_aligns_diagonal_by_label_identity() -> None:
+    matrix = pd.DataFrame(
+        [[20, 80], [90, 10]],
+        index=[1, "1"],
+        columns=["1", 1],
+    )
+    result = regionality_metrics(matrix)
+    assert result.total_flow == pytest.approx(200.0)
+    assert result.same_district_share == pytest.approx(0.85)
+
+
 def test_regionality_metrics_rejects_nonnumeric_flow_with_dataexcept() -> None:
     matrix = pd.DataFrame([[1, "bad"], [2, 3]], index=["A", "B"], columns=["A", "B"])
     with pytest.raises(DataValidationError, match="numeric"):
