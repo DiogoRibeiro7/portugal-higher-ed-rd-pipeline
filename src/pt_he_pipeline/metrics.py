@@ -106,14 +106,14 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
     same_share = diagonal / total
 
     # Conditional destination entropy averaged over origins, normalised to [0, 1].
-    n_destinations = values.shape[1]
+    n_destinations = numeric_matrix.shape[1]
     entropy_scale = math.log(n_destinations) if n_destinations > 1 else 1.0
     weighted_entropy = 0.0
-    row_totals = values.sum(axis=1)
-    for label, row_total in row_totals.items():
+    row_totals = numeric_matrix.sum(axis=1)
+    for row, row_total in zip(numeric_matrix, row_totals, strict=True):
         if row_total <= 0:
             continue
-        probabilities = (values.loc[label] / row_total).to_numpy(dtype=float)
+        probabilities = row / row_total
         positive = probabilities[probabilities > 0]
         entropy = -float(np.sum(positive * np.log(positive))) / entropy_scale
         weighted_entropy += (float(row_total) / total) * entropy
