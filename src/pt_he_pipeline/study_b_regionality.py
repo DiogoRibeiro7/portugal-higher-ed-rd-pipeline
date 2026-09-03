@@ -134,7 +134,7 @@ def build_regionality_summary(flows: pd.DataFrame) -> pd.DataFrame:
 
         rows.append(
             {
-                "year": int(year),
+                "year": int(str(year)),
                 "flow_type": str(flow_type),
                 "total_flows": int(total),
                 "comparable_district_origin_flows": int(comparable_total),

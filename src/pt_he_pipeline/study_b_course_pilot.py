@@ -77,10 +77,13 @@ class MatchedCoursePolicy:
         return tuple(range(self.first_year, self.last_year + 1))
 
 
+_DEFAULT_MATCHED_COURSE_POLICY = MatchedCoursePolicy()
+
+
 def validate_source_rows(
     source_rows: pd.DataFrame,
     *,
-    policy: MatchedCoursePolicy = MatchedCoursePolicy(),
+    policy: MatchedCoursePolicy = _DEFAULT_MATCHED_COURSE_POLICY,
 ) -> None:
     """Validate source rows before overlapping vintages are reconciled."""
 
@@ -150,7 +153,7 @@ def validate_source_rows(
 def reconcile_overlapping_sources(
     source_rows: pd.DataFrame,
     *,
-    policy: MatchedCoursePolicy = MatchedCoursePolicy(),
+    policy: MatchedCoursePolicy = _DEFAULT_MATCHED_COURSE_POLICY,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Hard-reconcile duplicated 2019 records and return a canonical panel.
 
@@ -181,7 +184,7 @@ def reconcile_overlapping_sources(
             )
         reconciliation_rows.append(
             {
-                "year": int(key[0]),
+                "year": int(str(key[0])),
                 "programme_code": str(key[1]),
                 "institution_code": str(key[2]),
                 "source_document_count": int(group["source_document_year"].nunique()),
@@ -281,10 +284,10 @@ def build_cross_section_associations(panel: pd.DataFrame) -> pd.DataFrame:
                 model = sm.OLS(subset[outcome].astype(float), design).fit()
                 rows.append(
                     {
-                        "year": int(year),
+                        "year": int(str(year)),
                         "outcome": outcome,
                         "demand_variable": demand,
-                        "n": int(len(subset)),
+                        "n": len(subset),
                         "log_demand_coefficient": float(model.params["log_demand"]),
                         "r_squared": float(model.rsquared),
                         "adjusted_r_squared": float(model.rsquared_adj),
@@ -329,8 +332,8 @@ def build_nested_model_summary(panel: pd.DataFrame) -> pd.DataFrame:
                 {
                     "outcome": outcome,
                     "model": name,
-                    "n": int(len(frame)),
-                    "parameters": int(len(model.params)),
+                    "n": len(frame),
+                    "parameters": len(model.params),
                     "r_squared": r_squared,
                     "adjusted_r_squared": float(model.rsquared_adj),
                     "incremental_r_squared_vs_structure": incremental_r_squared,
@@ -381,8 +384,8 @@ def build_leave_one_year_out(panel: pd.DataFrame) -> pd.DataFrame:
                         "outcome": outcome,
                         "held_out_year": int(held_out_year),
                         "model": name,
-                        "n_train": int(len(train)),
-                        "n_test": int(len(test)),
+                        "n_train": len(train),
+                        "n_test": len(test),
                         "rmse": _rmse(observed, predictions),
                         "mae": _mae(observed, predictions),
                     }
@@ -453,7 +456,7 @@ def _design_matrix(
         )
         dummies.index = frame.index
         design = pd.concat([design, dummies], axis=1)
-    return sm.add_constant(design, has_constant="add")
+    return pd.DataFrame(sm.add_constant(design, has_constant="add"))
 
 
 def _rmse(observed: np.ndarray, predicted: np.ndarray | pd.Series) -> float:

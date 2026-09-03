@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import math
 import re
 import unicodedata
 from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 
@@ -173,7 +173,9 @@ def _match_column(columns: Iterable[object], aliases: tuple[str, ...]) -> object
 def _normalise_code(value: object) -> str | None:
     """Normalise a DGES four-character code, preserving alphanumeric IDs."""
 
-    if pd.isna(value):
+    if value is None or value is pd.NA or value is pd.NaT:
+        return None
+    if isinstance(value, float) and math.isnan(value):
         return None
     text = str(value).strip().upper()
     if text.endswith(".0") and text[:-2].isdigit():
