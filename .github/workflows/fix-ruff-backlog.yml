@@ -1,0 +1,44 @@
+name: Fix Ruff Backlog
+
+on:
+  push:
+    branches:
+      - fix/full-ruff-backlog
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/full-ruff-backlog
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry==2.4.2
+      - name: Install locked dependencies
+        run: poetry install --no-interaction
+      - name: Apply safe Ruff fixes
+        run: poetry run ruff check . --fix
+      - name: Verify Ruff
+        run: poetry run ruff check .
+      - name: Verify mypy
+        run: poetry run mypy src
+      - name: Run tests
+        run: poetry run pytest -q
+      - name: Commit fixes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No Ruff fixes to commit."
+            exit 0
+          fi
+          git commit -m "Fix full-repository Ruff backlog"
+          git push origin HEAD:fix/full-ruff-backlog
