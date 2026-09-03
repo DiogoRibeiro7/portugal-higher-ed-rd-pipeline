@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataexcept import DataTransformationError
 import pytest
+from dataexcept import DataTransformationError
 
 from pt_he_pipeline.mobility import (
     DESTINATION_DISTRICTS,
