@@ -564,6 +564,18 @@ docs = ["ipython", "matplotlib", "numpydoc", "sphinx"]
 tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
+name = "dataexcept"
+version = "1.2.0"
+description = "A Python package providing structured, easily-extendable custom exception types."
+optional = false
+python-versions = "<3.15,>=3.10"
+groups = ["main"]
+files = [
+    {file = "dataexcept-1.2.0-py3-none-any.whl", hash = "sha256:96f6a65d3cdf1147483a875c75ad138ff00e6a385340f962e5b1cd8e29ac5862"},
+    {file = "dataexcept-1.2.0.tar.gz", hash = "sha256:056ca63e80ed932ee5a2dec00e1058d992f2ba477d30817dceea79d7e7235543"},
+]
+
+[[package]]
 name = "distlib"
 version = "0.4.3"
 description = "Distribution utilities"
@@ -2670,4 +2682,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "00f4e6af9f51ed498e13dda4f27cb1a0cb2a6fc666fdedbdcdbef6d428d93d2a"
+content-hash = "7dadc4da7045a14cf4dd935a737b45dc8ca23043ac232f7b035646baeb78c914"
