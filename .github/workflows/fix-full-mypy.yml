@@ -1,0 +1,107 @@
+name: Fix full mypy baseline
+
+on:
+  push:
+    branches:
+      - chore/restore-full-mypy
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chore/restore-full-mypy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply strict typing narrowings
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              "src/pt_he_pipeline/dges.py": [
+                  (
+                      """        candidate = candidate.find_previous()\n        if candidate is None:\n            break\n        text = \" \".join(candidate.get_text(\" \", strip=True).split())\n""",
+                      """        previous = candidate.find_previous()\n        while previous is not None and not isinstance(previous, Tag):\n            previous = previous.find_previous()\n        candidate = previous\n        if candidate is None:\n            break\n        text = \" \".join(candidate.get_text(\" \", strip=True).split())\n""",
+                  ),
+              ],
+              "src/pt_he_pipeline/study_b_regionality.py": [
+                  ('"year": int(year),', '"year": int(str(year)),'),
+              ],
+              "src/pt_he_pipeline/study_b_rankings.py": [
+                  ('"year": int(year),', '"year": int(str(year)),'),
+                  (
+                      '    data = sm.add_constant(data, has_constant="add")\n',
+                      '    data = pd.DataFrame(sm.add_constant(data, has_constant="add"))\n',
+                  ),
+              ],
+              "src/pt_he_pipeline/study_b_course_pilot.py": [
+                  ('"year": int(key[0]),', '"year": int(str(key[0])),'),
+                  ('"year": int(year),', '"year": int(str(year)),'),
+                  (
+                      '    return sm.add_constant(design, has_constant="add")\n',
+                      '    return pd.DataFrame(sm.add_constant(design, has_constant="add"))\n',
+                  ),
+              ],
+              "src/pt_he_pipeline/study_a.py": [
+                  (
+                      """        start = subset.loc[first_year]\n        end = subset.loc[last_year]\n        rows.append(\n""",
+                      """        start = subset.loc[first_year]\n        end = subset.loc[last_year]\n        if not isinstance(start, pd.Series) or not isinstance(end, pd.Series):\n            raise ValueError(f\"STEM component {code} has duplicate endpoint years\")\n        rows.append(\n""",
+                  ),
+                  (
+                      """    summary = stem_summary.set_index(\"year\")\n    rows.append(\n        _endpoint_row(\n            label=\"All registered STEM\",\n            code=\"STEM\",\n            first_year=first_year,\n            last_year=last_year,\n            start=summary.loc[first_year],\n            end=summary.loc[last_year],\n        )\n    )\n""",
+                      """    summary = stem_summary.set_index(\"year\")\n    summary_start = summary.loc[first_year]\n    summary_end = summary.loc[last_year]\n    if not isinstance(summary_start, pd.Series) or not isinstance(summary_end, pd.Series):\n        raise ValueError(\"STEM summary has duplicate endpoint years\")\n    rows.append(\n        _endpoint_row(\n            label=\"All registered STEM\",\n            code=\"STEM\",\n            first_year=first_year,\n            last_year=last_year,\n            start=summary_start,\n            end=summary_end,\n        )\n    )\n""",
+                  ),
+              ],
+              "src/pt_he_pipeline/dges_placements.py": [
+                  (
+                      "import re\nimport unicodedata\n",
+                      "import math\nimport re\nimport unicodedata\n",
+                  ),
+                  (
+                      """    if pd.isna(value):\n        return None\n""",
+                      """    if value is None or value is pd.NA or value is pd.NaT:\n        return None\n    if isinstance(value, float) and math.isnan(value):\n        return None\n""",
+                  ),
+              ],
+              "src/pt_he_pipeline/study_b_multi_course.py": [
+                  ('        programme = registry[code]\n', '        programme = registry[str(code)]\n'),
+                  ('"year": int(keys[0]),', '"year": int(str(keys[0])),'),
+                  ('"year": int(year),', '"year": int(str(year)),'),
+              ],
+          }
+
+          for filename, edits in replacements.items():
+              path = Path(filename)
+              text = path.read_text(encoding="utf-8")
+              for old, new in edits:
+                  if old not in text:
+                      raise SystemExit(f"expected snippet not found in {filename}: {old!r}")
+                  text = text.replace(old, new)
+              path.write_text(text, encoding="utf-8")
+          PY
+      - name: Install Poetry
+        run: pip install poetry==2.4.2
+      - name: Install locked dependencies
+        run: poetry install --no-interaction
+      - name: Check repaired source
+        run: |
+          poetry run ruff check src
+          poetry run mypy src
+      - name: Commit repairs
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git commit -m "Fix full-source strict typing"
+          git push origin HEAD:chore/restore-full-mypy
