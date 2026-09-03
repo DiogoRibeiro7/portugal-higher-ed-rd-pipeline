@@ -25,12 +25,6 @@ jobs:
           from pathlib import Path
 
           replacements = {
-              "src/pt_he_pipeline/dges.py": [
-                  (
-                      """        candidate = candidate.find_previous()\n        if candidate is None:\n            break\n        text = \" \".join(candidate.get_text(\" \", strip=True).split())\n""",
-                      """        previous = candidate.find_previous()\n        while previous is not None and not isinstance(previous, Tag):\n            previous = previous.find_previous()\n        candidate = previous\n        if candidate is None:\n            break\n        text = \" \".join(candidate.get_text(\" \", strip=True).split())\n""",
-                  ),
-              ],
               "src/pt_he_pipeline/study_b_regionality.py": [
                   ('"year": int(year),', '"year": int(str(year)),'),
               ],
