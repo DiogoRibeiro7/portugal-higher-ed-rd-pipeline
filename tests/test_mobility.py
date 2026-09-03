@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import pytest
 from dataexcept import DataTransformationError
+import pytest
 
 from pt_he_pipeline.mobility import (
     DESTINATION_DISTRICTS,
     classify_origin_area,
     parse_mobility_page_text,
+    parse_mobility_pdf,
     parse_mobility_row,
 )
 
@@ -82,3 +83,16 @@ def test_mobility_page_classifies_malformed_source_as_transformation_error() -> 
     text = "Concurso Nacional de Acesso de 2025\nMadeira 1ª opção Candidatura Total"
     with pytest.raises(DataTransformationError, match="no mobility rows were parsed"):
         parse_mobility_page_text(text, source_document_year=2025)
+
+
+def test_mobility_pdf_wraps_unreadable_pdf_as_transformation_error(tmp_path) -> None:
+    path = tmp_path / "broken.pdf"
+    path.write_bytes(b"not a PDF")
+    with pytest.raises(DataTransformationError, match="PDF read or text extraction failed"):
+        parse_mobility_pdf(path, source_document_year=2025)
+
+
+def test_mobility_pdf_keeps_missing_file_as_file_error(tmp_path) -> None:
+    missing = tmp_path / "missing.pdf"
+    with pytest.raises(FileNotFoundError):
+        parse_mobility_pdf(missing, source_document_year=2025)
