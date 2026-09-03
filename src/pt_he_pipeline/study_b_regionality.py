@@ -98,12 +98,18 @@ def reconcile_overlapping_flows(
             }
         )
 
-    overlap = frame.loc[frame["year"] == overlap_year]
+    audit = pd.DataFrame(audit_rows)
+    overlap = audit.loc[audit["year"] == overlap_year]
     if overlap.empty:
         raise ValueError("registered overlap year is absent")
-    overlap_counts = overlap.groupby(list(CELL_KEY))["source_document_year"].nunique()
-    if not (overlap_counts == 2).all():
+    if not (overlap["source_document_count"] == 2).all():
         raise ValueError("every overlap-year mobility cell must occur in both documents")
+
+    non_overlap = audit.loc[audit["year"] != overlap_year]
+    if not (non_overlap["source_document_count"] == 1).all():
+        raise ValueError(
+            "non-overlap mobility cells must occur in exactly one source document"
+        )
 
     canonical = (
         frame.sort_values([*CELL_KEY, "source_document_year"], kind="stable")
@@ -111,7 +117,7 @@ def reconcile_overlapping_flows(
         .sort_values(list(CELL_KEY), kind="stable")
         .reset_index(drop=True)
     )
-    return canonical, pd.DataFrame(audit_rows)
+    return canonical, audit
 
 
 def build_regionality_summary(flows: pd.DataFrame) -> pd.DataFrame:
