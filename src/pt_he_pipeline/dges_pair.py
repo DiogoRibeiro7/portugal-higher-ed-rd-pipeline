@@ -219,9 +219,22 @@ def parse_pair_statistics_pdf(path: Path, *, year: int, phase: int) -> pd.DataFr
     cover page from failing the run without silently losing real observations.
     """
 
+    if phase not in {1, 2, 3}:
+        raise ValueError("phase must be 1, 2 or 3")
+
     digest = sha256_file(path)
+    try:
+        pages = extract_pdf_pages(path)
+    except FileNotFoundError:
+        raise
+    except Exception as exc:
+        raise DataTransformationError(
+            "parse_pair_statistics_pdf",
+            f"PDF read or text extraction failed: {exc}",
+        ) from exc
+
     records: list[dict[str, object]] = []
-    for page_number, text in enumerate(extract_pdf_pages(path), start=1):
+    for page_number, text in enumerate(pages, start=1):
         if "Estabelecimento:" not in text or "Curso Superior:" not in text:
             continue
         try:
