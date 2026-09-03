@@ -97,7 +97,8 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
     labels = [str(label) for label in values.index]
     values.index = labels
     values.columns = [str(label) for label in values.columns]
-    diagonal = sum(float(values.loc[label, label]) for label in labels)
+    numeric_matrix = values.to_numpy(dtype=float)
+    diagonal = float(np.trace(numeric_matrix))
     same_share = diagonal / total
 
     # Conditional destination entropy averaged over origins, normalised to [0, 1].
@@ -115,7 +116,7 @@ def regionality_metrics(matrix: pd.DataFrame) -> RegionalityMetrics:
         weighted_entropy += (float(row_total) / total) * entropy
 
     # Mutual information between origin and destination, in nats.
-    joint = values.to_numpy(dtype=float) / total
+    joint = numeric_matrix / total
     p_origin = joint.sum(axis=1, keepdims=True)
     p_destination = joint.sum(axis=0, keepdims=True)
     expected = p_origin @ p_destination
