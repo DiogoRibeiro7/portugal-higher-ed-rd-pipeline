@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataexcept import DataTransformationError
 import pytest
+from dataexcept import DataTransformationError
 
 from pt_he_pipeline.dges_pair import parse_pair_statistics_pdf, parse_pair_statistics_text
 
