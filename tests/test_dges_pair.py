@@ -3,7 +3,10 @@ from __future__ import annotations
 import pytest
 from dataexcept import DataTransformationError
 
-from pt_he_pipeline.dges_pair import parse_pair_statistics_pdf, parse_pair_statistics_text
+from pt_he_pipeline.dges_pair import (
+    parse_pair_statistics_pdf,
+    parse_pair_statistics_text,
+)
 
 
 TEXT_2024 = """
