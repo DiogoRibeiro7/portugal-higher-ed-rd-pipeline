@@ -1,8 +1,8 @@
 """Registered multi-course extension for Study B."""
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -46,6 +46,9 @@ class MultiCoursePolicy:
         return tuple(range(self.first_year, self.last_year + 1))
 
 
+_DEFAULT_MULTI_COURSE_POLICY = MultiCoursePolicy()
+
+
 def validate_registry(programmes: Sequence[RegisteredProgramme]) -> None:
     """Require non-empty, unique programme identities."""
 
@@ -62,7 +65,7 @@ def reconcile_sources(
     source: pd.DataFrame,
     *,
     programmes: Sequence[RegisteredProgramme],
-    policy: MultiCoursePolicy = MultiCoursePolicy(),
+    policy: MultiCoursePolicy = _DEFAULT_MULTI_COURSE_POLICY,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Validate and reconcile duplicated cross-vintage observations."""
 
@@ -83,7 +86,7 @@ def reconcile_sources(
         raise ValueError("source years do not match policy")
 
     for code, subset in frame.groupby("programme_code"):
-        programme = registry[code]
+        programme = registry[str(code)]
         if set(subset["programme_name"].astype(str).str.strip()) != {programme.name}:
             raise ValueError(f"programme name mismatch for {code}")
         if set(subset["degree"].astype(str).str.strip()) != {programme.degree}:
@@ -117,7 +120,7 @@ def reconcile_sources(
             )
         audit_rows.append(
             {
-                "year": int(keys[0]),
+                "year": int(str(keys[0])),
                 "programme_code": str(keys[1]),
                 "institution_code": str(keys[2]),
                 "source_document_count": int(group["source_document_year"].nunique()),
@@ -138,7 +141,7 @@ def build_stable_panel(
     audit: pd.DataFrame,
     *,
     programmes: Sequence[RegisteredProgramme],
-    policy: MultiCoursePolicy = MultiCoursePolicy(),
+    policy: MultiCoursePolicy = _DEFAULT_MULTI_COURSE_POLICY,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Keep units offered in every year using coverage only."""
 
@@ -184,7 +187,7 @@ def build_stable_panel(
 def add_metrics(
     panel: pd.DataFrame,
     *,
-    policy: MultiCoursePolicy = MultiCoursePolicy(),
+    policy: MultiCoursePolicy = _DEFAULT_MULTI_COURSE_POLICY,
 ) -> pd.DataFrame:
     """Add demand, occupancy and panel identifiers."""
 
@@ -204,7 +207,7 @@ def add_metrics(
 def build_model_panel(
     panel: pd.DataFrame,
     *,
-    policy: MultiCoursePolicy = MultiCoursePolicy(),
+    policy: MultiCoursePolicy = _DEFAULT_MULTI_COURSE_POLICY,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Separate complete modelling units from the stable offering panel."""
 
@@ -252,9 +255,9 @@ def programme_year_associations(panel: pd.DataFrame) -> pd.DataFrame:
             rows.append(
                 {
                     "programme_code": str(code),
-                    "year": int(year),
+                    "year": int(str(year)),
                     "outcome": outcome,
-                    "n": int(len(subset)),
+                    "n": len(subset),
                     "r_squared": float(fitted.rsquared),
                     "log_demand_coefficient": float(fitted.params["log_demand"]),
                 }
@@ -271,7 +274,7 @@ def summarise_associations(associations: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "outcome": outcome,
-                "programme_year_cells": int(len(values)),
+                "programme_year_cells": len(values),
                 "median_r_squared": float(values.median()),
                 "q25_r_squared": float(values.quantile(0.25)),
                 "q75_r_squared": float(values.quantile(0.75)),

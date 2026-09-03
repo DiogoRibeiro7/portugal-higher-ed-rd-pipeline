@@ -305,6 +305,8 @@ def build_endpoint_comparison(
             raise ValueError(f"STEM component {code} is missing an endpoint year")
         start = subset.loc[first_year]
         end = subset.loc[last_year]
+        if not isinstance(start, pd.Series) or not isinstance(end, pd.Series):
+            raise ValueError(f"STEM component {code} has duplicate endpoint years")
         rows.append(
             _endpoint_row(
                 label=STEM_COMPONENT_LABELS[code],
@@ -317,14 +319,18 @@ def build_endpoint_comparison(
         )
 
     summary = stem_summary.set_index("year")
+    summary_start = summary.loc[first_year]
+    summary_end = summary.loc[last_year]
+    if not isinstance(summary_start, pd.Series) or not isinstance(summary_end, pd.Series):
+        raise ValueError("STEM summary has duplicate endpoint years")
     rows.append(
         _endpoint_row(
             label="All registered STEM",
             code="STEM",
             first_year=first_year,
             last_year=last_year,
-            start=summary.loc[first_year],
-            end=summary.loc[last_year],
+            start=summary_start,
+            end=summary_end,
         )
     )
     return pd.DataFrame(rows)

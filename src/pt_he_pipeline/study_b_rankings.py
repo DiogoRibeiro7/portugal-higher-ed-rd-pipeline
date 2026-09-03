@@ -69,10 +69,13 @@ class DesignSchema:
     ranking_band_levels: tuple[str, ...] = ()
 
 
+_DEFAULT_RANKING_POLICY = RankingPolicy()
+
+
 def validate_ranking_rows(
     rankings: pd.DataFrame,
     *,
-    policy: RankingPolicy = RankingPolicy(),
+    policy: RankingPolicy = _DEFAULT_RANKING_POLICY,
 ) -> pd.DataFrame:
     """Validate provider-specific ranking observations without imputing coverage."""
 
@@ -150,12 +153,11 @@ def build_ranking_coverage(
                 strict=False,
             )
         )
-        ranked_mask = subset["parent_institution_id"].astype(str).map(
-            lambda value: (value,) in keys
-        )
+        ranked_parent_ids = {key[0] for key in keys}
+        ranked_mask = subset["parent_institution_id"].astype(str).isin(ranked_parent_ids)
         rows.append(
             {
-                "year": int(year),
+                "year": int(str(year)),
                 "provider": provider,
                 "eligible_parent_institutions": int(eligible_parents),
                 "ranked_parent_institutions": int(
@@ -294,7 +296,7 @@ def leave_one_parent_out_comparison(
     if include_demand:
         data = data.loc[data["applicants_per_vacancy"] > 0].copy()
 
-    eligible_rows = int(len(data))
+    eligible_rows = len(data)
     eligible_parents = int(data["parent_institution_id"].astype(str).nunique())
     baseline_predictions: list[float] = []
     ranking_predictions: list[float] = []
@@ -380,7 +382,7 @@ def leave_one_parent_out_comparison(
         ranking_mae=float(np.mean(np.abs(ranking_residual))),
         eligible_rows=eligible_rows,
         eligible_parents=eligible_parents,
-        supported_rows=int(len(observed)),
+        supported_rows=len(observed),
         unsupported_rows=unsupported_rows,
         supported_parents=len(supported_parent_ids),
         unsupported_ranking_rows=unsupported_ranking_rows,
@@ -502,7 +504,7 @@ def _design(
         )
         data = pd.concat([data, band_dummies], axis=1)
 
-    data = sm.add_constant(data, has_constant="add")
+    data = pd.DataFrame(sm.add_constant(data, has_constant="add"))
     if columns is not None:
         data = data.reindex(columns=columns, fill_value=0.0)
     return data.astype(float)

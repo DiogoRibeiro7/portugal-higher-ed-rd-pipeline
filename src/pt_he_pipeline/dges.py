@@ -110,7 +110,10 @@ def _nearest_institution_label(anchor: Tag, institution_id: str) -> str:
     for _ in range(30):
         if candidate is None:
             break
-        candidate = candidate.find_previous()
+        previous = candidate.find_previous()
+        while previous is not None and not isinstance(previous, Tag):
+            previous = previous.find_previous()
+        candidate = previous
         if candidate is None:
             break
         text = " ".join(candidate.get_text(" ", strip=True).split())
