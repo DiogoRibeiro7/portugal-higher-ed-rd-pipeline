@@ -1,0 +1,5 @@
+stem_code,stem_component,first_year,last_year,placements_first,placements_last,raw_placement_change,age18_rate_first,age18_rate_last,age18_rate_change
+05,"Natural sciences, mathematics and statistics",2017,2026,3816,3557,-0.0678721174,34.54050091,32.2262086,-0.06700228001
+06,Information and communication technologies,2017,2026,820,1312,0.6,7.422225038,11.88664202,0.6014930782
+07,"Engineering, manufacturing and construction",2017,2026,9290,10312,0.1100107643,84.08837879,93.42610712,0.1110465973
+STEM,All registered STEM,2017,2026,13926,15181,0.09011920149,126.0511047,137.5389577,0.09113647226
