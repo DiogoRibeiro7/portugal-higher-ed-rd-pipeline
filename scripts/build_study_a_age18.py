@@ -40,7 +40,10 @@ def main() -> None:
     all_stem = endpoints.set_index("stem_code").loc["STEM"]
     print("Built exact age-18 Study A demographic normalisation")
     print(f"Raw endpoint change: {100.0 * float(all_stem['raw_placement_change']):+.2f}%")
-    print(f"Age-18-normalised endpoint change: {100.0 * float(all_stem['age18_rate_change']):+.2f}%")
+    print(
+        "Age-18-normalised endpoint change: "
+        f"{100.0 * float(all_stem['age18_rate_change']):+.2f}%"
+    )
 
 
 if __name__ == "__main__":
