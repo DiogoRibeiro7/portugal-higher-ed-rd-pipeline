@@ -1,0 +1,46 @@
+name: Probe INE age-18 series
+
+on:
+  push:
+    branches:
+      - research/study-a-age18-denominator
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Inspect INE indicator 0001223
+        run: |
+          python - <<'PY'
+          import json
+          from urllib.request import urlopen
+
+          data_url = (
+              "https://www.ine.pt/ine/json_indicador/pindica.jsp"
+              "?op=2&varcd=0001223&lang=PT"
+          )
+          meta_url = (
+              "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp"
+              "?varcd=0001223&lang=PT"
+          )
+
+          for label, url in (("DATA", data_url), ("META", meta_url)):
+              with urlopen(url, timeout=60) as response:
+                  payload = json.load(response)
+              print(f"=== {label} type={type(payload).__name__} ===")
+              if isinstance(payload, list):
+                  print("list length:", len(payload))
+                  if payload:
+                      first = payload[0]
+                      print("first keys:", sorted(first) if isinstance(first, dict) else type(first).__name__)
+                      print(json.dumps(first, ensure_ascii=False)[:12000])
+              elif isinstance(payload, dict):
+                  print("keys:", sorted(payload))
+                  print(json.dumps(payload, ensure_ascii=False)[:12000])
+              else:
+                  print(repr(payload)[:12000])
+          PY
