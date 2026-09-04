@@ -1,0 +1,34 @@
+name: Probe INE age-18 API
+
+on:
+  push:
+    branches:
+      - feat/study-a-exact-age18
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probe indicator 0002721
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          url = "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0002721&lang=PT"
+          with urllib.request.urlopen(url, timeout=30) as response:
+              payload = json.load(response)
+          print("TYPE", type(payload).__name__)
+          if isinstance(payload, list):
+              print("LEN", len(payload))
+              for i, item in enumerate(payload[:3]):
+                  print("ITEM", i, json.dumps(item, ensure_ascii=False)[:12000])
+          elif isinstance(payload, dict):
+              print("KEYS", sorted(payload))
+              print(json.dumps(payload, ensure_ascii=False)[:24000])
+          PY
