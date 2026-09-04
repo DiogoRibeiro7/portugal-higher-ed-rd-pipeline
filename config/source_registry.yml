@@ -59,17 +59,21 @@ sources:
     role: "Population denominators and demographic controls"
     acquisition: "official_api_or_download"
     exact_age_18:
-      indicator_code: "0002721"
-      series: "População média anual residente (Série longa, início 1971 - N.º) por Sexo e Idade; Anual"
-      official_url: "https://www.ine.pt/xurl/indx/0002721/PT"
-      target_slice: "Sexo=Total; Idade=18 anos; Portugal"
-      verified_coverage: "1971-2025"
-      use: "Preferred exact age-18 denominator for Study A demographic normalisation"
-      acquisition_status: >-
-        Indicator and dimensions are verified, but values are not yet source-locked in
-        the repository because the INE JSON endpoint timed out from GitHub Actions.
-        Use an official downloadable/exported table or a reproducible dissemination
-        mirror before promoting this source into release calculations.
+      indicator_code: "0001223"
+      series: "População residente (Série longa, início 1970 - N.º) por Sexo e Idade; Anual - INE, Estimativas anuais da população residente"
+      official_url: "https://www.ine.pt/xurl/indx/0001223/PT"
+      metadata_url: "https://www.ine.pt/bddXplorer/htdocs/minfo.jsp?var_cd=0001223&lingua=PT"
+      target_slice: "Local=PT; Sexo=T (HM); Idade=224 (18 anos)"
+      verified_coverage: "1970-2025"
+      source_locked_coverage: "2016-2025"
+      source_file: "data/curated/demography/pt_population_age_18_2016_2025.csv"
+      population_reference_rule: "CNA competition year t uses population year t-1"
+      methodology_break: >-
+        INE states that annual resident-population estimates are census-based through
+        2020 and administrative-base from 2021 onward; the 2020-to-2021 transition
+        must therefore be treated as a methodological break in trend interpretation.
+      use: "Exact age-18 denominator for Study A demographic normalisation"
+      acquisition_status: "source_locked"
     pordata_dissemination:
       series: "Resident population aged 15-24, total"
       url: "https://www.pordata.pt/en/portugal/resident+population+of+working+age+total+and+by+age+group-3245"
