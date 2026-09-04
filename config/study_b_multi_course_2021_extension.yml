@@ -1,0 +1,59 @@
+version: 0.3.4-development
+study: B
+analysis: registered_multi_course_2021_extension
+language: en-GB
+status: frozen_before_2021_outcome_extraction
+base_panel:
+  years: [2018, 2019, 2020]
+  source_document_years: [2019, 2020]
+extension:
+  source_document_year: 2021
+  source_url: https://www.dges.gov.pt/guias/pdfs/statcol/2021/StatsCurso21.pdf
+  comparison_years: [2020, 2021]
+  overlap_year: 2020
+  competition_phase: 1
+selection:
+  outcome_based_selection: false
+  registered_programmes:
+    - code: "9081"
+      name: Economia
+      degree: Licenciatura
+    - code: "9119"
+      name: Engenharia Informática
+      degree: Licenciatura
+    - code: "9147"
+      name: Gestão
+      degree: Licenciatura
+    - code: "9219"
+      name: Psicologia
+      degree: Licenciatura
+    - code: "9500"
+      name: Enfermagem
+      degree: Licenciatura
+  rules:
+    - Keep the exact five code-title-degree identities already frozen for the 2018-2020 panel.
+    - Do not add or remove programmes after inspecting 2021 demand or grade values.
+    - Select stable programme-establishment units from source coverage only.
+reconciliation:
+  required_overlap_year: 2020
+  rule: exact_registered_measure_equality_before_2021_append
+  canonical_overlap_preference: existing_2020_panel
+  failure_action: stop_without_2021_analysis
+balance:
+  target_years: [2018, 2019, 2020, 2021]
+  minimum_stable_institutions_per_programme: 6
+  zero_placement_rows_preserved: true
+  missing_grades_not_imputed: true
+analysis_gate:
+  authorised_before_extraction: false
+  requirements:
+    - All five registered programme identities are present in StatsCurso21.
+    - The extracted 2020 overlap reconciles exactly against the existing source-locked 2020 rows.
+    - Every programme retains at least six continuously observed establishments across 2018-2021.
+    - Model-complete attrition is reported separately from stable-offering coverage.
+interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  rankings: unchanged_and_separate
+  regionality: unchanged_and_separate
+  claim_scope: prospective extension of the registered five-programme demand/selectivity panel through 2021
