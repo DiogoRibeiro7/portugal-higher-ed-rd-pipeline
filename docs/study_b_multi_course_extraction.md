@@ -10,7 +10,7 @@ Version 0.3.4 extends the matched-course pilot to the five programmes frozen bef
 - 9219 — Psicologia;
 - 9500 — Enfermagem.
 
-The empirical layer must be built from the official DGES `StatsCurso` comparative first-phase tables for 2019 and 2020. No programme may be added or removed after inspecting the demand/grade association results.
+The empirical layer is built from the official DGES `StatsCurso` comparative first-phase tables for 2019 and 2020. No programme may be added or removed after inspecting the demand/grade association results.
 
 ## Source contract
 
@@ -69,18 +69,18 @@ Run:
 poetry run python scripts/build_study_b_multi_course.py
 ```
 
-The builder refuses to run until the registered source table exists at:
+The builder first looks for an optional consolidated source table at:
 
 ```text
 data/curated/dges/study_b_multi_course_source_rows.csv
 ```
 
-It does not substitute the existing 9119 pilot for missing programmes, relax the programme registry, impute missing source rows, or lower the stable-establishment gate.
+If that file is absent, it reconstructs the same source layer from the complete registered set of committed programme shards under `data/curated/dges/`. The build fails if any required shard is missing. It does not substitute the earlier 9119 pilot for missing programmes, relax the programme registry, impute missing source rows, or lower the stable-establishment gate.
 
-When the source table is complete, the builder writes reconciliation, coverage, stable-panel, model-attrition, model-panel, programme-year association, and association-summary artefacts under `results/study_b/`.
+The builder writes reconciliation, coverage, stable-panel, model-attrition, model-panel, programme-year association, and association-summary artefacts under `results/study_b/`.
 
 ## Current provenance boundary
 
-The repository currently registers the ten programme-document combinations in `data/source_manifests/dges_study_b_multi_course.csv`. The 9119 rows already exist from v0.3.3. The other four programmes remain `pending_registered_extraction` until the official source content can be recovered and transcribed with the same provenance discipline.
+The five-programme source layer is now complete for the registered 2018--2020 window. All ten programme-document combinations in `data/source_manifests/dges_study_b_multi_course.csv` are marked `curated_transcription_available`, and the corresponding curated shards are committed. The released multi-course outputs are therefore reproducible from repository data even though the optional consolidated CSV is not committed.
 
-No multi-course empirical result should be reported before that boundary is crossed.
+The next v0.3.4 gate is not completion of this five-programme extraction. It is scaling the exact programme/source contract to additional years or programmes without changing the registered demand/selectivity estimand or weakening the reconciliation rules.
