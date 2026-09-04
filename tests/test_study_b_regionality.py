@@ -82,6 +82,20 @@ def test_reconciliation_rejects_changed_overlap_cell() -> None:
         reconcile_overlapping_flows(frame, overlap_year=2024)
 
 
+def test_reconciliation_rejects_unexpected_non_overlap_duplicate() -> None:
+    frame = _fixture()
+    duplicate = frame.loc[
+        (frame["source_document_year"] == 2024)
+        & (frame["year"] == 2023)
+        & (frame["flow_type"] == "first_choice")
+    ].copy()
+    duplicate["source_document_year"] = 2023
+    frame = pd.concat([frame, duplicate], ignore_index=True)
+
+    with pytest.raises(ValueError, match="non-overlap mobility cells"):
+        reconcile_overlapping_flows(frame, overlap_year=2024)
+
+
 def test_primary_diagonal_preserves_non_district_geography() -> None:
     canonical, _ = reconcile_overlapping_flows(_fixture(), overlap_year=2024)
     summary = build_regionality_summary(canonical)
