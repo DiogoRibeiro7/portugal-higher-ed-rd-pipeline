@@ -1,0 +1,26 @@
+study: A
+analysis: exact_age18_demographic_normalisation
+language: en-GB
+admission_window:
+  first_year: 2017
+  last_year: 2026
+  observed_admission_years: [2017, 2018, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+denominator:
+  source_entity: INE
+  dissemination: INE JSON API
+  indicator: "0001223"
+  indicator_label: "População residente (Série longa, início 1970 - N.º) por Sexo e Idade; Anual"
+  geography_code: PT
+  sex_code: T
+  sex_label: HM
+  age_code: "224"
+  age_label: "18 anos"
+  population_reference_rule: previous_calendar_year
+  population_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  methodology_break: "INE documents a change from census-based estimates through 2020 to administrative-base estimates from 2021."
+interpretation:
+  - Exact age-18 population is the registered demographic denominator.
+  - Competition year t is aligned to population year t-1.
+  - Raw placements and national placement share remain distinct co-primary empirical margins.
+  - The older 15-24 divided-by-ten denominator is retained only as a broad-cohort sensitivity.
+  - No missing 2019 STEM broad-area observation is reconstructed.
