@@ -36,7 +36,7 @@ The project is built around public Portuguese sources:
 - **DGEEC — RAIDES and education statistics:** enrolled students, first-time entrants and graduates by cycle and field.
 - **FCT — R&D Unit evaluations and Atlas:** unit host institutions, scientific domains, integrated researchers, performance ratings and funding context.
 - **DGEEC — IPCTN / science and technology statistics:** R&D personnel and institutional research activity.
-- **INE / PORDATA demographic series:** official population denominators and transparent demographic sensitivities for access measures.
+- **INE demographic series:** exact age-18 population from indicator `0001223`, with the broader INE/PORDATA 15–24 series retained as a secondary demographic sensitivity.
 - **Optional ranking inputs:** user-supplied historical ranking series with provenance and licence recorded.
 
 See [`docs/data_sources.md`](docs/data_sources.md), [`docs/dges_ingestion.md`](docs/dges_ingestion.md) and [`config/source_registry.yml`](config/source_registry.yml).
@@ -124,7 +124,7 @@ D_{gt}=\frac{\text{applicants}_{gt}}{\text{vacancies}_{gt}}.
 
 The primary question concerns the trend in **both the absolute number and share of placements**. Demographic-normalised rates are reported alongside them.
 
-#### v0.3.2 medium-run evidence and demographic sensitivity
+#### Medium-run evidence and demographic normalisations
 
 The medium-run layer uses the complete official broad-area first-phase table for
 2017, 2018 and 2020-2026. The official 2019 first-phase archive has now been audited:
@@ -154,35 +154,41 @@ The component paths matter more than the all-STEM aggregate. Group 05 trends dow
 ICT expands strongly from its 2017 base, and group 07 ends above 2017. The result is
 therefore not consistent with describing **absolute first-phase STEM placements since
 2017** as one sustained decline. It still does not adjudicate the registered 1997-2026
-programme-level proposition, because the broad-area layer has a 2019 field-composition
-gap, lacks programme-level total applications, and the exact age-18 denominator is not
-yet source-locked.
+programme-level proposition because the broad-area layer has a 2019 field-composition
+gap and lacks programme-level total applications.
 
-The release now adds a deliberately weaker demographic sensitivity. For competition
-year \(t\), the preceding-year INE resident population aged 15-24, disseminated by
-PORDATA, is divided by ten to form an **average single-year cohort proxy**. It is not
-labelled as the population aged 18. The endpoint comparison becomes:
+The preferred demographic denominator is now the source-locked INE population aged
+exactly 18, indicator `0001223`, using Portugal (`PT`), total sex (`T/HM`) and age code
+`224`. Competition year \(t\) uses population year \(t-1\), so the released 2017–2026
+comparison uses population values for 2016–2025. INE documents a methodology change
+between the 2020 and 2021 population estimates, which is carried as a comparability
+caveat rather than interpreted automatically as demographic change.
 
-| Component | Raw placement change | Cohort-proxy rate change |
-|---|---:|---:|
-| 05 — Natural sciences, mathematics and statistics | -6.8% | -13.3% |
-| 06 — Information and communication technologies | +60.0% | +48.7% |
-| 07 — Engineering, manufacturing and construction | +11.0% | +3.2% |
-| **All registered STEM** | **+9.0%** | **+1.3%** |
+The exact-age and historical broad-cohort results differ materially:
 
-The 15-24 population reference grows by about 7.6% between the endpoint denominators,
-so most of the raw all-STEM increase is commensurate with demographic scale. This does
-not reverse the count result; it changes the margin from a sizeable raw increase to an
-approximately flat broad-cohort-normalised aggregate.
+| Component | Raw placement change | Exact age-18 rate change | 15–24/10 proxy rate change |
+|---|---:|---:|---:|
+| 05 — Natural sciences, mathematics and statistics | -6.8% | -6.7% | -13.3% |
+| 06 — Information and communication technologies | +60.0% | +60.1% | +48.7% |
+| 07 — Engineering, manufacturing and construction | +11.0% | +11.1% | +3.2% |
+| **All registered STEM** | **+9.0%** | **+9.1%** | **+1.3%** |
 
-See [`docs/study_a_medium_run.md`](docs/study_a_medium_run.md), the frozen
-[`config/study_a_medium_run.yml`](config/study_a_medium_run.yml), and the
-receipt-bound outputs in [`results/study_a/`](results/study_a/).
+The age-18 population is almost unchanged between the endpoint population references
+(110,479 in 2016 and 110,376 in 2025), so exact-age normalisation leaves the raw
+all-STEM increase essentially intact. By contrast, the 15–24 population rises by about
+7.6%, which strongly attenuates the broad-proxy rate. The proxy therefore measures
+broad young-adult population scale, not the registered entry-age cohort. It is retained
+as a secondary sensitivity rather than promoted to the preferred denominator.
 
-Reproduce the medium-run layer and demographic sensitivity with:
+See [`docs/study_a_medium_run.md`](docs/study_a_medium_run.md),
+[`docs/study_a_demography.md`](docs/study_a_demography.md), and the receipt-bound
+outputs in [`results/study_a/`](results/study_a/).
+
+Reproduce the medium-run layer and both demographic normalisations with:
 
 ```bash
 poetry run python scripts/build_study_a_medium_run.py
+poetry run python scripts/build_study_a_age18.py
 poetry run python scripts/build_study_a_demographic.py
 ```
 
@@ -267,14 +273,15 @@ Lagged exposure is then linked to R&D-unit characteristics. Where the historical
 
 Every downloaded source is stored with a receipt containing its URL, retrieval timestamp, byte size and SHA-256 digest. Canonical CNA rows bind the separate pair-statistics and vacancy/placement digests into one deterministic lineage fingerprint. Raw files are immutable inputs; transformations write new artefacts. See [`docs/reproducibility.md`](docs/reproducibility.md).
 
-## Current status — v0.3.3
+## Current status — v0.3.3+
 
-Study A retains the three source-locked layers from v0.3.2: the 2023-2026 recent
-baseline, the 2017/2018 and 2020-2026 medium-run broad-area panel, and the demographic
-cohort-proxy sensitivity. Raw registered STEM placements are 9.0% higher in 2026 than
-in 2017, their placement share is 0.64 percentage points lower, and the broad-cohort
-normalised endpoint rate is 1.3% higher. The registered 1997-2026 programme-level
-proposition remains open.
+Study A now contains the source-locked 2023-2026 recent baseline, the 2017/2018 and
+2020-2026 medium-run broad-area panel, the exact age-18 demographic normalisation, and
+the older broad-cohort proxy sensitivity. Raw registered STEM placements are 9.0%
+higher in 2026 than in 2017, their placement share is 0.64 percentage points lower,
+and the exact age-18-normalised endpoint rate is 9.1% higher. The broad 15–24/10 proxy
+gives only +1.3% and is retained as a weaker secondary sensitivity. The registered
+1997-2026 programme-level proposition remains open.
 
 Version 0.3.3 adds the first programme-level Study B evidence: a balanced 23-institution
 matched panel for course 9119 in 2018-2020, constructed from two overlapping official
@@ -284,9 +291,10 @@ but the amount explained varies materially by year and persistent institution st
 accounts for a large share of the between-institution differences. Demand also improves
 leave-one-year-out prediction in this pilot.
 
-The result is intentionally narrow. Scaling the programme panel, source-locking an exact
-age-18 denominator, constructing the regionality matrices and only then adding optional
-ranking information remain the next evidence gates.
+The next evidence gates are scaling the programme panel, extending historical coverage
+where programme comparability can be demonstrated, and completing the remaining Study B
+and Study C layers. The exact age-18 denominator is no longer an unresolved acquisition
+gate.
 
 ## Licence
 
