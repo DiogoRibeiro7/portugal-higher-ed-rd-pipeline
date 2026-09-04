@@ -1,0 +1,45 @@
+name: Build age-18 Study A results
+
+on:
+  push:
+    branches:
+      - research/study-a-age18-denominator
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: research/study-a-age18-denominator
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry==2.4.2
+      - name: Install locked dependencies
+        run: poetry install --no-interaction
+      - name: Build exact age-18 outputs
+        run: poetry run python scripts/build_study_a_age18.py
+      - name: Verify quality
+        run: |
+          poetry run ruff check .
+          poetry run mypy src
+          poetry run pytest -q
+      - name: Commit generated outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/study_a/age18_stem_metrics.csv \
+                  results/study_a/age18_component_metrics.csv \
+                  results/study_a/age18_endpoint_comparison.csv
+          if git diff --cached --quiet; then
+            echo "No generated age-18 changes to commit."
+            exit 0
+          fi
+          git commit -m "Build exact age-18 Study A outputs"
+          git push origin HEAD:research/study-a-age18-denominator
