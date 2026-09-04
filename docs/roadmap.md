@@ -33,7 +33,7 @@
 - add the INE/PORDATA 15-24 population series as a source-registered demographic input;
 - construct a preceding-year average single-year cohort proxy without presenting it as exact age-18 population;
 - publish raw-versus-cohort-proxy endpoint comparisons for registered STEM components;
-- preserve the exact age-18 denominator as a stronger unresolved input.
+- retain the broad-cohort result as a weaker demographic sensitivity.
 
 ## v0.3.3 — matched-course programme-level pilot — complete
 
@@ -49,7 +49,8 @@
 - scale the comparative-course and pair-statistics contracts across programmes and years;
 - validate programme-to-ISCED-F concordances through renamings, mergers and Bologna-era reforms;
 - extend historical coverage backwards where programme comparability can be demonstrated;
-- source-lock the registered INE indicator `0002721` Portugal/total-sex/age-18 series through an official export or reproducible dissemination mirror, carrying the 2020-2021 estimation-method break explicitly;
+- use the source-locked INE indicator `0001223` Portugal/total-sex/age-18 series as the preferred Study A demographic denominator, carrying the 2020-2021 estimation-method break explicitly;
+- retain the 15-24 divided-by-ten cohort proxy only as a secondary sensitivity;
 - execute the registered 1997-2026 Study A analysis only after its coverage gate is satisfied;
 - execute the broad Study B demand/grade comparison only after the matched-course result can be replicated across fields.
 
