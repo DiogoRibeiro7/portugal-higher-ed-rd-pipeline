@@ -15,7 +15,7 @@
 \maketitle
 
 \begin{abstract}
-This study evaluates linked empirical propositions about Portuguese higher education: whether placements in science and engineering are declining, how strongly demand and geography structure entry selectivity, whether external university rankings add predictive information beyond observed demand, and how these patterns may matter for the future research-talent pipeline. Comparable broad-area first-phase tables are observed for 2017, 2018 and 2020--2026; no 2019 field value is reconstructed. Registered STEM placements rise from 13,926 in 2017 to 15,181 in 2026 (+9.0\%), while their share of all first-phase placements falls by 0.64 percentage points. A broad-cohort demographic sensitivity reduces the endpoint increase to +1.3\%, with strong component heterogeneity. Study B uses five exact DGES programmes across 2018--2020. Across 15 programme-year cells, log applicants per vacancy has median $R^2=0.598$ for the general-contingent cut-off and $R^2=0.552$ for the mean application grade of placed candidates; all 30 coefficients are positive, but no cell reaches the preregistered $R^2=0.80$ benchmark. DGES mobility matrices for 2023--2025 show same-district first-choice shares near 64--65\%, compared with 56--58\% for realised placements. In leave-one-parent-institution-out ranking models, Times Higher Education rankings improve both grade outcomes before conditioning on demand, but the incremental gain essentially disappears once contemporaneous demand is included. QS and ARWU provide substantially narrower support and no stable incremental grade-prediction gain. The ranking attenuation is predictive, not causal mediation evidence. The remaining research-pipeline analysis is therefore treated as a distinct downstream question rather than inferred from admissions alone.
+This study evaluates linked empirical propositions about Portuguese higher education: whether placements in science and engineering are declining, how strongly demand and geography structure entry selectivity, whether external university rankings add predictive information beyond observed demand, and how these patterns may matter for the future research-talent pipeline. Comparable broad-area first-phase tables are observed for 2017, 2018 and 2020--2026; no 2019 field value is reconstructed. Registered STEM placements rise from 13,926 in 2017 to 15,181 in 2026 (+9.0\%), while their share of all first-phase placements falls by 0.64 percentage points. Normalising by the source-locked resident population aged exactly 18 gives an endpoint increase of +9.1\%, whereas the older 15--24 divided-by-ten cohort proxy gives only +1.3\%. The divergence shows that the broad proxy measures young-adult population scale rather than the registered entry-age cohort. Study B uses five exact DGES programmes across 2018--2020. Across 15 programme-year cells, log applicants per vacancy has median $R^2=0.598$ for the general-contingent cut-off and $R^2=0.552$ for the mean application grade of placed candidates; all 30 coefficients are positive, but no cell reaches the preregistered $R^2=0.80$ benchmark. DGES mobility matrices for 2023--2025 show same-district first-choice shares near 64--65\%, compared with 56--58\% for realised placements. In leave-one-parent-institution-out ranking models, Times Higher Education rankings improve both grade outcomes before conditioning on demand, but the incremental gain essentially disappears once contemporaneous demand is included. QS and ARWU provide substantially narrower support and no stable incremental grade-prediction gain. The ranking attenuation is predictive, not causal mediation evidence. The remaining research-pipeline analysis is therefore treated as a distinct downstream question rather than inferred from admissions alone.
 \end{abstract}
 
 \section{Introduction}
@@ -52,7 +52,9 @@ For every observed year, the broad-area data satisfy
 before STEM aggregation. The nine observed years therefore contribute $9\times23=207$ area-year observations.
 
 \subsection{Demographic series}
-The preferred denominator for the final access-rate analysis is population aged exactly 18. A source-locked single-age series is not yet available in the present dataset. The demographic sensitivity therefore uses the INE resident population aged 15--24 disseminated by PORDATA.\footnote{PORDATA, \href{https://www.pordata.pt/en/portugal/resident+population+of+working+age+total+and+by+age+group-3245}{resident population by age group}; source entity INE, last updated 22 June 2026.} The observed 15--24 population rises from 1,101,839 in 2016 to 1,185,234 in 2025, a 7.6\% increase between the population references used for the 2017 and 2026 admission endpoints.
+The preferred demographic denominator is the resident population aged exactly 18 from INE indicator \texttt{0001223}, \emph{Populacao residente (Serie longa, inicio 1970 - N.o) por Sexo e Idade; Anual}. The released slice is Portugal (\texttt{PT}), total sex (\texttt{T}/HM), age code \texttt{224} (18 years), for 2016--2025. Competition year $t$ is matched to population year $t-1$, so those ten population values cover the observed 2017--2026 admission endpoints. The age-18 population is 110,479 in 2016 and 110,376 in 2025, almost unchanged between the endpoint references. INE metadata documents a change from census-based estimates through 2020 to administrative-base estimates from 2021 onward; the 2020--2021 transition is therefore treated as a methodological comparability break rather than automatically interpreted as demographic change.
+
+The older demographic sensitivity uses the INE resident population aged 15--24 disseminated by PORDATA.\footnote{PORDATA, \href{https://www.pordata.pt/en/portugal/resident+population+of+working+age+total+and+by+age+group-3245}{resident population by age group}; source entity INE, last updated 22 June 2026.} That broad population rises from 1,101,839 in 2016 to 1,185,234 in 2025, a 7.6\% increase. It is retained as a secondary sensitivity and is never relabelled as population aged 18.
 
 \subsection{Study B programme panel and mobility data}
 Study B fixes five exact DGES programme identities: 9081 Economia, 9119 Engenharia Informática, 9147 Gestão, 9219 Psicologia and 9500 Enfermagem. Official \emph{StatsCurso19} and \emph{StatsCurso20} comparative tables provide 2018--2020 first-phase counts and grades. The 2019 overlap is reconciled exactly before deduplication. The source layer contains 87 stable programme--establishment units and 261 canonical programme--establishment-year observations.
@@ -89,16 +91,23 @@ The annual percentage path is reported as $100[\exp(\widehat\beta_g)-1]$. Placem
 
 A pre-specified sensitivity excludes 2020 and 2021. These observations are administrative population counts rather than a probability sample, and nine observed years are too few for credible data-driven break selection. The fitted slopes and $R^2$ values are descriptive summaries; no sampling p-values or causal interpretation are attached to them.
 
+\subsection{Exact age-18 demographic normalisation}
+Let $N_{18,t-1}$ denote the resident population aged exactly 18 in the calendar year preceding competition year $t$. The preferred demographic rate is
+\[
+H^{18}_{gt}=1000\frac{P_{gt}}{N_{18,t-1}}.
+\]
+The denominator is source-locked from INE indicator \texttt{0001223}. The 2020--2021 estimation-method change is carried explicitly as a comparability caveat. Raw counts and national placement shares remain separate outcomes; this demographic rate is descriptive rather than causal.
+
 \subsection{Broad-cohort demographic sensitivity}
-Let $N_{15:24,t-1}$ denote the resident population aged 15--24 in the calendar year preceding competition year $t$. The sensitivity defines an average single-year cohort proxy
+Let $N_{15:24,t-1}$ denote the resident population aged 15--24 in the calendar year preceding competition year $t$. The historical sensitivity defines an average single-year cohort proxy
 \[
 C^{\mathrm{proxy}}_t=\frac{N_{15:24,t-1}}{10},
 \]
-and the normalised placement rate
+and the secondary normalised placement rate
 \[
-H_{gt}=1000\frac{P_{gt}}{C^{\mathrm{proxy}}_t}.
+H^{\mathrm{proxy}}_{gt}=1000\frac{P_{gt}}{C^{\mathrm{proxy}}_t}.
 \]
-This denominator is deliberately weaker than an exact age-18 count. It is used only to test whether endpoint changes in placements are commensurate with the scale of the relevant young-adult population. Raw counts and national placement shares remain separate outcomes.
+This denominator is deliberately weaker than the exact age-18 count. It tests whether endpoint changes in placements are commensurate with broad young-adult population scale, not entry-age cohort size.
 
 \subsection{Demand, regionality and ranking}
 For programme $p$, institution $i$ and year $t$, define demand pressure
@@ -190,29 +199,29 @@ Engineering, manufacturing and construction & 9,290 & 10,312 & $+11.0\%$ & $+0.8
 Group 05 is the only registered component lower at the 2026 endpoint. ICT is 60.0\% above its 2017 placement count, while group 07 is 11.0\% above 2017. Within group 07, the published source category \emph{Engenharia e Tecnicas Afins} rises by 11.7\% between the same endpoints. The fitted paths reinforce the heterogeneity: group 05 has a -1.99\% annual log-linear count description, ICT +6.29\%, and group 07 +0.79\%. These are descriptive path summaries, not trend-significance tests.
 
 \subsection{Demographic scale}
-The raw endpoint changes and broad-cohort-normalised changes are compared in Table~\ref{tab:demography}.
+The raw endpoint changes, preferred exact-age-normalised changes and historical broad-cohort sensitivity are compared in Table~\ref{tab:demography}.
 
 \begin{table}[htbp]
 \centering
-\caption{Raw and broad-cohort-normalised endpoint changes, 2017--2026}\label{tab:demography}
-\begin{tabular}{lrr}
+\caption{Raw and demographic-normalised endpoint changes, 2017--2026}\label{tab:demography}
+\begin{tabular}{lrrr}
 \toprule
-Component & Raw placements & Cohort-proxy rate \\
+Component & Raw placements & Exact age 18 & 15--24/10 proxy \\
 \midrule
-Natural sciences, mathematics and statistics & $-6.8\%$ & $-13.3\%$ \\
-Information and communication technologies & $+60.0\%$ & $+48.7\%$ \\
-Engineering, manufacturing and construction & $+11.0\%$ & $+3.2\%$ \\
-\textbf{All registered STEM} & \textbf{$+9.0\%$} & \textbf{$+1.3\%$} \\
+Natural sciences, mathematics and statistics & $-6.8\%$ & $-6.7\%$ & $-13.3\%$ \\
+Information and communication technologies & $+60.0\%$ & $+60.1\%$ & $+48.7\%$ \\
+Engineering, manufacturing and construction & $+11.0\%$ & $+11.1\%$ & $+3.2\%$ \\
+\textbf{All registered STEM} & \textbf{$+9.0\%$} & \textbf{$+9.1\%$} & \textbf{$+1.3\%$} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The all-STEM rate changes from 126.4 to 128.1 placements per 1,000 average single-year cohort equivalents. Thus most of the +9.0\% raw endpoint increase is commensurate with the 7.6\% growth of the broad young-adult population reference. The demographic sensitivity does not reverse the raw-count result, but it changes its magnitude substantially. It also sharpens the component decomposition: group 05 weakens further after normalisation, ICT still expands strongly, and group 07 is only modestly above its 2017 rate.
+The exact-age all-STEM rate changes from 126.1 to 137.5 placements per 1,000 residents aged 18, an endpoint increase of about 9.1\%. Because the age-18 denominator is almost unchanged between the endpoint population references, the exact-age result closely tracks the +9.0\% raw increase. The broad 15--24/10 proxy instead changes from 126.4 to 128.1, or +1.3\%, because the broad young-adult population grows by 7.6\%. The attenuation in the proxy is therefore a property of that broader population scale rather than evidence that the entry-age-normalised STEM increase disappears.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.82\textwidth]{../figures/study_a/medium_run_demographic_index.png}
-\caption{All-STEM raw placements and broad-cohort-normalised placement rates, indexed to 2017 = 100. The demographic denominator is the preceding-year population aged 15--24 divided by ten, not population aged exactly 18.}
+\caption{All-STEM raw placements and the historical broad-cohort sensitivity, indexed to 2017 = 100. The figure retains the v0.3.2 15--24 divided-by-ten proxy; the preferred released demographic comparison uses the separate exact age-18 outputs.}
 \end{figure}
 
 \subsection{The 2025 trough}
@@ -228,7 +237,9 @@ The empirical results are reported only after the following checks:
 \item each observed broad-area year contains the same 23 source areas and reconciles exactly to published national controls;
 \item the missing 2019 field composition remains missing, and non-consecutive observations are not labelled year-on-year changes;
 \item the 2020--2021 exclusion sensitivity is evaluated separately;
-\item the demographic series covers every required preceding population year and the cohort proxy is labelled distinctly from an exact age-18 denominator;
+\item the exact age-18 denominator is source-locked to INE indicator \texttt{0001223}, Portugal, total sex and age code \texttt{224}, with competition year $t$ mapped to population year $t-1$;
+\item the 2020--2021 INE population-estimation methodology break is recorded explicitly;
+\item the 15--24 divided-by-ten denominator remains labelled as a broad-cohort proxy rather than an exact age-18 count;
 \item all duplicated 2019 programme observations reconcile across DGES comparative-table vintages before canonicalisation;
 \item stable programme selection precedes grade-model attrition and missing grades are not imputed;
 \item regionality uses only explicitly comparable district origins for the primary same-district statistic;
@@ -238,18 +249,20 @@ The empirical results are reported only after the following checks:
 These checks constrain interpretation but do not create a causal design.
 
 \section{Discussion}
-The medium-run evidence does not support a simple statement that absolute first-phase STEM placements have continuously declined since 2017. The 2026 all-STEM count is higher than both the 2017 and 2023 counts, and the 2025 contraction is followed by a large rebound. Yet that observation is only one margin. The all-STEM share of national placements is slightly lower than in 2017, first-choice pressure has weakened, and the broad-cohort-normalised aggregate is approximately flat between the endpoints.
+The medium-run evidence does not support a simple statement that absolute first-phase STEM placements have continuously declined since 2017. The 2026 all-STEM count is higher than both the 2017 and 2023 counts, and the 2025 contraction is followed by a large rebound. Yet that observation is only one margin. The all-STEM share of national placements is slightly lower than in 2017 and first-choice pressure has weakened. The preferred exact-age-normalised endpoint, however, remains close to the raw count result: +9.1\% versus +9.0\%.
 
-The component results are more informative than the aggregate. Natural sciences, mathematics and statistics are lower in both raw and normalised terms. ICT expands strongly from its 2017 base. Engineering, manufacturing and construction rises in raw counts but only modestly after demographic normalisation. Consequently, ``fewer placements'', ``lower relative share'', ``weaker first-choice pressure'' and ``lower placements relative to cohort scale'' are distinct empirical statements.
+The broad-cohort sensitivity tells a different story, with only +1.3\% endpoint growth. That difference is informative rather than contradictory. The exact denominator measures the registered entry-age cohort, while the 15--24/10 proxy measures a broad young-adult population scale that grew substantially over the period. The proxy is therefore retained as a robustness comparison but does not replace the exact-age result.
+
+The component results are more informative than the aggregate. Natural sciences, mathematics and statistics are lower in raw, exact-age and broad-proxy terms. ICT expands strongly from its 2017 base. Engineering, manufacturing and construction rises in raw and exact-age terms but only modestly under the broad proxy. Consequently, ``fewer placements'', ``lower relative share'', ``weaker first-choice pressure'', ``lower placements relative to age-18 population'' and ``lower placements relative to broad young-adult population scale'' are distinct empirical statements.
 
 Study B adds three further distinctions. First, applicants per vacancy are consistently positively associated with entry grades when programme identity is held fixed, but explanatory strength is heterogeneous and never reaches the preregistered threshold for an almost-complete explanation. Second, expressed first choices are strongly regional, yet realised placements are systematically less same-district concentrated, showing that preference geography and allocation geography are not the same object. Third, the broad THE ranking sample contains incremental grade-prediction information before demand is included, but essentially no residual out-of-institution grade-prediction gain after contemporaneous demand enters the model. That attenuation is consistent with demand already containing much of the predictive information associated with ranking or reputation, but the design does not identify a causal mediation pathway.
 
 Provider asymmetry matters. THE retains nearly complete out-of-institution support, whereas QS and ARWU lose large fractions of eligible rows under the frozen ranking and structural-support rules. Their weaker and less stable results should therefore not be interpreted as symmetric evidence about the substantive quality of the providers themselves. They are evidence about predictive performance under the registered historical coverage available for this panel.
 
-The remaining limitations are substantive. The broad-area field composition is not observed for 2019, the medium-run series begins only in 2017, and broad-area tables do not contain total programme applications. The demographic denominator is a broad cohort proxy rather than the preferred exact age-18 series. Study B covers five programmes and only three admission years for the ranking analysis; the regionality window is 2023--2025 rather than the same historical period. Rankings are imperfect proxies for reputation and their publication structures differ across providers. Finally, no current result establishes that admissions patterns have already constrained R\&D-unit performance. That downstream pipeline question requires explicit linkage to feeder fields, postgraduate progression and research personnel.
+The remaining limitations are substantive. The broad-area field composition is not observed for 2019, the medium-run series begins only in 2017, and broad-area tables do not contain total programme applications. The exact age-18 series is source-locked for the current 2016--2025 denominator window, but interpretation across 2020--2021 must respect INE's estimation-method change. Study B covers five programmes and only three admission years for the ranking analysis; the regionality window is 2023--2025 rather than the same historical period. Rankings are imperfect proxies for reputation and their publication structures differ across providers. Finally, no current result establishes that admissions patterns have already constrained R\&D-unit performance. That downstream pipeline question requires explicit linkage to feeder fields, postgraduate progression and research personnel.
 
 \section{Conclusion}
-Between 2017 and 2026, raw registered STEM placements rise by 9.0\%, their share of all first-phase placements falls by 0.64 percentage points, and the broad-cohort-normalised endpoint rate rises by only 1.3\%. Component paths diverge substantially, so the medium-run evidence cannot be represented by one claim of continuous aggregate decline.
+Between 2017 and 2026, raw registered STEM placements rise by 9.0\%, their share of all first-phase placements falls by 0.64 percentage points, and the preferred exact age-18-normalised endpoint rate rises by 9.1\%. The older broad 15--24/10 sensitivity rises by only 1.3\%, showing that demographic conclusions depend on whether the denominator represents the entry-age cohort or a much broader young-adult population scale. Component paths diverge substantially, so the medium-run evidence cannot be represented by one claim of continuous aggregate decline.
 
 Across five matched programmes in 2018--2020, applicants per vacancy are an important but heterogeneous predictor of entry grades: all 30 registered log-demand coefficients are positive, while no programme-year model reaches the frozen $R^2=0.80$ benchmark. Recent mobility matrices show that roughly two thirds of comparable first choices remain within the applicant's district, but realised placements are less geographically concentrated. In the ranking analysis, THE rankings improve out-of-institution grade prediction before demand is included, whereas the incremental gain essentially disappears after contemporaneous demand enters; QS and ARWU do not show stable incremental value under their narrower supported samples.
 
