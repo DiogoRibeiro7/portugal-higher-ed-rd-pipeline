@@ -58,6 +58,18 @@ sources:
     owner: "Instituto Nacional de Estatística (INE)"
     role: "Population denominators and demographic controls"
     acquisition: "official_api_or_download"
+    exact_age_18:
+      indicator_code: "0002721"
+      series: "População média anual residente (Série longa, início 1971 - N.º) por Sexo e Idade; Anual"
+      official_url: "https://www.ine.pt/xurl/indx/0002721/PT"
+      target_slice: "Sexo=Total; Idade=18 anos; Portugal"
+      verified_coverage: "1971-2025"
+      use: "Preferred exact age-18 denominator for Study A demographic normalisation"
+      acquisition_status: >-
+        Indicator and dimensions are verified, but values are not yet source-locked in
+        the repository because the INE JSON endpoint timed out from GitHub Actions.
+        Use an official downloadable/exported table or a reproducible dissemination
+        mirror before promoting this source into release calculations.
     pordata_dissemination:
       series: "Resident population aged 15-24, total"
       url: "https://www.pordata.pt/en/portugal/resident+population+of+working+age+total+and+by+age+group-3245"
