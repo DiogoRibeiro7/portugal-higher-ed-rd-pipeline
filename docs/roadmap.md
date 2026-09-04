@@ -49,7 +49,7 @@
 - scale the comparative-course and pair-statistics contracts across programmes and years;
 - validate programme-to-ISCED-F concordances through renamings, mergers and Bologna-era reforms;
 - extend historical coverage backwards where programme comparability can be demonstrated;
-- source-lock an exact age-18 denominator if available from an official single-age series;
+- source-lock the registered INE indicator `0002721` Portugal/total-sex/age-18 series through an official export or reproducible dissemination mirror, carrying the 2020-2021 estimation-method break explicitly;
 - execute the registered 1997-2026 Study A analysis only after its coverage gate is satisfied;
 - execute the broad Study B demand/grade comparison only after the matched-course result can be replicated across fields.
 
