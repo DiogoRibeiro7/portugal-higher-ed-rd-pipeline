@@ -1,0 +1,62 @@
+version: 0.3.4-development
+study: B
+analysis: statscurso_overlap_revision_policy
+language: en-GB
+status: frozen_before_any_2021_outcome_analysis
+trigger:
+  source_document_year: 2021
+  overlap_year: 2020
+  reason: later official DGES StatsCurso vintage revises previously source-locked overlap cells
+scope:
+  registered_programmes: ["9081", "9119", "9147", "9219", "9500"]
+  registered_measures:
+    - vacancies
+    - applicants
+    - first_choice_applicants
+    - placements
+    - first_choice_placements
+    - last_placed_general_contingent_grade
+    - mean_application_grade_placed
+    - mean_entrance_exam_grade_placed
+    - mean_secondary_grade_placed
+principles:
+  - Never overwrite a value already source-locked from its contemporary StatsCurso vintage.
+  - Treat a later official value for an overlap year as a provider revision, not as evidence that the earlier transcription was wrong.
+  - Record every differing overlap cell explicitly with programme code, institution code, measure, contemporary value, later-vintage value, and both source vintages.
+  - Do not use a numeric tolerance to suppress differences; any non-equal registered value is a revision that must be catalogued.
+  - Programme-code transition rows remain outside the exact-code continuity panel unless they belonged to the registered exact code in the contemporary source vintage.
+  - Counts and grades are treated under the same disclosure rule; no outcome-specific exception may be introduced after seeing associations.
+canonicalisation:
+  historical_overlap_value: contemporary_source_vintage
+  later_vintage_overlap_value: retained_only_in_revision_audit
+  appended_new_year_value: later_source_vintage
+  historical_release_mutation: prohibited
+extension_gate:
+  allow_append_after_revision_audit: true
+  requirements:
+    - Every registered overlap institution is present in the later vintage or explicitly accounted for by an identity transition.
+    - Every unequal registered overlap cell is catalogued in a committed revision audit.
+    - The contemporary source value remains canonical for the overlap year.
+    - The later-vintage source is official DGES and the new-year rows retain its provenance.
+    - Stable-offering selection uses programme/institution source coverage only and remains outcome-blind.
+    - No new-year demand/grade association or model result is inspected before this policy is merged.
+  failure_action: stop_without_new_year_analysis
+observed_trigger_inventory:
+  status: source_reconciliation_only_not_outcome_analysis
+  known_revisions:
+    - programme_code: "9147"
+      institution_code: "3065"
+      measure: mean_secondary_grade_placed
+      contemporary_2020_value: 146.9
+      StatsCurso21_reported_2020_value: 147.0
+    - programme_code: "9147"
+      institution_code: "3092"
+      measure: mean_entrance_exam_grade_placed
+      contemporary_2020_value: 116.8
+      StatsCurso21_reported_2020_value: 116.9
+  note: The complete five-programme overlap probe found no other registered-cell disagreements.
+interpretation:
+  purpose: provenance-preserving source-vintage reconciliation
+  changes_scientific_estimand: false
+  authorises_2021_analysis_immediately: false
+  next_required_step: commit a machine-readable revision audit and re-run the extension gate under this policy
