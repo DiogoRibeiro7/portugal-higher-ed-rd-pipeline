@@ -1,0 +1,52 @@
+name: Probe Study B 2021 source
+
+on:
+  push:
+    branches: [research/study-b-2021-extraction]
+    paths:
+      - '.github/workflows/probe-study-b-2021.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install PDF text tools
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Download official StatsCurso21
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://www.dges.gov.pt/guias/pdfs/statcol/2021/StatsCurso21.pdf \
+            --output /tmp/StatsCurso21.pdf
+          test -s /tmp/StatsCurso21.pdf
+          pdfinfo /tmp/StatsCurso21.pdf | sed -n '1,20p'
+      - name: Extract registered programme sections
+        run: |
+          set -euo pipefail
+          pdftotext -layout /tmp/StatsCurso21.pdf /tmp/StatsCurso21.txt
+          python - <<'PY'
+          from pathlib import Path
+
+          text = Path('/tmp/StatsCurso21.txt').read_text(encoding='utf-8', errors='replace')
+          programmes = {
+              '9081': 'Economia',
+              '9119': 'Engenharia Informática',
+              '9147': 'Gestão',
+              '9219': 'Psicologia',
+              '9500': 'Enfermagem',
+          }
+          for code, name in programmes.items():
+              marker = f'{code} {name}'
+              index = text.find(marker)
+              if index < 0:
+                  raise SystemExit(f'missing registered programme heading: {marker}')
+              start = max(0, index - 1200)
+              end = min(len(text), index + 14000)
+              print(f'\n===== {marker} =====\n')
+              print(text[start:end])
+          PY
