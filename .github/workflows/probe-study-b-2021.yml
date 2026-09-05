@@ -24,14 +24,16 @@ jobs:
             https://www.dges.gov.pt/guias/pdfs/statcol/2021/StatsCurso21.pdf \
             --output /tmp/StatsCurso21.pdf
           test -s /tmp/StatsCurso21.pdf
-          pdfinfo /tmp/StatsCurso21.pdf | sed -n '1,20p'
-      - name: Extract registered programme sections
+          pdftotext -layout /tmp/StatsCurso21.pdf /tmp/StatsCurso21.txt
+      - name: Reconcile 2020 overlap against committed shards
         run: |
           set -euo pipefail
-          pdftotext -layout /tmp/StatsCurso21.pdf /tmp/StatsCurso21.txt
           python - <<'PY'
           from pathlib import Path
+          import re
+          import pandas as pd
 
+          root = Path('.')
           text = Path('/tmp/StatsCurso21.txt').read_text(encoding='utf-8', errors='replace')
           programmes = {
               '9081': 'Economia',
@@ -40,13 +42,101 @@ jobs:
               '9219': 'Psicologia',
               '9500': 'Enfermagem',
           }
+          shards = [
+              'course_9081_economics_2018_2020_source_rows.csv',
+              'course_9119_engineering_informatics_2018_2020_source_rows.csv',
+              'course_9147_management_2018_2020_source_rows_part1.csv',
+              'course_9147_management_2018_2020_source_rows_part2a.csv',
+              'course_9147_management_2018_2020_source_rows_part2b.csv',
+              'course_9219_psychology_2018_2020_source_rows.csv',
+              'course_9500_nursing_2018_2020_source_rows_part1.csv',
+              'course_9500_nursing_2018_2020_source_rows_part2.csv',
+              'course_9500_nursing_2018_2020_source_rows_part3.csv',
+              'course_9500_nursing_2018_2020_source_rows_part4.csv',
+          ]
+          frames = [
+              pd.read_csv(root / 'data/curated/dges' / name, dtype={'programme_code': str, 'institution_code': str})
+              for name in shards
+          ]
+          existing = pd.concat(frames, ignore_index=True)
+          existing = existing[existing['year'].eq(2020)].copy()
+          measure_columns = [
+              'vacancies',
+              'applicants',
+              'first_choice_applicants',
+              'placements',
+              'first_choice_placements',
+              'last_placed_general_contingent_grade',
+              'mean_application_grade_placed',
+              'mean_entrance_exam_grade_placed',
+              'mean_secondary_grade_placed',
+          ]
+
+          heading_pattern = re.compile(
+              r'^\s*(?:[A-Z]\d{3}|\d{4})\s+.+?\s+\[Licenciatura\]\s*$',
+              re.MULTILINE,
+          )
+
+          def section_for(code: str, name: str) -> str:
+              marker = re.compile(
+                  rf'^\s*{re.escape(code)}\s+{re.escape(name)}\s+\[Licenciatura\]\s*$',
+                  re.MULTILINE,
+              )
+              match = marker.search(text)
+              if match is None:
+                  raise AssertionError(f'missing heading {code} {name}')
+              next_match = heading_pattern.search(text, match.end())
+              end = next_match.start() if next_match else len(text)
+              return text[match.end():end]
+
+          def parsed_rows(section: str) -> dict[str, tuple[float, ...]]:
+              rows: dict[str, tuple[float, ...]] = {}
+              for line in section.splitlines():
+                  match = re.match(r'^\s*(\d{4})\s+.*?\s+2020\s+(.+)$', line)
+                  if match is None:
+                      continue
+                  institution_code, tail = match.groups()
+                  tokens = tail.split()
+                  numeric: list[float] = []
+                  for token in tokens:
+                      try:
+                          numeric.append(float(token))
+                      except ValueError:
+                          break
+                  if len(numeric) < 9:
+                      raise AssertionError(
+                          f'{institution_code}: expected at least 9 registered numeric measures, got {numeric}'
+                      )
+                  rows[institution_code] = tuple(numeric[:9])
+              return rows
+
+          total_overlap = 0
           for code, name in programmes.items():
-              marker = f'{code} {name}'
-              index = text.find(marker)
-              if index < 0:
-                  raise SystemExit(f'missing registered programme heading: {marker}')
-              start = max(0, index - 1200)
-              end = min(len(text), index + 14000)
-              print(f'\n===== {marker} =====\n')
-              print(text[start:end])
+              source_rows = parsed_rows(section_for(code, name))
+              registered = existing[existing['programme_code'].eq(code)].copy()
+              registered_codes = set(registered['institution_code'])
+              parsed_codes = set(source_rows)
+              missing = sorted(registered_codes - parsed_codes)
+              if missing:
+                  raise AssertionError(f'{code}: registered 2020 institutions missing from StatsCurso21: {missing}')
+
+              mismatches: list[str] = []
+              for row in registered.itertuples(index=False):
+                  expected = tuple(float(getattr(row, column)) for column in measure_columns)
+                  observed = source_rows[row.institution_code]
+                  if expected != observed:
+                      mismatches.append(
+                          f'{row.institution_code}: expected={expected}, observed={observed}'
+                      )
+              if mismatches:
+                  raise AssertionError(f'{code}: 2020 overlap mismatch: ' + ' | '.join(mismatches))
+
+              extras = sorted(parsed_codes - registered_codes)
+              total_overlap += len(registered)
+              print(
+                  f'{code} {name}: overlap_ok={len(registered)} '
+                  f'extra_nonregistered_2020_rows={extras}'
+              )
+
+          print(f'ALL_REGISTERED_2020_OVERLAPS_OK total_rows={total_overlap}')
           PY
