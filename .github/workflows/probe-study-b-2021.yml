@@ -125,34 +125,52 @@ jobs:
               return tuple(value for value in values if value is not None)
 
           total_overlap = 0
+          all_failures: list[str] = []
           for code, name in programmes.items():
               source_rows = parsed_rows(section_for(code, name))
               registered = [row for row in existing if row['programme_code'] == code]
               registered_codes = {row['institution_code'] for row in registered}
               parsed_codes = set(source_rows)
               missing = sorted(registered_codes - parsed_codes)
+              extras = sorted(parsed_codes - registered_codes)
+              mismatches: list[str] = []
+
               if missing:
-                  raise AssertionError(
+                  all_failures.append(
                       f'{code}: registered 2020 institutions missing from StatsCurso21: {missing}'
                   )
 
-              mismatches: list[str] = []
               for row in registered:
+                  institution_code = row['institution_code']
+                  if institution_code not in source_rows:
+                      continue
                   expected = expected_measures(row)
-                  observed = source_rows[row['institution_code']]
+                  observed = source_rows[institution_code]
                   if observed[:len(expected)] != expected:
                       mismatches.append(
-                          f"{row['institution_code']}: expected={expected}, observed={observed}"
+                          f'{institution_code}: expected={expected}, observed={observed}'
                       )
-              if mismatches:
-                  raise AssertionError(f'{code}: 2020 overlap mismatch: ' + ' | '.join(mismatches))
 
-              extras = sorted(parsed_codes - registered_codes)
+              if mismatches:
+                  all_failures.append(
+                      f'{code}: 2020 overlap mismatch: ' + ' | '.join(mismatches)
+                  )
+
               total_overlap += len(registered)
+              status = 'ok' if not missing and not mismatches else 'FAIL'
               print(
-                  f'{code} {name}: overlap_ok={len(registered)} '
+                  f'{code} {name}: status={status} registered={len(registered)} '
+                  f'missing={missing} mismatches={len(mismatches)} '
                   f'extra_nonregistered_2020_rows={extras}'
               )
+              for mismatch in mismatches:
+                  print(f'  MISMATCH {code}/{mismatch}')
+
+          if all_failures:
+              print('\nREGISTERED_2020_OVERLAP_GATE_FAILED')
+              for failure in all_failures:
+                  print(f'- {failure}')
+              raise SystemExit(1)
 
           print(f'ALL_REGISTERED_2020_OVERLAPS_OK total_rows={total_overlap}')
           PY
