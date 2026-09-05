@@ -41,7 +41,7 @@ def test_parse_comparative_section_reads_both_years() -> None:
 def test_parse_comparative_section_exposes_prior_code_note() -> None:
     section = """
 0507 Universidade de Coimbra - Faculdade de Psicologia e de Ciências da Educação
-Código em 2020: 9555
+Código em 2020: 0507/9555
 %var.
 50
 50
@@ -57,3 +57,24 @@ Código em 2020: 9555
     rows = parse_comparative_section(section, programme_code="9219")
 
     assert {row.prior_programme_code for row in rows} == {"9555"}
+
+
+def test_parse_comparative_section_exposes_alphanumeric_prior_code() -> None:
+    section = """
+0903 Universidade de Évora - Escola de Ciências e Tecnologia
+Código em 2020: 0903/G005
+%var.
+40
+42
+180 40 40 20 130.0 140.0 135.0 145.0
+190 45 42 22 132.0 142.0 137.0 147.0
++2 +10 +5 +2 +2 +2.0 +2.0
+2020
+2021
+145.0
+147.0
+"""
+
+    rows = parse_comparative_section(section, programme_code="9119")
+
+    assert {row.prior_programme_code for row in rows} == {"G005"}
