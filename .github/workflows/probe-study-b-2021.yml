@@ -29,9 +29,10 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
+          import csv
+          from decimal import Decimal, InvalidOperation
           from pathlib import Path
           import re
-          import pandas as pd
 
           root = Path('.')
           text = Path('/tmp/StatsCurso21.txt').read_text(encoding='utf-8', errors='replace')
@@ -54,12 +55,13 @@ jobs:
               'course_9500_nursing_2018_2020_source_rows_part3.csv',
               'course_9500_nursing_2018_2020_source_rows_part4.csv',
           ]
-          frames = [
-              pd.read_csv(root / 'data/curated/dges' / name, dtype={'programme_code': str, 'institution_code': str})
-              for name in shards
-          ]
-          existing = pd.concat(frames, ignore_index=True)
-          existing = existing[existing['year'].eq(2020)].copy()
+          existing: list[dict[str, str]] = []
+          for name in shards:
+              path = root / 'data/curated/dges' / name
+              with path.open(encoding='utf-8', newline='') as handle:
+                  existing.extend(csv.DictReader(handle))
+          existing = [row for row in existing if row['year'] == '2020']
+
           measure_columns = [
               'vacancies',
               'applicants',
@@ -89,44 +91,58 @@ jobs:
               end = next_match.start() if next_match else len(text)
               return text[match.end():end]
 
-          def parsed_rows(section: str) -> dict[str, tuple[float, ...]]:
-              rows: dict[str, tuple[float, ...]] = {}
+          def parsed_rows(section: str) -> dict[str, tuple[Decimal, ...]]:
+              rows: dict[str, tuple[Decimal, ...]] = {}
               for line in section.splitlines():
                   match = re.match(r'^\s*(\d{4})\s+.*?\s+2020\s+(.+)$', line)
                   if match is None:
                       continue
                   institution_code, tail = match.groups()
-                  tokens = tail.split()
-                  numeric: list[float] = []
-                  for token in tokens:
+                  numeric: list[Decimal] = []
+                  for token in tail.split():
                       try:
-                          numeric.append(float(token))
-                      except ValueError:
+                          numeric.append(Decimal(token))
+                      except InvalidOperation:
                           break
-                  if len(numeric) < 9:
+                  if len(numeric) < 5:
                       raise AssertionError(
-                          f'{institution_code}: expected at least 9 registered numeric measures, got {numeric}'
+                          f'{institution_code}: expected at least five count measures, got {numeric}'
                       )
-                  rows[institution_code] = tuple(numeric[:9])
+                  rows[institution_code] = tuple(numeric)
               return rows
+
+          def expected_measures(row: dict[str, str]) -> tuple[Decimal, ...]:
+              values: list[Decimal | None] = []
+              for column in measure_columns:
+                  raw = row[column].strip()
+                  values.append(Decimal(raw) if raw else None)
+              while values and values[-1] is None:
+                  values.pop()
+              if any(value is None for value in values):
+                  raise AssertionError(
+                      f"{row['programme_code']}/{row['institution_code']}: internal blank in registered measures"
+                  )
+              return tuple(value for value in values if value is not None)
 
           total_overlap = 0
           for code, name in programmes.items():
               source_rows = parsed_rows(section_for(code, name))
-              registered = existing[existing['programme_code'].eq(code)].copy()
-              registered_codes = set(registered['institution_code'])
+              registered = [row for row in existing if row['programme_code'] == code]
+              registered_codes = {row['institution_code'] for row in registered}
               parsed_codes = set(source_rows)
               missing = sorted(registered_codes - parsed_codes)
               if missing:
-                  raise AssertionError(f'{code}: registered 2020 institutions missing from StatsCurso21: {missing}')
+                  raise AssertionError(
+                      f'{code}: registered 2020 institutions missing from StatsCurso21: {missing}'
+                  )
 
               mismatches: list[str] = []
-              for row in registered.itertuples(index=False):
-                  expected = tuple(float(getattr(row, column)) for column in measure_columns)
-                  observed = source_rows[row.institution_code]
-                  if expected != observed:
+              for row in registered:
+                  expected = expected_measures(row)
+                  observed = source_rows[row['institution_code']]
+                  if observed[:len(expected)] != expected:
                       mismatches.append(
-                          f'{row.institution_code}: expected={expected}, observed={observed}'
+                          f"{row['institution_code']}: expected={expected}, observed={observed}"
                       )
               if mismatches:
                   raise AssertionError(f'{code}: 2020 overlap mismatch: ' + ' | '.join(mismatches))
