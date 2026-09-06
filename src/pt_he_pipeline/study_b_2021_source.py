@@ -20,7 +20,10 @@ MEASURES = (
 
 _HEADING_RE = re.compile(r"^\s*(?:[A-Z]\d{3}|\d{4})\s+.+?\s+\[Licenciatura\]\s*$", re.MULTILINE)
 _INSTITUTION_RE = re.compile(r"^\s*(\d{4})\s+(.+)$")
-_CODE_NOTE_RE = re.compile(r"C[oó]digo em 2020:\s*([A-Z]?\d{3,4})", re.IGNORECASE)
+_CODE_NOTE_RE = re.compile(
+    r"C[oó]digo em 2020:\s*(?:\d{4}/)?([A-Z]?\d{3,4})",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
