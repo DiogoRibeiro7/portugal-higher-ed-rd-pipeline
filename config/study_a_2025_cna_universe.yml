@@ -1,0 +1,19 @@
+study: A
+purpose: modern_cna_programme_universe_denominator
+year: 2025
+phase: 1
+source:
+  authority: DGES
+  index_url: https://www.dges.gov.pt/guias/pdfs/statce/col25f1/index.htm
+  expected_unique_establishment_course_pairs: 1132
+  parser: pt_he_pipeline.dges.discover_pair_references_from_html
+  acquisition: receipt_backed_html
+outputs:
+  pair_universe: data/curated/dges/study_a_2025_cna_pair_universe.csv
+  course_universe: data/curated/dges/study_a_2025_cna_course_universe.csv
+rules:
+  - Preserve institution and course identifiers exactly as published.
+  - Do not filter to STEM before classification coverage is measured.
+  - Derive the course universe only by deduplicating the source-locked pair universe on course_id.
+  - Fail if the parsed pair count differs from the frozen 1132-pair source identity.
+  - Do not infer CITE-F from course titles; classification is joined later from DGEEC.
