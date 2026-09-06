@@ -30,6 +30,7 @@ _CODE_NOTE_RE = re.compile(
 class ComparativeRow:
     programme_code: str
     institution_code: str
+    institution_name: str
     year: int
     values: tuple[Decimal, ...]
     prior_programme_code: str | None = None
@@ -70,12 +71,7 @@ def parse_comparative_section(
     *,
     programme_code: str,
 ) -> tuple[ComparativeRow, ...]:
-    """Parse institution-level 2020/2021 rows from one programme section.
-
-    The DGES layout prints the two vacancy values separately, followed by the
-    eight remaining measures for 2020 and 2021. A repeated trailing grade is
-    present later in each block and is intentionally ignored.
-    """
+    """Parse institution-level 2020/2021 rows from one programme section."""
 
     lines = section.splitlines()
     rows: list[ComparativeRow] = []
@@ -87,6 +83,7 @@ def parse_comparative_section(
             continue
 
         institution_code = match.group(1)
+        institution_name = match.group(2).strip()
         block_end = index + 1
         while block_end < len(lines):
             if _INSTITUTION_RE.match(lines[block_end]) or _HEADING_RE.match(lines[block_end]):
@@ -128,6 +125,7 @@ def parse_comparative_section(
                 ComparativeRow(
                     programme_code=programme_code,
                     institution_code=institution_code,
+                    institution_name=institution_name,
                     year=2020,
                     values=(vacancies_2020[0], *measures_2020[:8]),
                     prior_programme_code=prior_code,
@@ -135,6 +133,7 @@ def parse_comparative_section(
                 ComparativeRow(
                     programme_code=programme_code,
                     institution_code=institution_code,
+                    institution_name=institution_name,
                     year=2021,
                     values=(vacancies_2021[0], *measures_2021[:8]),
                     prior_programme_code=prior_code,
