@@ -3,8 +3,11 @@ from pathlib import Path
 import pandas as pd
 
 from pt_he_pipeline.dgeec_cnaef import (
+    course_ficha_url,
     normalise_course_classification_table,
     parse_course_classification_excel,
+    parse_course_ficha_file,
+    parse_course_ficha_html,
 )
 
 
@@ -73,3 +76,51 @@ def test_missing_citef_2013_column_is_rejected() -> None:
         assert "citef_2013_code" in str(exc)
     else:
         raise AssertionError("missing CITE-F/2013 column should fail")
+
+
+def _ficha_html() -> str:
+    return """
+    <html><body>
+      <div>Curso</div><div>9119 - Engenharia Informática</div>
+      <div>Diploma</div><div>L - Licenciatura</div>
+      <div>Área CNAEF 2013</div><div>0613 - Desenvolvimento de software e aplicações</div>
+    </body></html>
+    """
+
+
+def test_course_ficha_url_uses_stable_version_prefix() -> None:
+    assert course_ficha_url("9119") == "https://cnaef.dgeec.medu.pt/?accao=Ficha&cod=139119"
+    assert course_ficha_url("9119", classification_version=1997).endswith("cod=979119")
+
+
+def test_parse_course_ficha_html_maps_citef_2013() -> None:
+    result = parse_course_ficha_html(
+        _ficha_html(),
+        expected_course_id="9119",
+        source_url=course_ficha_url("9119"),
+    )
+
+    assert result["course_id"] == "9119"
+    assert result["course_name"] == "Engenharia Informática"
+    assert result["degree"] == "Licenciatura"
+    assert result["citef_2013_code"] == "0613"
+    assert result["isced_f_2013_2digit"] == "06"
+    assert result["classification_source_url"] == course_ficha_url("9119")
+
+
+def test_parse_course_ficha_html_rejects_wrong_course() -> None:
+    try:
+        parse_course_ficha_html(_ficha_html(), expected_course_id="9081")
+    except ValueError as exc:
+        assert "course mismatch" in str(exc)
+    else:
+        raise AssertionError("mismatched ficha should fail")
+
+
+def test_parse_course_ficha_file_adds_sha256(tmp_path: Path) -> None:
+    path = tmp_path / "9119.html"
+    path.write_text(_ficha_html(), encoding="utf-8")
+
+    result = parse_course_ficha_file(path, expected_course_id="9119")
+
+    assert len(str(result["classification_source_sha256"])) == 64

@@ -45,14 +45,19 @@ sources:
     owner: "Direção-Geral de Estatísticas da Educação e Ciência (DGEEC)"
     role: "Official higher-education course classification under CITE-F/2013 and legacy CITE-1997/CNAEF"
     official_app: "https://cnaef.dgeec.medu.pt/"
-    acquisition: "official_excel_export"
-    format: "xlsx"
-    parser: "pt_he_pipeline.dgeec_cnaef.parse_course_classification_excel"
-    provenance: "SHA-256 of the downloaded provider export is retained in every normalised row"
+    primary_acquisition: "official_excel_export_when_live"
+    fallback_acquisition: "receipt-locked per-course ficha HTML"
+    ficha_url_template_2013: "https://cnaef.dgeec.medu.pt/?accao=Ficha&cod=13{course_id}"
+    ficha_url_template_1997: "https://cnaef.dgeec.medu.pt/?accao=Ficha&cod=97{course_id}"
+    excel_parser: "pt_he_pipeline.dgeec_cnaef.parse_course_classification_excel"
+    ficha_parser: "pt_he_pipeline.dgeec_cnaef.parse_course_ficha_file"
+    provenance: >-
+      XLSX exports carry the provider-file SHA-256. Ficha HTML pages are acquired
+      with fetch_with_receipt and carry their own SHA-256 and stable provider URL.
     use: >-
       Primary classification authority for Study A programme-to-field concordance.
-      The export is used for field membership only; longitudinal programme continuity
-      remains governed separately by config/study_a_programme_concordance.yml.
+      The export or ficha is used for field membership only; longitudinal programme
+      continuity remains governed separately by config/study_a_programme_concordance.yml.
 
   fct_rd_units:
     owner: "Fundação para a Ciência e a Tecnologia (FCT)"
