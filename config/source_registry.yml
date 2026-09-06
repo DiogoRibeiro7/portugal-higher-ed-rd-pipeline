@@ -41,6 +41,19 @@ sources:
     role: "Published higher-education tables by cycle and education field"
     example_2023_24: "https://estatisticas-educacao.dgeec.medu.pt/eef/2024/ensino_superior/alunos/diplomados.asp"
 
+  dgeec_course_classification:
+    owner: "Direção-Geral de Estatísticas da Educação e Ciência (DGEEC)"
+    role: "Official higher-education course classification under CITE-F/2013 and legacy CITE-1997/CNAEF"
+    official_app: "https://cnaef.dgeec.medu.pt/"
+    acquisition: "official_excel_export"
+    format: "xlsx"
+    parser: "pt_he_pipeline.dgeec_cnaef.parse_course_classification_excel"
+    provenance: "SHA-256 of the downloaded provider export is retained in every normalised row"
+    use: >-
+      Primary classification authority for Study A programme-to-field concordance.
+      The export is used for field membership only; longitudinal programme continuity
+      remains governed separately by config/study_a_programme_concordance.yml.
+
   fct_rd_units:
     owner: "Fundação para a Ciência e a Tecnologia (FCT)"
     role: "R&D-unit evaluations, host institutions, scientific domains and unit characteristics"
