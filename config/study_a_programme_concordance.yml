@@ -1,0 +1,66 @@
+version: 0.3.4-development
+study: A
+analysis: historical_programme_field_concordance
+status: frozen_before_1997_2026_programme_outcome_panel
+language: en-GB
+period:
+  earliest_target_year: 1997
+  latest_target_year: 2026
+  primary_access_phase: 1
+primary_stem_definition:
+  isced_f_2013_2digit: ["05", "06", "07"]
+  report_components_separately: true
+  components:
+    "05": Natural sciences, mathematics and statistics
+    "06": Information and communication technologies
+    "07": Engineering, manufacturing and construction
+classification:
+  unit: source_year_by_institution_by_programme
+  concordance_path: config/concordances/study_a_programme_fields.csv
+  field_membership_is_year_specific: true
+  programme_continuity_is_separate: true
+  required_columns:
+    - source_year
+    - source_institution_id
+    - source_course_id
+    - source_course_title
+    - source_degree
+    - isced_f_2013_2digit
+    - classification_basis
+    - classification_source
+    - continuity_id
+    - continuity_status
+    - continuity_source
+    - reviewed_by
+  allowed_classification_basis:
+    - official_dges
+    - official_dgeec
+    - documented_manual_crosswalk
+  allowed_continuity_status:
+    - exact_identity
+    - documented_successor
+    - structural_break
+    - unresolved
+rules:
+  - Preserve the raw DGES institution code, programme code, title and degree for every source year.
+  - Assign field membership for each source-year row independently of longitudinal programme continuity.
+  - Do not infer field membership from title similarity when an official or documented classification is unavailable.
+  - Do not merge different programme codes by title alone.
+  - Do not assume a renamed programme or Bologna-era successor is longitudinally identical to its predecessor.
+  - A documented successor requires explicit provenance; otherwise record a structural break or unresolved continuity.
+  - Field-year STEM aggregation may use year-specific classifications without stitching programme identities across years.
+  - Programme-level longitudinal trajectories may use only exact_identity or documented_successor continuity records.
+  - Structural-break and unresolved continuity records must remain outside longitudinal programme trajectories.
+release_gate:
+  primary_long_run_claim_requires:
+    - Every included programme row has exactly one two-digit ISCED-F 2013 classification with provenance.
+    - Every year used in the primary 1997-2026 claim has complete field-classification coverage; otherwise shorten the primary period rather than impute classifications.
+    - All primary STEM aggregates report components 05, 06 and 07 separately before aggregation.
+    - Raw counts and placement shares remain co-primary; demographic normalisation is supplementary.
+    - COVID years 2020 and 2021 remain in the primary series and are excluded only in the frozen sensitivity analysis.
+  continuity_not_required_for_field_aggregation: true
+interpretation:
+  sampling_inference: false
+  causal_interpretation: false
+  structural_breaks: exploratory_until_historical_panel_is_deep_and_comparable
+  study_b_cross_domain_panel_role: secondary_calibration_not_primary_stem_evidence
