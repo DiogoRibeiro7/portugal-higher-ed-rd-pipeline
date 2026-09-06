@@ -1,4 +1,4 @@
-"""Normalise official DGEEC course-classification exports for Study A."""
+"""Normalise and source-lock official DGEEC course classifications for Study A."""
 
 from __future__ import annotations
 
@@ -9,8 +9,12 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 import pandas as pd
+from bs4 import BeautifulSoup
 
-from pt_he_pipeline.io import sha256_file
+from pt_he_pipeline.io import fetch_with_receipt, sha256_file
+
+_FICHA_BASE_URL = "https://cnaef.dgeec.medu.pt/"
+_CLASSIFICATION_PREFIX = {2013: "13", 1997: "97"}
 
 
 def _fold(value: str) -> str:
@@ -77,9 +81,132 @@ def _normalise_field_code(value: object) -> str | None:
     if text is None:
         return None
     digits = re.sub(r"\D", "", text)
-    if not digits:
-        return None
-    return digits
+    return digits or None
+
+
+def _course_id(value: object) -> str:
+    code = _normalise_code(value)
+    if code is None or len(code) != 4 or not code.isalnum():
+        raise ValueError(f"invalid DGEEC course code: {value!r}")
+    return code
+
+
+def _ficha_lines(html: str) -> list[str]:
+    if not html.strip():
+        raise ValueError("DGEEC ficha HTML must not be empty")
+    soup = BeautifulSoup(html, "html.parser")
+    return [" ".join(value.split()) for value in soup.stripped_strings if value.strip()]
+
+
+def _value_after_label(lines: list[str], label: str) -> str:
+    target = _fold(label)
+    for index, line in enumerate(lines[:-1]):
+        if _fold(line) == target:
+            return lines[index + 1]
+    raise ValueError(f"missing DGEEC ficha field: {label}")
+
+
+def _split_code_label(value: str, *, field: str) -> tuple[str, str]:
+    match = re.match(r"^([0-9A-Za-z]+)\s*-\s*(.+)$", value)
+    if match is None:
+        raise ValueError(f"invalid DGEEC ficha {field}: {value!r}")
+    return match.group(1).upper(), match.group(2).strip()
+
+
+def course_ficha_url(course_id: object, *, classification_version: int = 2013) -> str:
+    """Return the stable DGEEC ficha URL for one course and classification version."""
+
+    try:
+        prefix = _CLASSIFICATION_PREFIX[classification_version]
+    except KeyError as exc:
+        raise ValueError("classification_version must be 2013 or 1997") from exc
+    code = _course_id(course_id)
+    return f"{_FICHA_BASE_URL}?accao=Ficha&cod={prefix}{code}"
+
+
+def parse_course_ficha_html(
+    html: str,
+    *,
+    classification_version: int = 2013,
+    expected_course_id: str | None = None,
+    source_url: str | None = None,
+) -> dict[str, object]:
+    """Parse one official DGEEC per-course classification ficha."""
+
+    if classification_version not in _CLASSIFICATION_PREFIX:
+        raise ValueError("classification_version must be 2013 or 1997")
+    lines = _ficha_lines(html)
+
+    course_code, course_name = _split_code_label(
+        _value_after_label(lines, "Curso"), field="course"
+    )
+    course_code = _course_id(course_code)
+    if expected_course_id is not None and course_code != _course_id(expected_course_id):
+        raise ValueError(
+            f"DGEEC ficha course mismatch: expected {expected_course_id}, got {course_code}"
+        )
+
+    _, degree = _split_code_label(_value_after_label(lines, "Diploma"), field="diploma")
+    area_label = f"Área CNAEF {classification_version}"
+    field_code, _ = _split_code_label(
+        _value_after_label(lines, area_label), field=area_label
+    )
+    field_code = _normalise_field_code(field_code)
+    if field_code is None:
+        raise ValueError("DGEEC ficha classification code is missing")
+
+    citef_2013_code = field_code if classification_version == 2013 else pd.NA
+    cite_1997_code = field_code if classification_version == 1997 else pd.NA
+    return {
+        "course_id": course_code,
+        "course_name": course_name,
+        "degree": degree,
+        "citef_2013_code": citef_2013_code,
+        "cite_1997_code": cite_1997_code,
+        "isced_f_2013_2digit": field_code[:2] if classification_version == 2013 else pd.NA,
+        "classification_source_url": source_url,
+    }
+
+
+def parse_course_ficha_file(
+    path: Path,
+    *,
+    classification_version: int = 2013,
+    expected_course_id: str | None = None,
+    source_url: str | None = None,
+) -> dict[str, object]:
+    """Parse a source-locked DGEEC ficha and attach its SHA-256 digest."""
+
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    record = parse_course_ficha_html(
+        path.read_text(encoding="utf-8", errors="replace"),
+        classification_version=classification_version,
+        expected_course_id=expected_course_id,
+        source_url=source_url,
+    )
+    record["classification_source_sha256"] = sha256_file(path)
+    return record
+
+
+def fetch_course_ficha(
+    course_id: object,
+    output: Path,
+    *,
+    classification_version: int = 2013,
+    overwrite: bool = False,
+) -> dict[str, object]:
+    """Source-lock one DGEEC ficha with a receipt and return its parsed classification."""
+
+    code = _course_id(course_id)
+    url = course_ficha_url(code, classification_version=classification_version)
+    fetch_with_receipt(url, output, overwrite=overwrite)
+    return parse_course_ficha_file(
+        output,
+        classification_version=classification_version,
+        expected_course_id=code,
+        source_url=url,
+    )
 
 
 def normalise_course_classification_table(frame: pd.DataFrame) -> pd.DataFrame:
