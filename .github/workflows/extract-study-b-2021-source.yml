@@ -2,7 +2,7 @@ name: Extract Study B 2021 source
 
 on:
   push:
-    branches: [research/study-b-2021-extract-source]
+    branches: [research/study-b-2021-materialise]
     paths:
       - 'src/pt_he_pipeline/study_b_2021_source.py'
       - 'scripts/extract_study_b_multi_course_2021.py'
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   extract:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
