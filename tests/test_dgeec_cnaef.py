@@ -82,8 +82,11 @@ def _ficha_html() -> str:
     return """
     <html><body>
       <div>Curso</div><div>9119 - Engenharia Informática</div>
-      <div>Diploma</div><div>L - Licenciatura</div>
-      <div>Área CNAEF 2013</div><div>0613 - Desenvolvimento de software e aplicações</div>
+      <div>Diploma</div><div>L1 - Licenciatura 1.º ciclo</div>
+      <div>Área CNAEF 2013</div>
+      <div>Principal</div><div>0714 - Eletrónica e automação</div>
+      <div>Secundária</div><div>0613 - Desenvolvimento e análise de software e aplicações informáticas</div>
+      <div>Url Direto</div><div>https://cnaef.dgeec.medu.pt/?accao=Ficha&amp;cod=139119</div>
     </body></html>
     """
 
@@ -93,7 +96,7 @@ def test_course_ficha_url_uses_stable_version_prefix() -> None:
     assert course_ficha_url("9119", classification_version=1997).endswith("cod=979119")
 
 
-def test_parse_course_ficha_html_maps_citef_2013() -> None:
+def test_parse_course_ficha_html_maps_principal_and_secondary_citef_2013() -> None:
     result = parse_course_ficha_html(
         _ficha_html(),
         expected_course_id="9119",
@@ -102,9 +105,10 @@ def test_parse_course_ficha_html_maps_citef_2013() -> None:
 
     assert result["course_id"] == "9119"
     assert result["course_name"] == "Engenharia Informática"
-    assert result["degree"] == "Licenciatura"
-    assert result["citef_2013_code"] == "0613"
-    assert result["isced_f_2013_2digit"] == "06"
+    assert result["degree"] == "Licenciatura 1.º ciclo"
+    assert result["citef_2013_code"] == "0714"
+    assert result["secondary_classification_codes"] == "0613"
+    assert result["isced_f_2013_2digit"] == "07"
     assert result["classification_source_url"] == course_ficha_url("9119")
 
 
@@ -115,6 +119,18 @@ def test_parse_course_ficha_html_rejects_wrong_course() -> None:
         assert "course mismatch" in str(exc)
     else:
         raise AssertionError("mismatched ficha should fail")
+
+
+def test_parse_course_ficha_html_requires_principal_classification() -> None:
+    html = _ficha_html().replace(
+        "<div>Principal</div><div>0714 - Eletrónica e automação</div>", ""
+    )
+    try:
+        parse_course_ficha_html(html, expected_course_id="9119")
+    except ValueError as exc:
+        assert "principal classification" in str(exc)
+    else:
+        raise AssertionError("ficha without principal classification should fail")
 
 
 def test_parse_course_ficha_file_adds_sha256(tmp_path: Path) -> None:
