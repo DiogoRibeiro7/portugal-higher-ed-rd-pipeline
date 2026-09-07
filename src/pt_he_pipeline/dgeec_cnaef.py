@@ -113,6 +113,50 @@ def _split_code_label(value: str, *, field: str) -> tuple[str, str]:
     return match.group(1).upper(), match.group(2).strip()
 
 
+def _classification_block(
+    lines: list[str], *, classification_version: int
+) -> tuple[str, tuple[str, ...]]:
+    """Return the provider's principal and secondary field codes for one ficha."""
+
+    area_label = f"Área CNAEF {classification_version}"
+    target = _fold(area_label)
+    start: int | None = None
+    for index, line in enumerate(lines):
+        if _fold(line) == target:
+            start = index + 1
+            break
+    if start is None:
+        raise ValueError(f"missing DGEEC ficha field: {area_label}")
+
+    principal: str | None = None
+    secondary: list[str] = []
+    index = start
+    while index < len(lines):
+        label = _fold(lines[index])
+        if label in {"url direto", "mostrar estabelecimentos", "estabelecimentos"}:
+            break
+        if label in {"principal", "secundaria"}:
+            if index + 1 >= len(lines):
+                raise ValueError(f"missing DGEEC ficha value after {lines[index]}")
+            code, _ = _split_code_label(lines[index + 1], field=lines[index])
+            normalised = _normalise_field_code(code)
+            if normalised is None:
+                raise ValueError("DGEEC ficha classification code is missing")
+            if label == "principal":
+                if principal is not None:
+                    raise ValueError("multiple principal DGEEC classifications")
+                principal = normalised
+            else:
+                secondary.append(normalised)
+            index += 2
+            continue
+        index += 1
+
+    if principal is None:
+        raise ValueError("DGEEC ficha principal classification is missing")
+    return principal, tuple(secondary)
+
+
 def course_ficha_url(course_id: object, *, classification_version: int = 2013) -> str:
     """Return the stable DGEEC ficha URL for one course and classification version."""
 
@@ -147,23 +191,22 @@ def parse_course_ficha_html(
         )
 
     _, degree = _split_code_label(_value_after_label(lines, "Diploma"), field="diploma")
-    area_label = f"Área CNAEF {classification_version}"
-    field_code, _ = _split_code_label(
-        _value_after_label(lines, area_label), field=area_label
+    principal_code, secondary_codes = _classification_block(
+        lines, classification_version=classification_version
     )
-    field_code = _normalise_field_code(field_code)
-    if field_code is None:
-        raise ValueError("DGEEC ficha classification code is missing")
 
-    citef_2013_code = field_code if classification_version == 2013 else pd.NA
-    cite_1997_code = field_code if classification_version == 1997 else pd.NA
+    citef_2013_code = principal_code if classification_version == 2013 else pd.NA
+    cite_1997_code = principal_code if classification_version == 1997 else pd.NA
     return {
         "course_id": course_code,
         "course_name": course_name,
         "degree": degree,
         "citef_2013_code": citef_2013_code,
         "cite_1997_code": cite_1997_code,
-        "isced_f_2013_2digit": field_code[:2] if classification_version == 2013 else pd.NA,
+        "secondary_classification_codes": "|".join(secondary_codes),
+        "isced_f_2013_2digit": (
+            principal_code[:2] if classification_version == 2013 else pd.NA
+        ),
         "classification_source_url": source_url,
     }
 
