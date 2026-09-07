@@ -1,4 +1,6 @@
-.PHONY: test lint typecheck quality study-a-recent study-a-medium-run paper clean
+.PHONY: test lint typecheck quality study-a-recent study-a-medium-run study-a-age18 \
+	study-a-demographic study-a-public study-b-pilot study-b-multi-course \
+	study-b-regionality study-b-ranking-coverage study-b-public empirical-public paper clean
 
 test:
 	pytest
@@ -17,7 +19,31 @@ study-a-recent:
 study-a-medium-run:
 	python scripts/build_study_a_medium_run.py
 
-paper: study-a-recent study-a-medium-run
+study-a-age18:
+	python scripts/build_study_a_age18.py
+
+study-a-demographic:
+	python scripts/build_study_a_demographic.py
+
+study-a-public: study-a-recent study-a-medium-run study-a-age18 study-a-demographic
+
+study-b-pilot:
+	python scripts/build_study_b_course9119_pilot.py
+
+study-b-multi-course:
+	python scripts/build_study_b_multi_course.py
+
+study-b-regionality:
+	python scripts/build_study_b_regionality.py
+
+study-b-ranking-coverage:
+	python scripts/build_study_b_ranking_coverage.py
+
+study-b-public: study-b-pilot study-b-multi-course study-b-regionality study-b-ranking-coverage
+
+empirical-public: study-a-public study-b-public
+
+paper: empirical-public
 	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 
