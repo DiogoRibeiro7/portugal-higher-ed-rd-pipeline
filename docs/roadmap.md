@@ -33,7 +33,7 @@
 - add the INE/PORDATA 15-24 population series as a source-registered demographic input;
 - construct a preceding-year average single-year cohort proxy without presenting it as exact age-18 population;
 - publish raw-versus-cohort-proxy endpoint comparisons for registered STEM components;
-- retain the broad-cohort result as a weaker demographic sensitivity.
+- source-lock the exact INE age-18 denominator and promote it to the preferred demographic normalisation.
 
 ## v0.3.3 — matched-course programme-level pilot — complete
 
@@ -44,36 +44,50 @@
 - estimate year-specific demand/grade associations, nested institution/demand descriptions and leave-one-year-out prediction;
 - prohibit generalisation beyond the matched course and defer rankings and regionality.
 
-## v0.3.4 — scalable programme-level Study A/B panel
+## v0.3.4 — Study A consolidation — complete
 
-- scale the comparative-course and pair-statistics contracts across programmes and years;
+- retain the source-locked 2017, 2018 and 2020-2026 broad-area first-phase panel as the current empirical Study A window;
+- retain the exact source-locked age-18 denominator as the preferred demographic normalisation;
+- preserve the 2019 field-composition gap without interpolation or reconstruction;
+- report groups 05, 06 and 07 separately before all-STEM aggregation;
+- conclude that the available 2017-2026 evidence does not support a sustained decline in absolute first-phase STEM placements: the endpoint count is +9.0%, the exact age-18-normalised endpoint rate is +9.1%, and the placement share is -0.64 percentage points;
+- preserve the materially different component paths: group 05 decreases, while groups 06 and 07 increase over the endpoints;
+- retain the five-programme Study B work as secondary cross-domain calibration rather than primary STEM evidence;
+- freeze programme-classification and continuity machinery for future historical extensions without making the 1997-2026 reconstruction a blocker for the current release;
+- enter consolidation freeze for the current admissions/STEM phase.
+
+## Current release boundary
+
+The current empirical Study A phase is complete for the source-locked 2017-2026 window. The repository should not add further admission-source, parser, concordance or sensitivity slices merely to increase historical depth.
+
+The historical 1997-2026 programme-level reconstruction is now **future work**, not a release gate. It should be reopened only if recoverable historical programme-level sources and defensible identity/classification concordances materially extend the estimand. The existing concordance code and DGEEC classification tooling are retained for that purpose.
+
+Further Study B scaling is optional secondary work. The existing matched-course and five-programme evidence is not promoted into the headline STEM claim.
+
+## Future work — not blockers for the current Study A release
+
+### Historical Study A extension
+
+- source-lock additional historical programme-level CNA vintages where recoverable;
 - validate programme-to-ISCED-F concordances through renamings, mergers and Bologna-era reforms;
-- extend historical coverage backwards where programme comparability can be demonstrated;
-- use the source-locked INE indicator `0001223` Portugal/total-sex/age-18 series as the preferred Study A demographic denominator, carrying the 2020-2021 estimation-method break explicitly;
-- retain the 15-24 divided-by-ten cohort proxy only as a secondary sensitivity;
-- execute the registered 1997-2026 Study A analysis only after its coverage gate is satisfied;
-- execute the broad Study B demand/grade comparison only after the matched-course result can be replicated across fields.
+- shorten the historical primary period rather than silently splice incomparable programme regimes;
+- execute a 1997-2026 or shorter programme-level analysis only if its prospective coverage gate becomes satisfiable.
 
-Structural-break diagnostics remain exploratory until the historical programme panel is sufficiently deep and comparable.
+### Study B extension
 
-## v0.4 — Study B: regionality, demand and entry grades
+- extend regionality and programme-level demand/grade evidence only when a new substantive question warrants it;
+- add ranking information only as a separately identified predictive layer;
+- do not treat further cross-domain Study B coverage as necessary to finish Study A.
 
-- build the first-choice and placement origin-destination panels;
-- quantify comparable-origin coverage;
-- estimate regional concentration, entropy and mutual information;
-- build the programme-level demand/grade panel;
-- compare nested explanatory and leave-one-year-out predictive models;
-- add ranking information only as an optional, separately identified layer.
-
-## v0.5 — Study C: R&D feeder pipeline
+### Study C — separate downstream research track
 
 - harmonise RAIDES / graduate / doctoral / R&D personnel series;
 - construct unit-host-field exposure weights;
 - link to FCT evaluation vintages and unit characteristics;
 - distinguish current pipeline exposure from realised downstream outcomes.
 
-## v0.6 — integrated paper
+Study C is a distinct downstream research question and is not required to close the current admissions/STEM empirical phase.
 
-- combine the three empirical studies without collapsing them into one verdict;
-- run cross-study robustness and multiplicity diagnostics;
-- freeze a publication/reproducibility release only when each study's own evidence gate is satisfied.
+## Consolidation rule
+
+No new theorem, model, sensitivity, parser or source-ingestion PR should be opened for the current phase unless it fixes a demonstrated defect, incorporates materially new official evidence, or is required for publication/reproducibility packaging.
