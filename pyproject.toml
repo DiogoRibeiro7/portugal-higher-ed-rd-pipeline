@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pt-he-pipeline"
-version = "0.3.3"
+version = "0.3.4"
 description = "Reproducible analysis of Portuguese higher-education demand, regionality, entry grades, and the R&D talent pipeline."
 authors = ["Diogo"]
 readme = "README.md"
