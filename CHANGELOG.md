@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.4 — 2026-09-07
+
+- Close the current Study A empirical phase on the source-locked 2017, 2018 and 2020-2026 first-phase broad-area panel, preserving 2019 as an unobserved field-composition year rather than imputing it.
+- Promote the source-locked INE population aged exactly 18 to the preferred demographic denominator; retain the 15-24 divided-by-ten proxy only as a weaker secondary sensitivity.
+- Consolidate the headline Study A result: all-STEM placements are +9.0% between 2017 and 2026, the exact age-18-normalised endpoint rate is +9.1%, and placement share is -0.64 percentage points.
+- Preserve component heterogeneity: group 05 declines over the endpoints, while groups 06 and 07 increase materially.
+- Record that the available 2017-2026 evidence does not support describing absolute first-phase STEM placements as one sustained decline.
+- Keep the five-programme Study B work as secondary cross-domain calibration rather than primary STEM evidence.
+- Freeze programme-classification and continuity machinery for optional future historical extension without making the 1997-2026 programme reconstruction a blocker for the current release.
+- Move historical programme-level reconstruction and further Study B scaling to future work.
+- Treat Study C as a separate downstream R&D-pipeline research track rather than a prerequisite for closing the current admissions/STEM phase.
+- Enter consolidation freeze: no further parser, sensitivity, concordance or source-ingestion work for this phase unless it fixes a demonstrated defect, incorporates materially new official evidence, or is required for publication/reproducibility packaging.
+
 ## 0.3.3 — 2026-08-26
 
 - Add the first programme-level matched-course pilot using DGES course code 9119, `Engenharia Informática [Licenciatura]`, across 23 institutions in 2018-2020.
