@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- source-dot-sha256: 74aaa544b1085755bb3665c977cb039f93af4da16063e07524109e359c412aa0 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980" role="img" aria-labelledby="title desc">
+  <title id="title">Portuguese higher-education pipeline provenance architecture</title>
+  <desc id="desc">Official sources flow through receipt-bound acquisition and canonical data contracts into public Study A and Study B rebuilds, manuscript evidence, and release validation. Private ranking inputs and Study C sit outside the v0.3.4 public empirical rebuild.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/></marker>
+    <style>
+      .box{fill:#fff;stroke:#222;stroke-width:2;rx:12;ry:12}.group{fill:none;stroke:#555;stroke-width:2;stroke-dasharray:7 5;rx:16;ry:16}.public{stroke-width:3}.external{fill:#fafafa}.note{fill:#f7f7f7}.dash{stroke-dasharray:8 6}.edge{stroke:#333;stroke-width:2;fill:none;marker-end:url(#arrow)}.txt{font-family:Arial,Helvetica,sans-serif;fill:#111}.h1{font-size:28px;font-weight:700}.h2{font-size:19px;font-weight:700}.body{font-size:16px}.small{font-size:14px}.muted{fill:#555}
+    </style>
+  </defs>
+  <text class="txt h1" x="900" y="42" text-anchor="middle">Portuguese higher-education pipeline: provenance and public reproducibility boundary</text>
+
+  <rect class="group" x="30" y="85" width="285" height="430"/>
+  <text class="txt h2" x="172" y="115" text-anchor="middle">Official / external sources</text>
+  <rect class="box external" x="55" y="145" width="235" height="70"/>
+  <text class="txt body" x="172" y="173" text-anchor="middle">DGES / CNA</text><text class="txt small muted" x="172" y="196" text-anchor="middle">pair stats · placements · mobility</text>
+  <rect class="box external" x="55" y="235" width="235" height="70"/>
+  <text class="txt body" x="172" y="263" text-anchor="middle">DGEEC</text><text class="txt small muted" x="172" y="286" text-anchor="middle">CITE-F · RAIDES · education stats</text>
+  <rect class="box external" x="55" y="325" width="235" height="70"/>
+  <text class="txt body" x="172" y="353" text-anchor="middle">INE demographics</text><text class="txt small muted" x="172" y="376" text-anchor="middle">exact age-18 series</text>
+  <rect class="box external" x="55" y="415" width="235" height="70"/>
+  <text class="txt body" x="172" y="443" text-anchor="middle">FCT / IPCTN</text><text class="txt small muted" x="172" y="466" text-anchor="middle">R&amp;D units · workforce</text>
+
+  <rect class="box" x="360" y="115" width="260" height="105"/>
+  <text class="txt body" x="490" y="145" text-anchor="middle">Frozen study/source contracts</text>
+  <text class="txt small muted" x="490" y="171" text-anchor="middle">source_registry.yml · study*.yml</text>
+  <text class="txt small muted" x="490" y="194" text-anchor="middle">versioned concordances</text>
+
+  <rect class="group" x="350" y="260" width="390" height="350"/>
+  <text class="txt h2" x="545" y="292" text-anchor="middle">Immutable / curated input boundary</text>
+  <rect class="box" x="385" y="325" width="320" height="72"/>
+  <text class="txt body" x="545" y="353" text-anchor="middle">Acquisition / transcription</text><text class="txt small muted" x="545" y="378" text-anchor="middle">source-specific parsers</text>
+  <rect class="box" x="385" y="425" width="150" height="120"/>
+  <text class="txt body" x="460" y="455" text-anchor="middle">Receipts</text><text class="txt small muted" x="460" y="480" text-anchor="middle">URL · UTC</text><text class="txt small muted" x="460" y="502" text-anchor="middle">bytes · SHA-256</text>
+  <rect class="box" x="555" y="425" width="150" height="120"/>
+  <text class="txt body" x="630" y="455" text-anchor="middle">Inputs</text><text class="txt small muted" x="630" y="480" text-anchor="middle">raw provider bytes</text><text class="txt small muted" x="630" y="502" text-anchor="middle">or curated tables</text>
+
+  <rect class="box" x="790" y="315" width="300" height="135"/>
+  <text class="txt body" x="940" y="345" text-anchor="middle">Canonical / interim data contracts</text>
+  <text class="txt small muted" x="940" y="373" text-anchor="middle">validated schemas · source digests</text>
+  <text class="txt small muted" x="940" y="396" text-anchor="middle">reconciliation gates</text>
+  <text class="txt small muted" x="940" y="419" text-anchor="middle">lineage fingerprints</text>
+
+  <rect class="group public" x="1140" y="130" width="380" height="505"/>
+  <text class="txt h2" x="1330" y="162" text-anchor="middle">v0.3.4 public empirical rebuild</text>
+  <rect class="box" x="1190" y="195" width="280" height="64"/>
+  <text class="txt body" x="1330" y="234" text-anchor="middle">make empirical-public</text>
+  <rect class="box" x="1180" y="300" width="300" height="120"/>
+  <text class="txt body" x="1330" y="328" text-anchor="middle">Study A public layers</text>
+  <text class="txt small muted" x="1330" y="354" text-anchor="middle">recent · medium-run STEM</text>
+  <text class="txt small muted" x="1330" y="377" text-anchor="middle">age-18 · demographic sensitivity</text>
+  <rect class="box" x="1180" y="455" width="300" height="120"/>
+  <text class="txt body" x="1330" y="483" text-anchor="middle">Study B public layers</text>
+  <text class="txt small muted" x="1330" y="509" text-anchor="middle">course pilot · multi-course</text>
+  <text class="txt small muted" x="1330" y="532" text-anchor="middle">regionality · ranking coverage</text>
+
+  <rect class="box" x="1580" y="250" width="190" height="110"/>
+  <text class="txt body" x="1675" y="280" text-anchor="middle">Public results</text>
+  <text class="txt small muted" x="1675" y="306" text-anchor="middle">tables · coverage</text>
+  <text class="txt small muted" x="1675" y="329" text-anchor="middle">receipts · evidence</text>
+  <rect class="box" x="1580" y="405" width="190" height="90"/>
+  <text class="txt body" x="1675" y="437" text-anchor="middle">LaTeX manuscript</text>
+  <text class="txt small muted" x="1675" y="463" text-anchor="middle">paper/main.tex</text>
+  <rect class="box" x="1565" y="545" width="220" height="135"/>
+  <text class="txt body" x="1675" y="575" text-anchor="middle">Release validation</text>
+  <text class="txt small muted" x="1675" y="601" text-anchor="middle">quality + public rebuild</text>
+  <text class="txt small muted" x="1675" y="624" text-anchor="middle">2× pdflatex · clean-tree check</text>
+  <text class="txt small muted" x="1675" y="647" text-anchor="middle">commit-scoped evidence</text>
+
+  <rect class="box note dash" x="790" y="515" width="300" height="100"/>
+  <text class="txt body" x="940" y="545" text-anchor="middle">Private ranking model</text>
+  <text class="txt small muted" x="940" y="572" text-anchor="middle">non-redistributed panel + digest contract</text>
+  <text class="txt small muted" x="940" y="595" text-anchor="middle">outside public rebuild</text>
+  <rect class="box note dash" x="790" y="675" width="300" height="100"/>
+  <text class="txt body" x="940" y="705" text-anchor="middle">Study C R&amp;D pipeline</text>
+  <text class="txt small muted" x="940" y="732" text-anchor="middle">separate downstream research track</text>
+  <text class="txt small muted" x="940" y="755" text-anchor="middle">outside v0.3.4 public rebuild</text>
+
+  <rect class="box note" x="1525" y="760" width="255" height="125"/>
+  <text class="txt body" x="1652" y="790" text-anchor="middle">Hosted GitHub Actions gate</text>
+  <text class="txt small muted" x="1652" y="816" text-anchor="middle">required before v0.3.4 tag</text>
+  <text class="txt small muted" x="1652" y="839" text-anchor="middle">currently runner-provisioning blocked</text>
+  <text class="txt small muted" x="1652" y="862" text-anchor="middle">local pass ≠ tag-ready</text>
+
+  <path class="edge" d="M315 280 H385"/><path class="edge" d="M315 360 H385"/><path class="edge" d="M315 450 H385"/>
+  <path class="edge" d="M490 220 V325"/><path class="edge" d="M545 397 V425"/><path class="edge" d="M705 485 H760 V382 H790"/><path class="edge" d="M535 485 H760 V382 H790"/>
+  <path class="edge" d="M1090 382 H1160 V360 H1180"/><path class="edge" d="M1090 382 H1160 V515 H1180"/>
+  <path class="edge" d="M1330 259 V300"/><path class="edge" d="M1330 259 V455"/>
+  <path class="edge" d="M1480 360 H1545 V305 H1580"/><path class="edge" d="M1480 515 H1545 V305 H1580"/>
+  <path class="edge" d="M1675 360 V405"/><path class="edge" d="M1675 495 V545"/><path class="edge" d="M1675 680 V760"/>
+  <path class="edge dash" d="M1090 565 H1150 V515 H1180"/><path class="edge dash" d="M1090 725 H1140"/>
+
+  <text class="txt small muted" x="900" y="930" text-anchor="middle">Reader-facing SVG tied to docs/diagrams/pipeline_provenance.dot by embedded source SHA-256.</text>
+</svg>
