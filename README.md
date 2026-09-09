@@ -16,6 +16,14 @@ The repository is deliberately neutral. It does not begin by accepting or reject
 | B — Regionality, demand and entry grades | How much do geography and demand pressure account for student choices and entry grades? | origin area × destination district; programme × institution × year | first-choice flows, placement flows, applicants/vacancy, mean and cut-off grades |
 | C — R&D pipeline | Are strong R&D units increasingly exposed to declining feeder pipelines? | R&D unit × host institution × field × year | entrants, graduates, MSc/PhD pipeline, researchers, FCT evaluation and unit size |
 
+## Pipeline architecture and provenance
+
+![Pipeline provenance architecture](docs/diagrams/rendered/pipeline_provenance.svg)
+
+The repository is organized around a provenance chain rather than a service architecture: official sources are acquired or transcribed under frozen source contracts, bound to receipts and deterministic lineage, transformed into canonical data, rebuilt into public Study A and Study B evidence, and then compiled into the manuscript and release-validation layer.
+
+The diagram also marks the reproducibility boundary explicitly. The provider-specific ranking model depends on a non-redistributed private ranking panel, and Study C is a separate downstream research track; neither is part of the v0.3.4 `make empirical-public` rebuild. See [`docs/architecture.md`](docs/architecture.md) for the full architecture and release boundary.
+
 ## Key design choices
 
 - **CNA first phase is the primary access series.** Later phases are sensitivity analyses because they mix unfilled capacity and reallocation dynamics.
@@ -273,7 +281,7 @@ Lagged exposure is then linked to R&D-unit characteristics. Where the historical
 
 Every downloaded source is stored with a receipt containing its URL, retrieval timestamp, byte size and SHA-256 digest. Canonical CNA rows bind the separate pair-statistics and vacancy/placement digests into one deterministic lineage fingerprint. Raw files are immutable inputs; transformations write new artefacts. See [`docs/reproducibility.md`](docs/reproducibility.md).
 
-## Current status — v0.3.3+
+## Current status — v0.3.4
 
 Study A now contains the source-locked 2023-2026 recent baseline, the 2017/2018 and
 2020-2026 medium-run broad-area panel, the exact age-18 demographic normalisation, and
@@ -291,10 +299,9 @@ but the amount explained varies materially by year and persistent institution st
 accounts for a large share of the between-institution differences. Demand also improves
 leave-one-year-out prediction in this pilot.
 
-The next evidence gates are scaling the programme panel, extending historical coverage
-where programme comparability can be demonstrated, and completing the remaining Study B
-and Study C layers. The exact age-18 denominator is no longer an unresolved acquisition
-gate.
+The v0.3.4 release boundary consolidates the source-locked Study A evidence and the publicly reproducible Study B layers without changing their estimands. `make empirical-public` is the canonical public rebuild entry point. The provider-specific ranking model remains outside that public rebuild because it requires the non-redistributed ranking panel, and Study C remains a separate downstream research track.
+
+The next evidence gates are extending historical coverage where programme comparability can be demonstrated and completing the remaining Study C work without weakening the current source and reproducibility contracts. The exact age-18 denominator is no longer an unresolved acquisition gate.
 
 ## Licence
 
