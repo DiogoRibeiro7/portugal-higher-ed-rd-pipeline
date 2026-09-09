@@ -1,6 +1,7 @@
 .PHONY: test lint typecheck quality study-a-recent study-a-medium-run study-a-age18 \
 	study-a-demographic study-a-public study-b-pilot study-b-multi-course \
-	study-b-regionality study-b-ranking-coverage study-b-public empirical-public paper clean
+	study-b-regionality study-b-ranking-coverage study-b-public empirical-public paper \
+	validate-release clean
 
 test:
 	pytest
@@ -46,6 +47,9 @@ empirical-public: study-a-public study-b-public
 paper: empirical-public
 	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex
+
+validate-release:
+	python scripts/validate_release_candidate.py
 
 clean:
 	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov
