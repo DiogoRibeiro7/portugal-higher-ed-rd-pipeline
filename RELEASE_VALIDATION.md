@@ -1,6 +1,6 @@
 # Release validation — v0.3.4
 
-Date: 2026-09-07
+Date: 2026-09-09
 
 ## Release status
 
@@ -94,6 +94,31 @@ make paper
 
 The `paper` target recompiles the committed manuscript after rebuilding all public empirical
 layers. It does not claim to regenerate the private-input ranking model.
+
+## Local release-candidate validation
+
+While hosted runners are unavailable, an exact checkout can be validated locally with:
+
+```bash
+make validate-release
+```
+
+The validator refuses to start from a dirty checkout. It records the exact Git commit and then
+runs the release gates in sequence:
+
+1. Poetry lock validation;
+2. dependency installation;
+3. Ruff;
+4. strict mypy over `src`;
+5. pytest with package coverage;
+6. every publicly reproducible Study A and Study B builder;
+7. two `pdflatex` manuscript passes;
+8. a final Git working-tree check so rebuild drift fails validation.
+
+Command logs, environment metadata and a machine-readable summary are written under
+`validation/results/<commit>/`. These files are local evidence for that exact checkout.
+A **LOCAL PASS is not equivalent to tag-ready** and does not replace the hosted GitHub Actions
+gate.
 
 ## Automated release gate
 

@@ -24,3 +24,4 @@ results/**
 !results/study_a/
 !results/study_a/**
 paper/main.pdf
+validation/results/
