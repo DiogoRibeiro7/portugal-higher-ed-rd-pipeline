@@ -1,0 +1,82 @@
+digraph PortugalHigherEdPipeline {
+  graph [
+    rankdir=LR,
+    labelloc="t",
+    label="Portuguese higher-education pipeline: source provenance and public reproducibility boundary",
+    fontsize=20,
+    fontname="Helvetica",
+    nodesep=0.45,
+    ranksep=0.72,
+    splines=ortho
+  ];
+  node [shape=box, style="rounded", fontname="Helvetica", fontsize=10, margin="0.15,0.10"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_sources {
+    label="Official / external source layer";
+    style="rounded";
+    dges [label="DGES / CNA\npair statistics · placements · mobility · StatsCurso"];
+    dgeec [label="DGEEC\nCITE-F / RAIDES / education statistics"];
+    ine [label="INE demographics\nexact age-18 series"];
+    fct [label="FCT / IPCTN\nR&D-unit and research-workforce sources"];
+    rankings [label="Optional ranking inputs\nlicensed or user-supplied", shape=folder];
+  }
+
+  registry [label="Frozen source + study contracts\nconfig/source_registry.yml\nconfig/study*.yml\nversioned concordances"];
+
+  subgraph cluster_inputs {
+    label="Immutable / curated input boundary";
+    style="rounded";
+    acquire [label="Acquisition / transcription\nsource-specific parsers"];
+    receipts [label="Source receipts\nURL · retrieval time · byte size · SHA-256"];
+    raw [label="data/raw\nimmutable provider bytes"];
+    curated [label="data/curated\npublic aggregate/transcribed inputs\nexplicitly not provider-byte claims"];
+  }
+
+  canonical [label="Canonical / interim data contracts\nvalidated schemas · source digests\nreconciliation gates · lineage fingerprints"];
+
+  subgraph cluster_public {
+    label="v0.3.4 public empirical rebuild";
+    style="rounded,bold";
+    study_a [label="Study A public layers\nrecent baseline\nmedium-run STEM\nexact age-18 normalisation\nbroad-cohort sensitivity"];
+    study_b [label="Study B public layers\ncourse 9119 pilot\nmulti-course panel\nregionality\nranking-coverage audit"];
+    results [label="Committed/public results\nresults/study_a · Study B outputs\ncoverage / receipts / numerical tables"];
+    public_entry [label="make empirical-public", shape=component];
+  }
+
+  private_rank [label="Provider-specific ranking model\nprivate ranking panel + frozen digest contract\nnot part of public rebuild", shape=folder, style="rounded,dashed"];
+  study_c [label="Study C R&D-pipeline research track\nseparate downstream layer\nnot part of v0.3.4 public empirical rebuild", shape=folder, style="rounded,dashed"];
+
+  paper [label="LaTeX manuscript\npaper/main.tex\npublic empirical layers rebuilt first"];
+  release [label="Release validation\nquality gates + empirical-public rebuild\n2× pdflatex + clean-tree drift check\ncommit-scoped validation evidence"];
+  hosted [label="Hosted GitHub Actions gate\nrequired before v0.3.4 tag\ncurrently runner-provisioning blocked", shape=note];
+
+  dges -> acquire;
+  dgeec -> acquire;
+  ine -> acquire;
+  fct -> acquire;
+  rankings -> private_rank [style=dashed, label="local/private input"];
+  registry -> acquire [label="vintage / parser contract"];
+  registry -> canonical [label="estimands / concordances"];
+
+  acquire -> receipts;
+  acquire -> raw [label="when provider bytes retained"];
+  acquire -> curated [label="when public curated layer is used"];
+  receipts -> canonical [label="bind provenance"];
+  raw -> canonical;
+  curated -> canonical;
+
+  canonical -> study_a;
+  canonical -> study_b;
+  canonical -> study_c [style=dashed];
+  private_rank -> study_b [style=dashed, label="optional non-public model path"];
+
+  public_entry -> study_a;
+  public_entry -> study_b;
+  study_a -> results;
+  study_b -> results;
+  results -> paper;
+  paper -> release;
+  public_entry -> release [label="rebuild contract"];
+  release -> hosted [label="local pass is necessary, not sufficient"];
+}
