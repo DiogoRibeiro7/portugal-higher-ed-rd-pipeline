@@ -126,7 +126,7 @@ def _steps() -> tuple[Step, ...]:
         Step("study-b-regionality", (*python, "scripts/build_study_b_regionality.py"), ROOT),
         Step(
             "study-b-ranking-coverage",
-            (*python, "scripts/build_study_b_ranking_coverage.py"),
+            (*python, "-m", "scripts.build_study_b_ranking_coverage"),
             ROOT,
         ),
         Step(
