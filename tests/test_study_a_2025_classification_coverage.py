@@ -46,7 +46,9 @@ def test_build_coverage_preserves_course_and_pair_denominators() -> None:
     assert summary.loc[0, "course_classification_coverage"] == pytest.approx(0.5)
     assert summary.loc[0, "pair_denominator"] == EXPECTED_PAIR_COUNT
     assert summary.loc[0, "pair_classified"] == 700
-    assert summary.loc[0, "pair_classification_coverage"] == pytest.approx(700 / EXPECTED_PAIR_COUNT)
+    assert summary.loc[0, "pair_classification_coverage"] == pytest.approx(
+        700 / EXPECTED_PAIR_COUNT
+    )
     assert summary.loc[0, "classified_primary_stem_courses"] == 1
     assert summary.loc[0, "classified_primary_stem_pairs"] == 700
 
