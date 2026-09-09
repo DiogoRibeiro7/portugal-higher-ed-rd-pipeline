@@ -27,5 +27,15 @@ jobs:
         run: poetry run mypy src
       - name: Tests
         run: poetry run pytest --cov=pt_he_pipeline --cov-report=term-missing
-      - name: Rebuild Study A recent baseline
-        run: poetry run python scripts/build_study_a_recent.py
+      - name: Rebuild public Study A release layers
+        run: |
+          poetry run python scripts/build_study_a_recent.py
+          poetry run python scripts/build_study_a_medium_run.py
+          poetry run python scripts/build_study_a_age18.py
+          poetry run python scripts/build_study_a_demographic.py
+      - name: Rebuild public Study B release layers
+        run: |
+          poetry run python scripts/build_study_b_course9119_pilot.py
+          poetry run python scripts/build_study_b_multi_course.py
+          poetry run python scripts/build_study_b_regionality.py
+          poetry run python scripts/build_study_b_ranking_coverage.py

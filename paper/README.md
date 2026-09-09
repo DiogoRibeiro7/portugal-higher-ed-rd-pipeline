@@ -7,14 +7,22 @@ pdflatex -interaction=nonstopmode -halt-on-error main.tex
 pdflatex -interaction=nonstopmode -halt-on-error main.tex
 ```
 
-Rebuild the empirical inputs and figures first:
+From the repository root, rebuild all publicly reproducible empirical inputs used by the current manuscript with:
 
 ```bash
-poetry run python scripts/build_study_a_recent.py
-poetry run python scripts/build_study_a_medium_run.py
-poetry run python scripts/build_study_a_age18.py
-poetry run python scripts/build_study_a_demographic.py
+make empirical-public
 ```
+
+That target rebuilds:
+
+- the recent and medium-run Study A layers;
+- exact age-18 and broad-cohort demographic normalisations;
+- the historical matched-course Study B pilot;
+- the registered five-programme Study B panel;
+- the public regionality results;
+- provider/year ranking coverage from committed audit inputs.
+
+The provider-specific ranking model itself is intentionally **not** part of the public rebuild target. Its runner requires the non-redistributed private historical ranking panel and validates that panel against the frozen SHA-256 contract before fitting. The committed ranking result artefacts can therefore be audited in the repository, but exact model reruns require access to the separately held private panel.
 
 The current paper reports the completed source-locked Study A empirical phase for the
 2017-2026 window, with 2019 retained as an unobserved field-composition year. The
