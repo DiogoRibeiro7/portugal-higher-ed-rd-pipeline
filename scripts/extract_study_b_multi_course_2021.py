@@ -7,7 +7,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from pt_he_pipeline.study_b_2021_source import MEASURES, parse_comparative_section, programme_section
+from pt_he_pipeline.study_b_2021_source import (
+    MEASURES,
+    parse_comparative_section,
+    programme_section,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT / "data" / "curated" / "dges"
@@ -73,7 +77,12 @@ def extract(text: str) -> tuple[pd.DataFrame, pd.DataFrame]:
                 "institution_code": row.institution_code,
                 "institution_name": row.institution_name,
             }
-            record.update({measure: value for measure, value in zip(MEASURES, row.values, strict=True)})
+            record.update(
+                {
+                    measure: value
+                    for measure, value in zip(MEASURES, row.values, strict=True)
+                }
+            )
             records.append(record)
     return pd.DataFrame(records), pd.DataFrame(excluded)
 
@@ -84,8 +93,14 @@ def coverage(existing: pd.DataFrame, rows_2021: pd.DataFrame) -> pd.DataFrame:
     output: list[dict[str, object]] = []
     for code, (name, _) in PROGRAMMES.items():
         subset = combined.loc[combined["programme_code"] == code]
-        counts = subset.groupby("institution_code")["year"].agg(lambda values: set(map(int, values)))
-        stable = sorted(str(code_) for code_, observed in counts.items() if years.issubset(observed))
+        counts = subset.groupby("institution_code")["year"].agg(
+            lambda values: set(map(int, values))
+        )
+        stable = sorted(
+            str(code_)
+            for code_, observed in counts.items()
+            if years.issubset(observed)
+        )
         output.append(
             {
                 "programme_code": code,
@@ -117,7 +132,10 @@ def main() -> None:
     if rows_2021.empty:
         raise SystemExit("No eligible 2021 rows were extracted")
     if not bool(gate["gate_passed"].all()):
-        failed = gate.loc[~gate["gate_passed"], ["programme_code", "stable_institutions_2018_2021"]]
+        failed = gate.loc[
+            ~gate["gate_passed"],
+            ["programme_code", "stable_institutions_2018_2021"],
+        ]
         raise SystemExit(f"Four-year coverage gate failed:\n{failed.to_string(index=False)}")
 
 
