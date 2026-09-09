@@ -9,10 +9,10 @@ import subprocess
 import sys
 import time
 import tomllib
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS_ROOT = ROOT / "validation" / "results"
@@ -51,8 +51,7 @@ def _run_text(command: Sequence[str], cwd: Path = ROOT) -> str:
         command,
         cwd=cwd,
         check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         text=True,
     )
     return completed.stdout.strip()
@@ -245,7 +244,7 @@ def main() -> int:
         "platform": platform.platform(),
         "poetry": _tool_version(("poetry", "--version")),
         "python": sys.version,
-        "started_at_utc": datetime.now(timezone.utc).isoformat(),
+        "started_at_utc": datetime.now(UTC).isoformat(),
         "version": version,
     }
     _write_json(output_dir / "metadata.json", metadata)
