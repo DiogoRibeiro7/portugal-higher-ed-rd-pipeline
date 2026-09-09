@@ -1,0 +1,55 @@
+name: Documentation diagrams
+
+on:
+  pull_request:
+    paths:
+      - "docs/diagrams/**"
+      - "docs/architecture.md"
+      - "README.md"
+      - ".github/workflows/documentation_diagrams.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/diagrams/**"
+      - "docs/architecture.md"
+      - "README.md"
+      - ".github/workflows/documentation_diagrams.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+          dot -V
+
+      - name: Validate DOT source renders
+        run: |
+          mkdir -p /tmp/diagram-render
+          dot -Tsvg docs/diagrams/pipeline_provenance.dot \
+            -o /tmp/diagram-render/pipeline_provenance.svg
+          test -s /tmp/diagram-render/pipeline_provenance.svg
+          grep -q "Portuguese higher-education pipeline" \
+            /tmp/diagram-render/pipeline_provenance.svg
+
+      - name: Verify committed SVG is tied to current DOT source
+        run: |
+          source_sha="$(sha256sum docs/diagrams/pipeline_provenance.dot | awk '{print $1}')"
+          grep -q "source-dot-sha256: ${source_sha}" \
+            docs/diagrams/rendered/pipeline_provenance.svg
+
+      - name: Verify reader-visible boundary labels
+        run: |
+          svg=docs/diagrams/rendered/pipeline_provenance.svg
+          grep -q "v0.3.4 public empirical rebuild" "$svg"
+          grep -q "Private ranking model" "$svg"
+          grep -q "Study C R&amp;D pipeline" "$svg"
+          grep -q "Hosted GitHub Actions gate" "$svg"
+          grep -q "local pass ≠ tag-ready" "$svg"
