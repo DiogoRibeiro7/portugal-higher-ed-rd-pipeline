@@ -85,7 +85,8 @@ def _ficha_html() -> str:
       <div>Diploma</div><div>L1 - Licenciatura 1.º ciclo</div>
       <div>Área CNAEF 2013</div>
       <div>Principal</div><div>0714 - Eletrónica e automação</div>
-      <div>Secundária</div><div>0613 - Desenvolvimento e análise de software e aplicações informáticas</div>
+      <div>Secundária</div>
+      <div>0613 - Desenvolvimento e análise de software e aplicações informáticas</div>
       <div>Url Direto</div><div>https://cnaef.dgeec.medu.pt/?accao=Ficha&amp;cod=139119</div>
     </body></html>
     """

@@ -26,7 +26,8 @@ def build_universe(html_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     )
     if len(references) != EXPECTED_PAIR_COUNT:
         raise ValueError(
-            f"2025 CNA pair universe mismatch: expected {EXPECTED_PAIR_COUNT}, got {len(references)}"
+            "2025 CNA pair universe mismatch: "
+            f"expected {EXPECTED_PAIR_COUNT}, got {len(references)}"
         )
 
     digest = sha256_file(html_path)

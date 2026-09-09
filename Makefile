@@ -38,7 +38,7 @@ study-b-regionality:
 	python scripts/build_study_b_regionality.py
 
 study-b-ranking-coverage:
-	python scripts/build_study_b_ranking_coverage.py
+	python -m scripts.build_study_b_ranking_coverage
 
 study-b-public: study-b-pilot study-b-multi-course study-b-regionality study-b-ranking-coverage
 

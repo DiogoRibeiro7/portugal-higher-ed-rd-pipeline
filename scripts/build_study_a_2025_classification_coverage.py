@@ -69,11 +69,20 @@ def build_coverage(
     ]
     course_audit = courses.copy()
     course_audit["course_id"] = course_audit["course_id"].astype(str)
-    course_audit = course_audit.merge(classified[class_cols], on="course_id", how="left", suffixes=("_cna", "_dgeec"))
+    course_audit = course_audit.merge(
+        classified[class_cols],
+        on="course_id",
+        how="left",
+        suffixes=("_cna", "_dgeec"),
+    )
     course_audit["classified"] = course_audit["course_id"].isin(classified_ids)
     course_audit["stem_primary"] = course_audit["isced_f_2013_2digit"].isin(STEM_GROUPS)
     if failed_ids:
-        failure_cols = [column for column in ("course_id", "error_type", "error_message") if column in failed.columns]
+        failure_cols = [
+            column
+            for column in ("course_id", "error_type", "error_message")
+            if column in failed.columns
+        ]
         course_audit = course_audit.merge(failed[failure_cols], on="course_id", how="left")
 
     pair_audit = pairs.copy()
@@ -117,7 +126,11 @@ def main() -> None:
     parser.add_argument("courses", type=Path)
     parser.add_argument("classified", type=Path)
     parser.add_argument("failed", type=Path)
-    parser.add_argument("--output-dir", type=Path, default=Path("results/study_a/2025_classification"))
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("results/study_a/2025_classification"),
+    )
     args = parser.parse_args()
 
     dtype = {"institution_id": str, "course_id": str}

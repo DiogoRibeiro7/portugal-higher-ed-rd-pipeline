@@ -44,7 +44,11 @@ def _registry() -> tuple[RegisteredProgramme, ...]:
     config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
     items = config["selection"]["registered_programmes"]
     return tuple(
-        RegisteredProgramme(code=str(item["code"]), name=str(item["name"]), degree=str(item["degree"]))
+        RegisteredProgramme(
+            code=str(item["code"]),
+            name=str(item["name"]),
+            degree=str(item["degree"]),
+        )
         for item in items
     )
 

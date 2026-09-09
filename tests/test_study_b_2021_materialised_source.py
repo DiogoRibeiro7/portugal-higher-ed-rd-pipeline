@@ -5,7 +5,13 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "data" / "curated" / "dges" / "study_b_multi_course_2021_source_rows.csv"
 EXCLUSIONS = ROOT / "data" / "curated" / "dges" / "study_b_2021_code_transition_exclusions.csv"
-COVERAGE = ROOT / "results" / "study_b" / "2021_extension" / "study_b_2018_2021_coverage_gate.csv"
+COVERAGE = (
+    ROOT
+    / "results"
+    / "study_b"
+    / "2021_extension"
+    / "study_b_2018_2021_coverage_gate.csv"
+)
 
 EXPECTED_COUNTS = {"9081": 13, "9119": 23, "9147": 22, "9219": 8, "9500": 21}
 EXPECTED_TRANSITIONS = {
@@ -50,6 +56,7 @@ def test_materialised_2021_source_excludes_code_transitions() -> None:
 def test_four_year_coverage_gate_is_frozen_and_passes() -> None:
     coverage = pd.read_csv(COVERAGE, dtype={"programme_code": str})
 
-    assert coverage.set_index("programme_code")["stable_institutions_2018_2021"].to_dict() == EXPECTED_COUNTS
+    observed = coverage.set_index("programme_code")["stable_institutions_2018_2021"].to_dict()
+    assert observed == EXPECTED_COUNTS
     assert coverage["minimum_required"].eq(6).all()
     assert coverage["gate_passed"].all()
