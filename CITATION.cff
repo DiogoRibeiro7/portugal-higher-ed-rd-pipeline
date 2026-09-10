@@ -3,7 +3,7 @@ message: "If you use this repository, please cite it."
 title: "Portuguese Higher Education Demand, Regionality, and R&D Pipeline"
 type: software
 version: 0.3.4
-date-released: 2026-09-07
+date-released: 2026-09-10
 authors:
   - name: "Diogo"
 license: MIT
