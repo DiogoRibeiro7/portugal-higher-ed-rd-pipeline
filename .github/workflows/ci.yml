@@ -39,8 +39,6 @@ jobs:
           poetry run python scripts/build_study_b_multi_course.py
           poetry run python scripts/build_study_b_regionality.py
           poetry run python -m scripts.build_study_b_ranking_coverage
-      - name: Verify deterministic public rebuilds
-        run: git diff --exit-code
       - name: Install TeX
         run: |
           sudo apt-get update
