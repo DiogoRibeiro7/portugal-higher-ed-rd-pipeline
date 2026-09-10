@@ -39,3 +39,20 @@ jobs:
           poetry run python scripts/build_study_b_multi_course.py
           poetry run python scripts/build_study_b_regionality.py
           poetry run python -m scripts.build_study_b_ranking_coverage
+      - name: Verify deterministic public rebuilds
+        run: git diff --exit-code
+      - name: Install TeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-lang-english
+      - name: Compile manuscript
+        run: |
+          cd paper
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          test -s main.pdf
