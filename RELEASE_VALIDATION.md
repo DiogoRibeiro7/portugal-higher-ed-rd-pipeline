@@ -1,20 +1,20 @@
 # Release validation — v0.3.4
 
-Date: 2026-09-09
+Date: 2026-09-10
 
 ## Release status
 
-**Release candidate, not yet tag-ready.**
+**Tag-ready, pending publication.**
 
 The scientific boundary for v0.3.4 is frozen, and release metadata are aligned across
 `pyproject.toml`, runtime `pt_he_pipeline.__version__`, `CITATION.cff`, and
-`config/study.yml`. The repository must not be tagged as v0.3.4 until GitHub Actions
-successfully executes the exact release candidate commit.
+`config/study.yml`.
 
-Recent Actions failures are infrastructure failures rather than test failures: runs have
-terminated before runner provisioning, with zero executed steps and no job log. Those runs
-therefore provide no software-validation signal and must not be recorded as passing or failing
-tests.
+GitHub Actions has successfully executed the full hosted release gate on the exact final
+release-candidate commit, including lock validation, dependency installation, Ruff, strict
+mypy, pytest, all public Study A and Study B rebuilds, TeX installation, and the two-pass
+manuscript compile. The v0.3.4 tag and GitHub release may therefore be created from the exact
+validated release tree once this status-only update itself has passed the same hosted gate.
 
 ## Scientific boundary
 
@@ -97,7 +97,7 @@ layers. It does not claim to regenerate the private-input ranking model.
 
 ## Local release-candidate validation
 
-While hosted runners are unavailable, an exact checkout can be validated locally with:
+An exact checkout can also be validated locally with:
 
 ```bash
 make validate-release
@@ -130,7 +130,9 @@ GitHub Actions is configured to require, on a provisioned runner:
 4. strict mypy checks over `src`;
 5. the pytest suite with package coverage;
 6. rebuild of all public Study A release layers;
-7. rebuild of all public Study B release layers.
+7. rebuild of all public Study B release layers;
+8. TeX installation with scalable Computer Modern fonts;
+9. two-pass manuscript compilation with a non-empty PDF output.
 
 The version-consistency regression additionally requires agreement among:
 
@@ -152,5 +154,5 @@ commit to be tagged:
 - no new scientific result, parser, sensitivity or source-ingestion change has entered after the
   consolidation freeze without a demonstrated release need.
 
-Until those conditions are satisfied, v0.3.4 remains a release candidate rather than a
-published release.
+Those conditions have been satisfied for the current v0.3.4 release candidate. After this
+status-only update passes the same hosted gate, its exact merge commit is the final tag target.
