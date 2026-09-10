@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.4 — 2026-09-07
+## 0.3.4 — 2026-09-10
 
 - Close the current Study A empirical phase on the source-locked 2017, 2018 and 2020-2026 first-phase broad-area panel, preserving 2019 as an unobserved field-composition year rather than imputing it.
 - Promote the source-locked INE population aged exactly 18 to the preferred demographic denominator; retain the 15-24 divided-by-ten proxy only as a weaker secondary sensitivity.
